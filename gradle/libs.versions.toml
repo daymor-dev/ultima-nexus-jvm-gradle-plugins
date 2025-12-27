@@ -23,7 +23,7 @@ jsr305 = "3.0.2"
 junit-jupiter = "5.12.2"
 lombok = "1.18.42"
 slf4j = "2.0.17"
-spring-boot-dependencies = "3.5.9"
+spring-boot-dependencies = "4.0.1"
 
 [libraries]
 # GRADLE PLUGINS (implementation dependencies for convention plugins)
