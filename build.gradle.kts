@@ -290,6 +290,11 @@ afterEvaluate {
                 description = "Auto-discover subprojects in multi-project builds"
                 tags = pluginTags
             }
+            named("dev.daymor.ultimanexus.jvm.gradle.feature.repositories") {
+                displayName = "Ultima Nexus - Repositories"
+                description = "Configures Maven Central repository for dependency resolution"
+                tags = pluginTags
+            }
 
             // Report Plugins
             named("dev.daymor.ultimanexus.jvm.gradle.report.code-coverage") {
