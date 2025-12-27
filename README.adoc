@@ -1,5 +1,5 @@
 = Ultima Nexus JVM Gradle Plugins
-:toc: left
+:toc: preamble
 :toclevels: 2
 :icons: font
 :source-highlighter: highlight.js
@@ -1145,6 +1145,13 @@ lombok = { module = "org.projectlombok:lombok", version = "1.18.42" }
 
 * Gradle 9.0+ (tested with Gradle 9.2.1)
 * Java 17+ (configured for Java 25 LTS by default)
+
+== Contribution and Code of conduct
+
+Contributions are welcome! +
+If you find a bug, want to correct an issue or suggest improvements, please check out this link:./CONTRIBUTING.adoc[contributing].
+
+The project follows a code of conduct, please check out this link:./CODE_OF_CONDUCT.md[code of conduct].
 
 == Acknowledgements
 
