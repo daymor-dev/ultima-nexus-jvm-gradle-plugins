@@ -1,0 +1,45 @@
+= Contributing to Ultima Nexus JVM Gradle Plugins
+
+== Find a bug?
+
+If you find a bug, please open an https://github.com/daymor-dev/ultima-nexus-jvm-gradle-plugins/issues[issue].
+
+Please provide any information that can help resolve the problem with a short description, a stacktrace, and a minimal reproducible example if applicable.
+
+== Idea for improvement or question
+
+If you have any idea that could improve this project or any question:
+
+* Open an https://github.com/daymor-dev/ultima-nexus-jvm-gradle-plugins/issues[issue]
+* Start a new https://github.com/daymor-dev/ultima-nexus-jvm-gradle-plugins/discussions[discussion]
+
+== Contribute
+
+If you want to contribute by correcting a bug or improving this project, please follow these steps:
+
+* Fork the project
+* Create a new branch
+* Apply the changes
+* Add or modify the tests
+* Update the documentation if necessary
+* Submit a pull request
+
+Remember to:
+
+* Run `./gradlew build` to verify changes before committing
+* Create one branch and one pull request by bug or feature
+
+== Code of conduct
+
+The project follows a code of conduct, please check out this link:./CODE_OF_CONDUCT.md[code of conduct].
+
+== Contact Information
+
+If you have any questions, feedback, or collaboration ideas, feel free to contact:
+
+* Email: link:mailto:ultima-nexus-jvm@daymor.dev[ultima-nexus-jvm@daymor.dev]
+* GitHub: https://github.com/daymor-dev/ultima-nexus-jvm-gradle-plugins/discussions
+
+== License
+
+Ultima Nexus JVM Gradle Plugins is licensed under the https://www.apache.org/licenses/LICENSE-2.0[Apache License, Version 2.0].
