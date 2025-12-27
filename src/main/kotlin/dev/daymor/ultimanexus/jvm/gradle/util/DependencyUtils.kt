@@ -35,7 +35,7 @@ object DependencyUtils {
         const val JUNIT_JUPITER_VERSION = "6.0.1"
         const val LOMBOK = "org.projectlombok:lombok:1.18.42"
         const val SLF4J_SIMPLE = "org.slf4j:slf4j-simple:2.0.17"
-        const val SPRING_BOOT_DEVTOOLS = "org.springframework.boot:spring-boot-devtools:3.5.9"
+        const val SPRING_BOOT_DEVTOOLS = "org.springframework.boot:spring-boot-devtools:4.0.1"
     }
 
     fun getLibrary(
