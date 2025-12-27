@@ -37,7 +37,7 @@ The project follows a code of conduct, please check out this link:./CODE_OF_COND
 
 If you have any questions, feedback, or collaboration ideas, feel free to contact:
 
-* Email: link:mailto:ultima-nexus-jvm@daymor.dev[ultima-nexus-jvm@daymor.dev]
+* Email: link:mailto:ultima-nexus@daymor.dev[ultima-nexus@daymor.dev]
 * GitHub: https://github.com/daymor-dev/ultima-nexus-jvm-gradle-plugins/discussions
 
 == License

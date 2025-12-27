@@ -5,8 +5,11 @@
 :source-highlighter: highlight.js
 :highlightjs-theme: monokai
 
-image:https://img.shields.io/badge/version-1.0.0-blue[Version]
-image:https://img.shields.io/github/license/daymor-dev/ultima-nexus-jvm-gradle-plugins[GitHub License]
+image:https://img.shields.io/github/v/release/daymor-dev/ultima-nexus-jvm-gradle-plugins?label=version[Version, link="https://github.com/daymor-dev/ultima-nexus-jvm-gradle-plugins/releases/latest"]
+image:https://img.shields.io/github/license/daymor-dev/ultima-nexus-jvm-gradle-plugins[License]
+image:https://github.com/daymor-dev/ultima-nexus-jvm-gradle-plugins/actions/workflows/ci.yml/badge.svg[CI, link="https://github.com/daymor-dev/ultima-nexus-jvm-gradle-plugins/actions/workflows/ci.yml"]
+image:https://github.com/daymor-dev/ultima-nexus-jvm-gradle-plugins/actions/workflows/publish.yml/badge.svg[Publish, link="https://github.com/daymor-dev/ultima-nexus-jvm-gradle-plugins/actions/workflows/publish.yml"]
+image:https://github.com/daymor-dev/ultima-nexus-jvm-gradle-plugins/actions/workflows/github-code-scanning/codeql/badge.svg[CodeQL, link="https://github.com/daymor-dev/ultima-nexus-jvm-gradle-plugins/actions/workflows/github-code-scanning/codeql"]
 
 image:https://github.com/codespaces/badge.svg[link="https://codespaces.new/daymor-dev/ultima-nexus-jvm-gradle-plugins?quickstart=1", alt="Open in GitHub Codespaces"]
 
@@ -1243,8 +1246,13 @@ This project was inspired by and builds upon the excellent work of many open sou
 
 The plugin architecture and many conventions in this project follow the patterns established in the https://github.com/jjohannes/gradle-project-setup-howto/tree/spring_boot[Gradle Project Setup How-To (Spring Boot branch)] by Jendrik Johannes.
 
+== Contact Information
+
+If you have any questions, feedback, or collaboration ideas, feel free to contact:
+
+* Email: link:mailto:ultima-nexus@daymor.dev[ultima-nexus@daymor.dev]
+* GitHub: https://github.com/daymor-dev/ultima-nexus-jvm-gradle-plugins/discussions
+
 == License
 
-Apache License 2.0
-
-Copyright (C) 2025 Malcolm Rozé
+Ultima Nexus JVM gradle plugins is licensed under the https://www.apache.org/licenses/LICENSE-2.0[Apache License, Version 2.0].
