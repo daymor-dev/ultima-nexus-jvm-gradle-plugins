@@ -10,7 +10,7 @@ jvm-dependency-conflict-resolution = "2.5"
 node = "7.1.0"
 spotbugs-gradle-plugin = "6.4.8"
 spotless-plugin-gradle = "8.1.0"
-spring-boot = "4.0.0"
+spring-boot = "4.0.1"
 
 # TOOL VERSIONS (used by check plugins)
 checkstyle = "12.3.0"
