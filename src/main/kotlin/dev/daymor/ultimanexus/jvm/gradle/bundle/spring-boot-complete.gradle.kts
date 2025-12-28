@@ -17,8 +17,29 @@
 package dev.daymor.ultimanexus.jvm.gradle.bundle
 
 /**
- * Bundle plugin for complete Spring Boot library development.
- * Includes all Java complete features plus Spring Boot development dependencies.
+ * Bundle plugin for complete Spring Boot development.
+ * Supports both application and library modes.
+ *
+ * Default: Application mode (bootJar/bootRun enabled)
+ *
+ * Configuration via build.gradle.kts:
+ * ```kotlin
+ * springBootConfig {
+ *     isApplication.set(false)  // library mode
+ * }
+ * ```
+ *
+ * Configuration via gradle.properties:
+ * ```properties
+ * springBoot.isApplication=false
+ * ```
+ *
+ * Includes:
+ * - Quality checks (Checkstyle, PMD, SpotBugs, Spotless)
+ * - Testing (unit, integration, functional, performance)
+ * - Reporting (code coverage, SBOM)
+ * - Publishing (Maven Central ready)
+ * - Spring Boot with configurable application/library mode
  *
  * Usage:
  * plugins {
@@ -26,8 +47,14 @@ package dev.daymor.ultimanexus.jvm.gradle.bundle
  * }
  */
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete")
-    id("dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot")
-    id("dev.daymor.ultimanexus.jvm.gradle.dependency.spring-boot-development")
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project")
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.check")
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.test")
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.report")
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.compile-java")
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.javadoc")
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.publish-java")
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-unified")
+    id("dev.daymor.ultimanexus.jvm.gradle.dependency.jspecify")
     id("dev.daymor.ultimanexus.jvm.gradle.dependency.spring-boot-test")
 }

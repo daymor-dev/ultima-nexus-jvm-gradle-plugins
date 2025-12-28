@@ -112,7 +112,7 @@ afterEvaluate {
             }
             named("dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete") {
                 displayName = "Ultima Nexus - Java Complete"
-                description = "Complete Java library with quality, testing, and publishing"
+                description = "Complete Java with configurable app/library mode (default: application)"
                 tags = pluginTags
             }
 
@@ -124,12 +124,7 @@ afterEvaluate {
             }
             named("dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete") {
                 displayName = "Ultima Nexus - Spring Boot Complete"
-                description = "Complete Spring Boot library with all features"
-                tags = pluginTags
-            }
-            named("dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-application") {
-                displayName = "Ultima Nexus - Spring Boot Application"
-                description = "Spring Boot application with quality checks and testing"
+                description = "Complete Spring Boot with configurable app/library mode (default: application)"
                 tags = pluginTags
             }
             named("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus") {
@@ -245,6 +240,11 @@ afterEvaluate {
                 description = "Java library publishing with sources and javadoc"
                 tags = pluginTags
             }
+            named("dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central") {
+                displayName = "Ultima Nexus - Maven Central Publishing"
+                description = "Uploads publications to Maven Central via Central Portal"
+                tags = pluginTags
+            }
             named("dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot") {
                 displayName = "Ultima Nexus - Spring Boot"
                 description = "Spring Boot library dependencies"
@@ -253,6 +253,16 @@ afterEvaluate {
             named("dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-application") {
                 displayName = "Ultima Nexus - Spring Boot App Feature"
                 description = "Spring Boot application configuration"
+                tags = pluginTags
+            }
+            named("dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-unified") {
+                displayName = "Ultima Nexus - Spring Boot Unified"
+                description = "Spring Boot with configurable application/library mode"
+                tags = pluginTags
+            }
+            named("dev.daymor.ultimanexus.jvm.gradle.feature.java-unified") {
+                displayName = "Ultima Nexus - Java Unified"
+                description = "Java with configurable application/library mode"
                 tags = pluginTags
             }
             named("dev.daymor.ultimanexus.jvm.gradle.feature.version-platform") {

@@ -17,8 +17,31 @@
 package dev.daymor.ultimanexus.jvm.gradle.bundle
 
 /**
- * Bundle plugin for complete Java library development.
- * Includes quality checks, testing, reporting, Javadoc, publishing, and jspecify.
+ * Bundle plugin for complete Java development.
+ * Supports both application and library modes.
+ *
+ * Default: Application mode (run task and distribution enabled)
+ *
+ * Configuration via build.gradle.kts:
+ * ```kotlin
+ * javaConfig {
+ *     isApplication.set(false)  // library mode
+ * }
+ * ```
+ *
+ * Configuration via gradle.properties:
+ * ```properties
+ * java.isApplication=false
+ * ```
+ *
+ * Includes:
+ * - Quality checks (Checkstyle, PMD, SpotBugs, Spotless)
+ * - Testing (unit, integration, functional, performance)
+ * - Reporting (code coverage, SBOM)
+ * - Javadoc generation
+ * - Publishing (Maven Central ready)
+ * - Java with configurable application/library mode
+ * - JSpecify nullability annotations
  *
  * Usage:
  * plugins {
@@ -26,10 +49,12 @@ package dev.daymor.ultimanexus.jvm.gradle.bundle
  * }
  */
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple")
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project")
     id("dev.daymor.ultimanexus.jvm.gradle.bundle.check")
     id("dev.daymor.ultimanexus.jvm.gradle.bundle.test")
     id("dev.daymor.ultimanexus.jvm.gradle.bundle.report")
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.compile-java")
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.java-unified")
     id("dev.daymor.ultimanexus.jvm.gradle.feature.javadoc")
     id("dev.daymor.ultimanexus.jvm.gradle.feature.publish-java")
     id("dev.daymor.ultimanexus.jvm.gradle.dependency.jspecify")

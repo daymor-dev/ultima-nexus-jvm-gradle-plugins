@@ -38,36 +38,67 @@ The plugins can be used independently or combined through predefined "bundle" pl
 
 == Installation
 
-=== From Gradle Plugin Portal
+TIP: *Best Practice*: Use Gradle version catalog (`libs.versions.toml`) instead of hardcoding versions. This provides single source of truth, IDE autocomplete, and easy version updates.
 
-Add plugins to your `build.gradle.kts`:
+=== Quick Start (Recommended)
+
+Complete setup for a new project using version catalog:
+
+==== Step 1: Version Catalog (`gradle/libs.versions.toml`)
+
+[source,toml]
+----
+[versions]
+ultima-nexus-plugins = "1.0.0"
+
+[plugins]
+# Settings plugin
+ultimanexus-bundle-settings = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm", version.ref = "ultima-nexus-plugins" }
+
+# Build plugins (choose one based on your project type)
+ultimanexus-bundle-java-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete", version.ref = "ultima-nexus-plugins" }
+ultimanexus-bundle-spring-boot-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete", version.ref = "ultima-nexus-plugins" }
+----
+
+==== Step 2: Settings Script (`settings.gradle.kts`)
 
 [source,kotlin]
 ----
-plugins {
-    // Use a bundle for quick setup
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete") version "1.0.0"
-
-    // Or pick individual plugins
-    id("dev.daymor.ultimanexus.jvm.gradle.check.checkstyle") version "1.0.0"
-}
-----
-
-=== Plugin Resolution Setup
-
-To use these plugins, you must configure `pluginManagement` in your `settings.gradle.kts`:
-
-[source,kotlin]
-----
-// settings.gradle.kts
 pluginManagement {
     repositories {
         gradlePluginPortal()
     }
 }
+
+plugins {
+    alias(libs.plugins.ultimanexus.bundle.settings)
+}
 ----
 
-TIP: If you use the `project-structure` plugin, `rootProject.name` is automatically set from the directory name (or `rootProjectName` property in `gradle.properties`).
+==== Step 3: Build Script (`build.gradle.kts`)
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.bundle.java.complete)
+}
+----
+
+==== Step 4: Project Properties (`gradle.properties`)
+
+[source,properties]
+----
+# Project identity
+groupId=com.example.myproject
+version=1.0.0
+description=My project description
+
+# Build optimizations
+org.gradle.caching=true
+org.gradle.configuration-cache=true
+----
+
+That's it! Run `./gradlew qualityCheck` to verify the setup.
 
 == Bundle Plugins
 
@@ -94,12 +125,11 @@ Level 1 - Feature Bundles:
 Level 2 - Project Bundles:
 ├── gradle-project     (lifecycle + identity + dependency-rules + format-gradle + repositories)
 ├── java-simple        (gradle-project + compile-java)
-└── java-complete      (java-simple + check + test + report + javadoc + publish + jspecify)
+└── java-complete      (check + test + report + compile-java + java-unified + publish + jspecify) [app/lib mode]
 
 Level 3 - Framework Bundles:
 ├── spring-boot-simple     (java-simple + spring-boot + spring-boot-test)
-├── spring-boot-complete   (java-complete + spring-boot + spring-boot-dev + spring-boot-test)
-└── spring-boot-application (gradle-project + check + test + compile-java + spring-boot-app + sbom)
+└── spring-boot-complete   (check + test + report + compile-java + publish + spring-boot-unified) [app/lib mode]
 
 Level 4 - Full Bundle:
 └── ultima-nexus       (spring-boot-complete + lombok + lombok-test)
@@ -115,9 +145,11 @@ Settings bundle for Ultima Nexus JVM projects.
 ----
 // settings.gradle.kts
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm") version "1.0.0"
+    alias(libs.plugins.ultimanexus.bundle.settings)
 }
 ----
+
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm") version "1.0.0"`
 
 *Includes:*
 
@@ -133,9 +165,11 @@ Code quality checks bundle.
 [source,kotlin]
 ----
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.check") version "1.0.0"
+    alias(libs.plugins.ultimanexus.bundle.check)
 }
 ----
+
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.bundle.check") version "1.0.0"`
 
 *Includes:*
 
@@ -153,9 +187,11 @@ All test suites bundle.
 [source,kotlin]
 ----
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.test") version "1.0.0"
+    alias(libs.plugins.ultimanexus.bundle.test)
 }
 ----
+
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.bundle.test") version "1.0.0"`
 
 *Includes:*
 
@@ -172,9 +208,11 @@ Reporting bundle.
 [source,kotlin]
 ----
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.report") version "1.0.0"
+    alias(libs.plugins.ultimanexus.bundle.report)
 }
 ----
+
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.bundle.report") version "1.0.0"`
 
 *Includes:*
 
@@ -188,9 +226,11 @@ Antora documentation bundle.
 [source,kotlin]
 ----
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.documentation") version "1.0.0"
+    alias(libs.plugins.ultimanexus.bundle.documentation)
 }
 ----
+
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.bundle.documentation") version "1.0.0"`
 
 *Includes:*
 
@@ -206,9 +246,11 @@ Base Gradle project conventions.
 [source,kotlin]
 ----
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project") version "1.0.0"
+    alias(libs.plugins.ultimanexus.bundle.gradle.project)
 }
 ----
+
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project") version "1.0.0"`
 
 *Includes:*
 
@@ -225,9 +267,11 @@ Simple Java library without quality checks.
 [source,kotlin]
 ----
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple") version "1.0.0"
+    alias(libs.plugins.ultimanexus.bundle.java.simple)
 }
 ----
+
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple") version "1.0.0"`
 
 *Includes:*
 
@@ -236,25 +280,77 @@ plugins {
 
 ==== java-complete
 
-Full Java library development with quality, testing, and publishing.
+Complete Java development with configurable application/library mode.
 
 [source,kotlin]
 ----
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete") version "1.0.0"
+    alias(libs.plugins.ultimanexus.bundle.java.complete)
 }
 ----
 
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete") version "1.0.0"`
+
 *Includes:*
 
-* Everything in `gradle-project`
-* All quality checks (`check` bundle)
+* Quality checks (`check` bundle)
 * All test types (`test` bundle)
 * All reports (`report` bundle)
 * Java compilation configuration
+* Java with configurable application/library mode
 * Javadoc generation
 * Maven Central publishing
 * JSpecify nullability annotations
+
+===== Java Mode Configuration
+
+The `java-complete` bundle supports both application and library modes.
+
+*Default: Application mode* (run task and distribution enabled)
+
+Configure via `build.gradle.kts`:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.bundle.java.complete)
+}
+
+// For applications, configure main class
+application {
+    mainClass.set("com.example.Main")
+}
+
+// Optional: Switch to library mode
+javaConfig {
+    isApplication.set(false)  // library mode - no run/distribution tasks
+}
+----
+
+Or via `gradle.properties`:
+
+[source,properties]
+----
+# Default is true (application mode)
+java.isApplication=false
+----
+
+[cols="1,2,1,1,2"]
+|===
+|Mode |Plugin |run task |distZip |Use Case
+
+|Application (default)
+|`application`
+|Enabled
+|Enabled
+|CLI tools, services
+
+|Library
+|`java-library`
+|None
+|None
+|Shared libraries, SDKs
+|===
 
 === Framework Bundles
 
@@ -265,9 +361,11 @@ Simple Spring Boot library without quality checks.
 [source,kotlin]
 ----
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple") version "1.0.0"
+    alias(libs.plugins.ultimanexus.bundle.spring.boot.simple)
 }
 ----
+
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple") version "1.0.0"`
 
 *Includes:*
 
@@ -277,43 +375,73 @@ plugins {
 
 ==== spring-boot-complete
 
-Complete Spring Boot library with all features.
+Complete Spring Boot development with configurable application/library mode.
 
 [source,kotlin]
 ----
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete") version "1.0.0"
+    alias(libs.plugins.ultimanexus.bundle.spring.boot.complete)
 }
 ----
 
-*Includes:*
-
-* Everything in `java-complete`
-* Spring Boot plugin
-* Spring Boot development dependencies
-* Spring Boot test dependencies
-
-==== spring-boot-application
-
-Spring Boot application development.
-
-[source,kotlin]
-----
-plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-application") version "1.0.0"
-}
-----
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete") version "1.0.0"`
 
 *Includes:*
 
-* Base project conventions (`gradle-project`)
 * Quality checks (`check` bundle)
 * All test types (`test` bundle)
-* Java compilation
-* Spring Boot application plugin
-* Spring Boot application dependencies
+* All reports (`report` bundle)
+* Java compilation configuration
+* Javadoc generation
+* Maven Central publishing
+* JSpecify nullability annotations
+* Spring Boot with configurable application/library mode
 * Spring Boot test dependencies
-* SBOM generation
+
+===== Spring Boot Mode Configuration
+
+The `spring-boot-complete` bundle supports both application and library modes.
+
+*Default: Application mode* (bootJar and bootRun enabled)
+
+Configure via `build.gradle.kts`:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.bundle.spring.boot.complete)
+}
+
+// Optional: Switch to library mode
+springBootConfig {
+    isApplication.set(false)  // library mode - standard JAR, no bootJar/bootRun
+}
+----
+
+Or via `gradle.properties`:
+
+[source,properties]
+----
+# Default is true (application mode)
+springBoot.isApplication=false
+----
+
+[cols="1,2,1,1,2"]
+|===
+|Mode |JAR Type |bootJar |bootRun |Use Case
+
+|Application (default)
+|Executable fat JAR
+|Enabled
+|Enabled
+|Standalone Spring Boot apps
+
+|Library
+|Standard JAR
+|Disabled
+|Disabled
+|Shared libraries, starters
+|===
 
 === Full Bundle
 
@@ -324,9 +452,11 @@ Full Ultima Nexus framework experience with all conventions.
 [source,kotlin]
 ----
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus") version "1.0.0"
+    alias(libs.plugins.ultimanexus.bundle.ultima.nexus)
 }
 ----
+
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus") version "1.0.0"`
 
 *Includes:*
 
@@ -431,6 +561,9 @@ plugins {
 |`dev.daymor.ultimanexus.jvm.gradle.feature.compile-java`
 |Java 25 LTS compilation settings
 
+|`dev.daymor.ultimanexus.jvm.gradle.feature.java-unified`
+|Java with configurable application/library mode (default: app)
+
 |`dev.daymor.ultimanexus.jvm.gradle.feature.git-hooks`
 |Configures pre-commit git hooks *(Settings plugin)*
 
@@ -444,16 +577,22 @@ plugins {
 |Configures Maven Central repository for dependency resolution
 
 |`dev.daymor.ultimanexus.jvm.gradle.feature.publish`
-|Maven Central publishing (configurable)
+|Prepares Maven publication with signing and POM metadata
 
 |`dev.daymor.ultimanexus.jvm.gradle.feature.publish-java`
-|Java artifact publishing
+|Java artifact publishing with sources and javadoc jars
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central`
+|Uploads publications to Maven Central via Central Portal
 
 |`dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot`
 |Spring Boot Gradle plugin wrapper
 
 |`dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-application`
 |Spring Boot application configuration (bootJar, bootRun)
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-unified`
+|Spring Boot with configurable application/library mode (default: app)
 
 |`dev.daymor.ultimanexus.jvm.gradle.feature.use-all-catalog-versions`
 |Applies `java-platform` plugin and enforces all version catalog entries as strict constraints. *Cannot be combined with `java-library` or `java` plugins.*
@@ -515,26 +654,30 @@ Configure the project identity (group ID and version):
 [source,kotlin]
 ----
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.base.identity") version "1.0.0"
+    alias(libs.plugins.ultimanexus.base.identity)
 }
 
 identity {
-    groupId = "com.example.myproject"  // Required
-    version = "1.0.0"                   // Optional
+    groupId = "com.example.myproject"     // Required
+    version = "1.0.0"                      // Optional
+    description = "My project description" // Optional
 }
 ----
 
-Or via `gradle.properties`:
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.base.identity") version "1.0.0"`
+
+Or via `gradle.properties` (recommended):
 
 [source,properties]
 ----
 groupId=com.example.myproject
 version=1.0.0
+description=My project description
 ----
 
 === Checkstyle Configuration
 
-By default, the checkstyle plugin uses rules from the `ultima-nexus-jvm-check` artifact.
+By default, the checkstyle plugin uses rules from the https://github.com/daymor-dev/ultima-nexus-jvm-check[ultima-nexus-jvm-check] artifact, which is automatically resolved and used. You only need custom configuration if you want to override the defaults.
 
 [source,kotlin]
 ----
@@ -558,7 +701,7 @@ checkstyle.fileSuppressionsFile=config/checkstyle/file-suppressions.xml
 
 === PMD Configuration
 
-By default, the PMD plugin uses rules from the `ultima-nexus-jvm-check` artifact.
+By default, the PMD plugin uses rules from the https://github.com/daymor-dev/ultima-nexus-jvm-check[ultima-nexus-jvm-check] artifact, which is automatically resolved and used. You only need custom configuration if you want to override the defaults.
 
 [source,kotlin]
 ----
@@ -576,7 +719,7 @@ pmd.ruleSetFile=config/pmd/pmd-ruleset.xml
 
 === Java Formatting Configuration
 
-By default, the format-java plugin uses the Eclipse formatter and license header from the `ultima-nexus-jvm-check` artifact.
+By default, the format-java plugin uses the Eclipse formatter and license header from the https://github.com/daymor-dev/ultima-nexus-jvm-check[ultima-nexus-jvm-check] artifact, which is automatically resolved and used. You only need custom configuration if you want to override the defaults.
 
 [source,kotlin]
 ----
@@ -624,7 +767,7 @@ spotbugs.reportLevel=LOW
 spotbugs.excludeFilterFile=config/spotbugs/exclude-filter.xml
 ----
 
-TIP: If `excludeFilterFile` is not set, the plugin will automatically use `spotbugs-filter.xml` from the `ultima-nexus-jvm-check` artifact, or fall back to `$rootDir/ultima-nexus-jvm-check/src/main/resources/spotbugs-filter.xml`.
+TIP: If `excludeFilterFile` is not set, the plugin will automatically use `spotbugs-filter.xml` from the https://github.com/daymor-dev/ultima-nexus-jvm-check[ultima-nexus-jvm-check] artifact, which is automatically resolved and used. You only need custom configuration if you want to override the defaults.
 
 === Test Configuration
 
@@ -716,6 +859,41 @@ publish.scmConnection=scm:git:git://github.com/organization/project.git
 publish.scmDeveloperConnection=scm:git:ssh://git@github.com/organization/project.git
 ----
 
+==== Publishing to Maven Central
+
+The publishing setup uses two plugins:
+
+* `publish` (or `publish-java`) - Prepares Maven publication with signing and POM metadata
+* `publish-maven-central` - Uploads publications to Maven Central via Central Portal
+
+*Single-module project:*
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.feature.publish.java)
+    alias(libs.plugins.ultimanexus.feature.publish.maven.central)
+}
+----
+Run: `./gradlew publishAggregationToCentralPortal`
+
+*Multi-module project:*
+[source,kotlin]
+----
+// Root build.gradle.kts
+plugins {
+    alias(libs.plugins.ultimanexus.feature.publish.maven.central) // For Maven Central publishing
+}
+
+// Each submodule build.gradle.kts
+plugins {
+    alias(libs.plugins.ultimanexus.feature.publish.java)
+}
+----
+Run: `./gradlew publishAggregationToCentralPortal`
+
+NOTE: See <<Version Catalog Support>> for version catalog setup.
+The `publish-maven-central` plugin handles uploading to Maven Central.
+
 === Format Gradle Root Configuration
 
 Configure Gradle formatting targets for root projects.
@@ -748,9 +926,11 @@ Auto-discovers and includes subprojects based on directory structure:
 ----
 // settings.gradle.kts
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.feature.project-structure") version "1.0.0"
+    alias(libs.plugins.ultimanexus.feature.project.structure)
 }
 ----
+
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.feature.project-structure") version "1.0.0"`
 
 Configure via `gradle.properties`:
 
@@ -774,9 +954,11 @@ Configures pre-commit git hooks for quality checks:
 ----
 // settings.gradle.kts
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.feature.git-hooks") version "1.0.0"
+    alias(libs.plugins.ultimanexus.feature.git.hooks)
 }
 ----
+
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.feature.git-hooks") version "1.0.0"`
 
 === Aggregation Plugin
 
@@ -785,7 +967,7 @@ Creates an aggregator module that bundles subprojects for coverage and reporting
 [source,kotlin]
 ----
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.feature.aggregation") version "1.0.0"
+    alias(libs.plugins.ultimanexus.feature.aggregation)
 }
 
 aggregation {
@@ -794,6 +976,8 @@ aggregation {
 }
 ----
 
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.feature.aggregation") version "1.0.0"`
+
 === Version Platform Plugin
 
 Creates a Java Platform (BOM) with version constraints from the version catalog:
@@ -801,7 +985,7 @@ Creates a Java Platform (BOM) with version constraints from the version catalog:
 [source,kotlin]
 ----
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.feature.version-platform") version "1.0.0"
+    alias(libs.plugins.ultimanexus.feature.version.platform)
 }
 
 versionPlatform {
@@ -809,6 +993,8 @@ versionPlatform {
     springBootBomLibrary = "spring-boot-dependencies" // Catalog library name
 }
 ----
+
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.feature.version-platform") version "1.0.0"`
 
 === Use All Catalog Versions Plugin
 
@@ -819,9 +1005,11 @@ This is useful for creating a platform/BOM project that enforces consistent vers
 ----
 // In a dedicated platform subproject (NOT a library project)
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.feature.use-all-catalog-versions") version "1.0.0"
+    alias(libs.plugins.ultimanexus.feature.use.all.catalog.versions)
 }
 ----
+
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.feature.use-all-catalog-versions") version "1.0.0"`
 
 IMPORTANT: This plugin applies the `java-platform` plugin internally. It *cannot* be used with `java`, `java-library`,
 or any bundle that includes these plugins (like `java-simple`, `java-complete`, `spring-boot-*`).
@@ -834,13 +1022,15 @@ Configure Java version and compilation settings:
 [source,kotlin]
 ----
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.feature.compile-java") version "1.0.0"
+    alias(libs.plugins.ultimanexus.feature.compile.java)
 }
 
 compileJavaConfig {
     jdkVersion = 21 // Override the default JDK version
 }
 ----
+
+NOTE: See <<Version Catalog Support>> for version catalog setup. Direct plugin ID: `id("dev.daymor.ultimanexus.jvm.gradle.feature.compile-java") version "1.0.0"`
 
 Or via `gradle.properties`:
 
@@ -876,12 +1066,34 @@ ultimanexus-bundle-java-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bun
 # Framework Bundles
 ultimanexus-bundle-spring-boot-simple = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple", version.ref = "ultima-nexus-plugins" }
 ultimanexus-bundle-spring-boot-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-spring-boot-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-application", version.ref = "ultima-nexus-plugins" }
 ultimanexus-bundle-ultima-nexus = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus", version.ref = "ultima-nexus-plugins" }
 
-# Individual plugins (examples)
+# Base plugins
+ultimanexus-base-identity = { id = "dev.daymor.ultimanexus.jvm.gradle.base.identity", version.ref = "ultima-nexus-plugins" }
+ultimanexus-base-lifecycle = { id = "dev.daymor.ultimanexus.jvm.gradle.base.lifecycle", version.ref = "ultima-nexus-plugins" }
+
+# Feature plugins
+ultimanexus-feature-publish = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.publish", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-publish-java = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.publish-java", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-publish-maven-central = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-aggregation = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.aggregation", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-compile-java = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.compile-java", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-project-structure = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.project-structure", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-git-hooks = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.git-hooks", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-version-platform = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.version-platform", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-use-all-catalog-versions = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.use-all-catalog-versions", version.ref = "ultima-nexus-plugins" }
+
+# Check plugins
 ultimanexus-check-checkstyle = { id = "dev.daymor.ultimanexus.jvm.gradle.check.checkstyle", version.ref = "ultima-nexus-plugins" }
+ultimanexus-check-pmd = { id = "dev.daymor.ultimanexus.jvm.gradle.check.pmd", version.ref = "ultima-nexus-plugins" }
+ultimanexus-check-spotbugs = { id = "dev.daymor.ultimanexus.jvm.gradle.check.spotbugs", version.ref = "ultima-nexus-plugins" }
+ultimanexus-check-format-java = { id = "dev.daymor.ultimanexus.jvm.gradle.check.format-java", version.ref = "ultima-nexus-plugins" }
+ultimanexus-check-format-gradle = { id = "dev.daymor.ultimanexus.jvm.gradle.check.format-gradle", version.ref = "ultima-nexus-plugins" }
+
+# Test plugins
 ultimanexus-test-integration-test = { id = "dev.daymor.ultimanexus.jvm.gradle.test.integration-test", version.ref = "ultima-nexus-plugins" }
+ultimanexus-test-functional-test = { id = "dev.daymor.ultimanexus.jvm.gradle.test.functional-test", version.ref = "ultima-nexus-plugins" }
+ultimanexus-test-performance-test = { id = "dev.daymor.ultimanexus.jvm.gradle.test.performance-test", version.ref = "ultima-nexus-plugins" }
 ----
 
 Then use in `settings.gradle.kts`:
@@ -901,6 +1113,8 @@ plugins {
     alias(libs.plugins.ultimanexus.bundle.java.complete)
 }
 ----
+
+TIP: You only need to add the plugins you actually use to your version catalog. The bundles already include common functionality, so you may not need individual plugins.
 
 == Lifecycle Tasks
 
@@ -946,7 +1160,7 @@ src/
 
 == Gradle Properties Reference
 
-Configure plugins via `gradle.properties`:
+Configure plugins via `gradle.properties`. All properties can also be set programmatically in `build.gradle.kts` using the corresponding extension (extension values take precedence).
 
 === Core Properties
 
@@ -962,6 +1176,10 @@ Configure plugins via `gradle.properties`:
 |_(optional)_
 |Project version (e.g., `1.0.0`)
 
+|`description`
+|_(optional)_
+|Project description
+
 |`jdkVersion`
 |`25`
 |JDK version for Java compilation toolchain
@@ -969,6 +1187,21 @@ Configure plugins via `gradle.properties`:
 |`company`
 |`""`
 |Company name for license headers in Java formatting
+|===
+
+=== Application/Library Mode Properties
+
+[cols="2,1,3"]
+|===
+|Property |Default |Description
+
+|`java.isApplication`
+|`true`
+|Java application (true) or library (false). Controls `application` vs `java-library` plugin.
+
+|`springBoot.isApplication`
+|`true`
+|Spring Boot application (true) or library (false). Controls bootJar/bootRun availability.
 |===
 
 === Dependency Rules Properties
@@ -998,30 +1231,45 @@ Configure plugins via `gradle.properties`:
 
 |`projectStructureExclusions`
 |`gradle/plugins,*-gradle-plugins`
-|Comma-separated list of directory patterns to exclude
+|Comma-separated directory patterns to exclude
+
+|`rootProjectName`
+|_(directory name)_
+|Custom name for the root project
 |===
 
-=== Publishing Properties
+=== Checkstyle Properties
 
 [cols="2,1,3"]
 |===
 |Property |Default |Description
 
-|`signingKey`
-|_(env: SIGNINGKEY)_
-|PGP signing key (ASCII-armored) for artifact signing
+|`checkstyle.configFile`
+|_(auto)_
+|Path to custom checkstyle.xml. Uses check artifact if not set.
 
-|`signingPassword`
-|_(env: SIGNINGPASSWORD)_
-|Password for the PGP signing key
+|`checkstyle.headerFile`
+|_(auto)_
+|Path to license header file for checkstyle
 
-|`mavenCentralUsername`
-|_(env: MAVENCENTRALUSERNAME)_
-|Maven Central (Sonatype) username
+|`checkstyle.suppressionsFile`
+|_(auto)_
+|Path to checkstyle suppressions file
 
-|`mavenCentralPassword`
-|_(env: MAVENCENTRALPASSWORD)_
-|Maven Central (Sonatype) password/token
+|`checkstyle.fileSuppressionsFile`
+|_(auto)_
+|Path to file-level suppressions file
+|===
+
+=== PMD Properties
+
+[cols="2,1,3"]
+|===
+|Property |Default |Description
+
+|`pmd.ruleSetFile`
+|_(auto)_
+|Path to custom PMD ruleset XML. Uses check artifact if not set.
 |===
 
 === SpotBugs Properties
@@ -1052,7 +1300,41 @@ Configure plugins via `gradle.properties`:
 
 |`spotbugs.excludeFilterFile`
 |_(auto)_
-|Path to custom exclude filter file. If not set, uses `spotbugs-filter.xml` from check artifact.
+|Path to custom exclude filter. Uses check artifact if not set.
+|===
+
+=== Java Formatting Properties
+
+[cols="2,1,3"]
+|===
+|Property |Default |Description
+
+|`formatJava.formatterConfigFile`
+|_(auto)_
+|Path to Eclipse formatter XML. Uses check artifact if not set.
+
+|`formatJava.licenseHeaderFile`
+|_(auto)_
+|Path to license header file
+
+|`formatJava.licenseHeaderText`
+|_(none)_
+|License header text (takes precedence over file)
+|===
+
+=== Gradle Formatting Properties
+
+[cols="2,1,3"]
+|===
+|Property |Default |Description
+
+|`formatGradleRoot.kotlinGradleTarget`
+|`gradle/plugins/src/main/**/*.gradle.kts`
+|Target pattern for Kotlin Gradle files to format
+
+|`formatGradleRoot.kotlinTarget`
+|`gradle/plugins/src/main/**/*.kt`
+|Target pattern for Kotlin files to format
 |===
 
 === Test Properties
@@ -1093,6 +1375,103 @@ Configure plugins via `gradle.properties`:
 |Comma-separated patterns for classes to exclude from coverage
 |===
 
+=== Publishing Metadata Properties
+
+[cols="2,1,3"]
+|===
+|Property |Default |Description
+
+|`publish.projectUrl`
+|_(none)_
+|Project URL for Maven POM
+
+|`publish.inceptionYear`
+|_(none)_
+|Project inception year
+
+|`publish.licenseName`
+|`The Apache License, Version 2.0`
+|License name for Maven POM
+
+|`publish.licenseUrl`
+|`http://www.apache.org/licenses/LICENSE-2.0.txt`
+|License URL for Maven POM
+
+|`publish.developerId`
+|_(none)_
+|Developer ID for Maven POM
+
+|`publish.developerName`
+|_(none)_
+|Developer name for Maven POM
+
+|`publish.developerEmail`
+|_(none)_
+|Developer email for Maven POM
+
+|`publish.developerUrl`
+|_(none)_
+|Developer URL for Maven POM
+
+|`publish.developerOrganization`
+|_(none)_
+|Developer organization name
+
+|`publish.developerOrganizationUrl`
+|_(none)_
+|Developer organization URL
+
+|`publish.scmUrl`
+|_(none)_
+|Source Control Management URL
+
+|`publish.scmConnection`
+|_(none)_
+|SCM connection string (e.g., `scm:git:https://...`)
+
+|`publish.scmDeveloperConnection`
+|_(none)_
+|SCM developer connection string
+|===
+
+=== Publishing Credentials Properties
+
+[cols="2,1,3"]
+|===
+|Property |Default |Description
+
+|`signingKey`
+|_(env: SIGNINGKEY)_
+|PGP signing key (ASCII-armored) for artifact signing
+
+|`signingPassword`
+|_(env: SIGNINGPASSWORD)_
+|Password for the PGP signing key
+
+|`mavenCentralUsername`
+|_(env: MAVENCENTRALUSERNAME)_
+|Maven Central Portal username
+
+|`mavenCentralPassword`
+|_(env: MAVENCENTRALPASSWORD)_
+|Maven Central Portal password/token
+|===
+
+=== Version Platform Properties
+
+[cols="2,1,3"]
+|===
+|Property |Default |Description
+
+|`versionPlatform.includeSpringBootBom`
+|`true`
+|Whether to include Spring Boot BOM in version platform
+
+|`versionPlatform.springBootBomLibrary`
+|`spring-boot-dependencies`
+|Catalog library name for Spring Boot BOM
+|===
+
 TIP: All plugin properties can be set via `gradle.properties` or programmatically in `build.gradle.kts` using the corresponding extension. The extension takes precedence if both are set.
 
 == Dependency Fallbacks
@@ -1116,11 +1495,11 @@ The plugins work out of the box with sensible defaults. If a dependency is not f
 |spring-boot-development, spring-boot-test plugins
 
 |`spring-boot-devtools`
-|`3.5.9`
+|`4.0.1`
 |spring-boot-development plugin
 
 |`junit-jupiter-engine`
-|`5.12.2`
+|`6.0.1`
 |test plugin
 
 |`slf4j-simple`

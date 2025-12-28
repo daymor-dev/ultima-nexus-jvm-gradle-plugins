@@ -21,7 +21,6 @@ plugins {
     `maven-publish`
     signing
     id("dev.daymor.ultimanexus.jvm.gradle.base.identity")
-    id("com.gradleup.nmcp.aggregation")
 }
 
 /**
@@ -134,22 +133,9 @@ signing {
     sign(publishing.publications)
 }
 
-nmcpAggregation {
-    centralPortal {
-        username =
-            providers.gradleProperty("mavenCentralUsername").orNull
-                ?: System.getenv("MAVENCENTRALUSERNAME")
-                ?: ""
-        password =
-            providers.gradleProperty("mavenCentralPassword").orNull
-                ?: System.getenv("MAVENCENTRALPASSWORD")
-                ?: ""
-        publishingType = "AUTOMATIC"
-    }
-}
-
 listOf(
         PublishToMavenRepository::class,
+        PublishToMavenLocal::class,
         GenerateMavenPom::class,
         GenerateModuleMetadata::class,
     )
