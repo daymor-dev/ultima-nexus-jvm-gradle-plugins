@@ -23,35 +23,31 @@ jobs:
           TOML_FILE="gradle/libs.versions.toml"
           KOTLIN_FILE="plugins-core/src/main/kotlin/dev/daymor/ultimanexus/jvm/gradle/util/DependencyUtils.kt"
 
-          # Extract versions from TOML
+          # Extract versions from TOML (using grep -F for fixed string matching)
           get_version() {
-            grep "^$1 = " "$TOML_FILE" | sed 's/.*= "\(.*\)"/\1/'
+            grep -F "$1 = " "$TOML_FILE" | head -1 | sed 's/.*= "\(.*\)"/\1/'
           }
 
-          ASSERTJ=$(get_version "assertj")
-          BYTE_BUDDY=$(get_version "byte-buddy-agent")
-          CHECKSTYLE=$(get_version "checkstyle")
-          JSPECIFY=$(get_version "jspecify")
-          JSR305=$(get_version "jsr305")
-          JUNIT=$(get_version "junit-jupiter")
-          LOMBOK=$(get_version "lombok")
-          MOCKK=$(get_version "mockk")
-          PMD=$(get_version "pmd")
-          SLF4J=$(get_version "slf4j")
-          SPRING_BOOT=$(get_version "spring-boot-dependencies")
+          # Update a fallback version constant if the version is found
+          update_version() {
+            local const_name="$1"
+            local version="$2"
+            if [ -n "$version" ]; then
+              sed -i "s/const val $const_name = \"[^\"]*\"/const val $const_name = \"$version\"/" "$KOTLIN_FILE"
+            fi
+          }
 
-          # Update DependencyUtils.kt with new versions
-          sed -i "s/const val ASSERTJ = \"[^\"]*\"/const val ASSERTJ = \"$ASSERTJ\"/" "$KOTLIN_FILE"
-          sed -i "s/const val BYTE_BUDDY_AGENT = \"[^\"]*\"/const val BYTE_BUDDY_AGENT = \"$BYTE_BUDDY\"/" "$KOTLIN_FILE"
-          sed -i "s/const val CHECKSTYLE = \"[^\"]*\"/const val CHECKSTYLE = \"$CHECKSTYLE\"/" "$KOTLIN_FILE"
-          sed -i "s/const val JSPECIFY = \"[^\"]*\"/const val JSPECIFY = \"$JSPECIFY\"/" "$KOTLIN_FILE"
-          sed -i "s/const val JSR305 = \"[^\"]*\"/const val JSR305 = \"$JSR305\"/" "$KOTLIN_FILE"
-          sed -i "s/const val JUNIT_JUPITER = \"[^\"]*\"/const val JUNIT_JUPITER = \"$JUNIT\"/" "$KOTLIN_FILE"
-          sed -i "s/const val LOMBOK = \"[^\"]*\"/const val LOMBOK = \"$LOMBOK\"/" "$KOTLIN_FILE"
-          sed -i "s/const val MOCKK = \"[^\"]*\"/const val MOCKK = \"$MOCKK\"/" "$KOTLIN_FILE"
-          sed -i "s/const val PMD = \"[^\"]*\"/const val PMD = \"$PMD\"/" "$KOTLIN_FILE"
-          sed -i "s/const val SLF4J = \"[^\"]*\"/const val SLF4J = \"$SLF4J\"/" "$KOTLIN_FILE"
-          sed -i "s/const val SPRING_BOOT = \"[^\"]*\"/const val SPRING_BOOT = \"$SPRING_BOOT\"/" "$KOTLIN_FILE"
+          update_version "ASSERTJ" "$(get_version "assertj")"
+          update_version "BYTE_BUDDY_AGENT" "$(get_version "byte-buddy-agent")"
+          update_version "CHECKSTYLE" "$(get_version "checkstyle")"
+          update_version "JSPECIFY" "$(get_version "jspecify")"
+          update_version "JSR305" "$(get_version "jsr305")"
+          update_version "JUNIT_JUPITER" "$(get_version "junit-jupiter")"
+          update_version "LOMBOK" "$(get_version "lombok")"
+          update_version "MOCKK" "$(get_version "mockk")"
+          update_version "PMD" "$(get_version "pmd")"
+          update_version "SLF4J" "$(get_version "slf4j")"
+          update_version "SPRING_BOOT" "$(get_version "spring-boot-dependencies")"
 
       - name: Commit changes if any
         run: |
