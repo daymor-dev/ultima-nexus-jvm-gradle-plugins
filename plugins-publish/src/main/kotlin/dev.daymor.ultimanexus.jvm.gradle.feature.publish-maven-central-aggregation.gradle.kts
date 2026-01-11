@@ -71,6 +71,8 @@ nmcpAggregation {
                 ?: ""
         publishingType = "AUTOMATIC"
     }
+    // Allow empty aggregation when no modules are configured yet
+    allowEmptyAggregation = true
 }
 
 providers.gradleProperty(PropertyKeys.Publish.MODULES).orNull?.let { modules ->
