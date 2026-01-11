@@ -29,11 +29,12 @@ jobs:
           }
 
           # Update a fallback version constant if the version is found
+          # Only matches simple version strings (no colons), to avoid modifying Fallbacks object
           update_version() {
             local const_name="$1"
             local version="$2"
             if [ -n "$version" ]; then
-              sed -i "s/const val $const_name = \"[^\"]*\"/const val $const_name = \"$version\"/" "$KOTLIN_FILE"
+              sed -i "s/const val $const_name = \"[0-9][^:\"]*\"/const val $const_name = \"$version\"/" "$KOTLIN_FILE"
             fi
           }
 
