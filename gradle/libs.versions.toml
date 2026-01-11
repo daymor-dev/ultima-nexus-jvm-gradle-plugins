@@ -28,8 +28,8 @@ slf4j = "2.0.17"
 spring-boot-dependencies = "4.0.1"
 
 # TEST LIBRARY VERSIONS (used by test convention plugins)
-assertj = "3.27.3"
-mockk = "1.13.13"
+assertj = "3.27.6"
+mockk = "1.14.7"
 
 [libraries]
 # GRADLE PLUGINS (implementation dependencies for convention plugins)
