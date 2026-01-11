@@ -1,0 +1,345 @@
+= Ultima Nexus - Java Module
+:toc: preamble
+:toclevels: 2
+
+Java-specific convention plugins for JVM projects.
+
+== Overview
+
+The `plugins-java` module provides Java development conventions:
+
+* **Java Compilation**: Toolchain support with configurable JDK version
+* **Java Unified**: Switchable application/library mode
+* **Javadoc**: Documentation generation configuration
+* **JSpecify**: Nullability annotations
+* **Bundles**: Pre-configured `java-simple` and `java-complete` bundles
+
+All plugins support configuration via extension DSL or gradle.properties.
+
+== Plugins
+
+[cols="1,3"]
+|===
+|Plugin ID |Description
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.compile-java`
+|Java compilation with toolchain support (default: Java 25)
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.java-unified`
+|Java with configurable application/library mode
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.javadoc`
+|Javadoc generation configuration
+
+|`dev.daymor.ultimanexus.jvm.gradle.dependency.jspecify`
+|JSpecify nullability annotations
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple`
+|Simple Java project without quality checks
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete`
+|Complete Java development with app/library mode
+|===
+
+== Installation
+
+Add to your version catalog (`gradle/libs.versions.toml`):
+
+[source,toml]
+----
+[versions]
+ultima-nexus-plugins = "1.0.0"
+
+[plugins]
+ultimanexus-bundle-java-simple = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple", version.ref = "ultima-nexus-plugins" }
+ultimanexus-bundle-java-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-compile-java = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.compile-java", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-java-unified = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.java-unified", version.ref = "ultima-nexus-plugins" }
+----
+
+== Java Complete Bundle
+
+The recommended bundle for full-featured Java development.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.java.complete)
+}
+----
+
+=== Includes
+
+* Base Gradle project conventions (`gradle-project` bundle)
+* All quality checks (`check` bundle)
+* All test types (`test` bundle)
+* All reports (`report` bundle)
+* Java compilation configuration
+* Java with configurable application/library mode
+* Javadoc generation
+* Maven Central publishing
+* JSpecify nullability annotations
+
+=== Application vs Library Mode
+
+By default, `java-complete` runs in **application mode**. This enables:
+
+* The `application` plugin
+* `run` task for executing the application
+* Distribution tasks (`distZip`, `distTar`)
+
+For libraries, switch to **library mode**:
+
+[source,kotlin]
+----
+ultimaNexus {
+    applicationMode.set(false)
+}
+----
+
+Or via gradle.properties:
+
+[source,properties]
+----
+java.isApplication=false
+----
+
+=== Mode Comparison
+
+[cols="1,2,1,1,2"]
+|===
+|Mode |Plugin |run task |Publishing |Use Case
+
+|Application (default)
+|`application`
+|Enabled
+|Not included
+|CLI tools, services
+
+|Library
+|`java-library`
+|None
+|`publish-java` enabled
+|Shared libraries, SDKs
+|===
+
+NOTE: In library mode, the `publish-java` plugin is automatically included, enabling Maven Central publishing with sources and Javadoc JARs.
+
+== Java Simple Bundle
+
+Minimal Java setup without quality checks.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.java.simple)
+}
+----
+
+=== Includes
+
+* Base Gradle project conventions
+* Java compilation configuration
+
+== Java Compilation Plugin
+
+Configures Java compilation settings including JDK version and compiler options.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.compile.java)
+}
+----
+
+=== Configuration via Extension
+
+[source,kotlin]
+----
+compileJavaConfig {
+    jdkVersion.set(21)
+}
+----
+
+=== Configuration via gradle.properties
+
+[source,properties]
+----
+jdkVersion=21
+----
+
+=== Default Settings
+
+* JDK version: 25
+* Fork compilation enabled
+* UTF-8 encoding
+* Compiler flags:
+** `-parameters` - Preserve method parameter names
+** `-implicit:none` - No implicit annotation processing
+** `-Werror` - Treat warnings as errors
+** `-Xlint:all,-serial,-processing` - Enable most lint warnings
+
+=== Reproducible Builds
+
+Archives are configured for reproducibility:
+
+* Consistent file order
+* No timestamps preserved
+* Standard file permissions (0664 for files, 0775 for directories)
+
+== Java Unified Plugin
+
+Configurable application/library mode for Java projects.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.java.unified)
+}
+----
+
+=== Configuration via Extension
+
+[source,kotlin]
+----
+ultimaNexus {
+    applicationMode.set(false)  // Library mode
+}
+----
+
+=== Configuration via gradle.properties
+
+[source,properties]
+----
+java.isApplication=false
+----
+
+=== Behavior
+
+* **Application mode (default)**: Applies `application` plugin
+* **Library mode**: Applies `java-library` plugin
+
+NOTE: This plugin uses the shared `ultimaNexus` extension from `UltimaNexusConfig`.
+
+== Javadoc Plugin
+
+Configures Javadoc generation.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.javadoc)
+}
+----
+
+=== Running Javadoc
+
+[source,bash]
+----
+./gradlew javadoc
+----
+
+== JSpecify Plugin
+
+Adds https://jspecify.dev/[JSpecify] nullability annotations.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.dependency.jspecify)
+}
+----
+
+=== What It Does
+
+Adds JSpecify as a compile-only dependency for nullability annotations:
+
+[source,java]
+----
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
+@NullMarked
+public class MyClass {
+    public void process(@Nullable String input) {
+        // ...
+    }
+}
+----
+
+=== Fallback Version
+
+If not specified in your version catalog, falls back to version `1.0.0`.
+
+== Properties Reference
+
+[cols="2,1,2,3"]
+|===
+|Property |Default |Plugin |Description
+
+|`jdkVersion`
+|`25`
+|`compile-java`
+|JDK version for Java compilation toolchain
+
+|`java.isApplication`
+|`true`
+|`java-unified`
+|Application mode (true) or library mode (false)
+|===
+
+== Running Common Tasks
+
+[source,bash]
+----
+# Compile Java
+./gradlew compileJava
+
+# Run quality checks
+./gradlew qualityCheck
+
+# Run all tests
+./gradlew allTest
+
+# Generate Javadoc
+./gradlew javadoc
+
+# Run application (application mode only)
+./gradlew run
+
+# Build distribution (application mode only)
+./gradlew distZip
+----
+
+== Dependency Fallbacks
+
+[cols="2,2,2"]
+|===
+|Dependency |Fallback Version |Description
+
+|`jspecify`
+|`1.0.0`
+|JSpecify nullability annotations
+|===
+
+== Related Modules
+
+* link:../plugins-base/README.adoc[plugins-base] - Base Gradle project conventions (dependency)
+* link:../plugins-check/README.adoc[plugins-check] - Quality checks (used by java-complete)
+* link:../plugins-test/README.adoc[plugins-test] - Testing infrastructure (used by java-complete)
+* link:../plugins-report/README.adoc[plugins-report] - Reporting (used by java-complete)
+* link:../plugins-publish/README.adoc[plugins-publish] - Publishing (used by java-complete)
+* link:../plugins-spring-boot/README.adoc[plugins-spring-boot] - Spring Boot extensions
+* link:../README.adoc[Root README] - Project overview and quick start

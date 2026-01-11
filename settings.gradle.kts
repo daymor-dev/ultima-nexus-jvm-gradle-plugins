@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-dependencyResolutionManagement {
-    repositories {
-        gradlePluginPortal()
-    }
+pluginManagement {
+    includeBuild("plugins-core")
 }
 
-rootProject.name = "ultima-nexus-jvm-gradle-plugins"
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.composite-build")
+}

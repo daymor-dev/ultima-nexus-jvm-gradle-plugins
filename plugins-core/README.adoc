@@ -1,0 +1,349 @@
+= Ultima Nexus - Core Module
+:toc: preamble
+:toclevels: 2
+
+Foundation module providing shared utilities, configuration infrastructure, and development plugins for building Gradle convention plugins.
+
+== Overview
+
+The `plugins-core` module is the foundation of the Ultima Nexus plugin ecosystem. It provides:
+
+* **Settings Plugins**: Composite build configuration for multi-module plugin projects
+* **Development Plugins**: Testing and publishing conventions for Gradle plugin development
+* **Shared Utilities**: Configuration management, property handling, and dependency utilities
+* **Testing Infrastructure**: Fixtures and extensions for testing Gradle plugins
+
+This module has no internal dependencies and serves as the base for all other Ultima Nexus modules.
+
+== Plugins
+
+[cols="1,3"]
+|===
+|Plugin ID |Description
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.composite-build`
+|Settings plugin for Gradle composite build projects with auto-discovery and shared configuration
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.gradle-plugin-publish`
+|Convention plugin for publishing Gradle plugins to the Gradle Plugin Portal
+
+|`dev.daymor.ultimanexus.jvm.gradle.test.gradle-plugin`
+|Convention plugin for testing Gradle plugins with TestKit, JUnit 5 and AssertJ
+
+|`dev.daymor.ultimanexus.jvm.gradle.test.unit`
+|Convention plugin for unit testing with JUnit 5, AssertJ and MockK
+|===
+
+== Installation
+
+Add to your version catalog (`gradle/libs.versions.toml`):
+
+[source,toml]
+----
+[versions]
+ultima-nexus-plugins = "1.0.0"
+
+[plugins]
+ultimanexus-feature-composite-build = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.composite-build", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-gradle-plugin-publish = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.gradle-plugin-publish", version.ref = "ultima-nexus-plugins" }
+ultimanexus-test-gradle-plugin = { id = "dev.daymor.ultimanexus.jvm.gradle.test.gradle-plugin", version.ref = "ultima-nexus-plugins" }
+ultimanexus-test-unit = { id = "dev.daymor.ultimanexus.jvm.gradle.test.unit", version.ref = "ultima-nexus-plugins" }
+----
+
+== Composite Build Settings Plugin
+
+Settings plugin for Gradle composite build projects (like plugin development). Automatically discovers composite builds, shares version catalog, and loads shared properties.
+
+=== Usage
+
+Apply in `settings.gradle.kts`:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.composite.build)
+}
+----
+
+=== Features
+
+* Auto-discovers composite builds by prefix pattern in root project
+* Shares version catalog from `gradle/libs.versions.toml` across all subprojects
+* Loads shared properties from `gradle/shared.properties`
+* Applies `org.gradle.*` properties as system properties
+
+=== Configuration
+
+Configure via `gradle.properties`:
+
+[source,properties]
+----
+# Root project name (required)
+rootProjectName=my-plugins
+
+# Prefix for auto-discovering composite builds in root project
+compositeBuildPrefix=plugins-
+
+# Path to shared gradle folder (default: ../gradle/ for subprojects)
+sharedGradlePath=../gradle/
+
+# Explicit composite builds to include in subprojects
+includedBuilds=plugins-core,plugins-base
+----
+
+=== Example Project Structure
+
+[source]
+----
+my-plugins/                          # Root project
+├── settings.gradle.kts              # Apply composite-build plugin
+├── gradle/
+│   ├── libs.versions.toml           # Shared version catalog
+│   └── shared.properties            # Shared properties
+├── plugins-core/                    # Auto-discovered (plugins-* prefix)
+│   └── settings.gradle.kts          # Subproject with composite-build
+├── plugins-check/
+│   └── settings.gradle.kts
+└── plugins-test/
+    └── settings.gradle.kts
+----
+
+== Gradle Plugin Publishing Convention
+
+Convention plugin for publishing Gradle plugins to the Gradle Plugin Portal. Automatically configures plugin metadata from `gradle.properties`.
+
+=== Usage
+
+Apply in `build.gradle.kts`:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.gradle.plugin.publish)
+}
+----
+
+=== Features
+
+* Automatically configures group ID and version from `gradle.properties`
+* Sets website and VCS URL for Gradle Plugin Portal
+* Configures plugin metadata (displayName, description, tags)
+* Plugin ID prefix is derived from `groupId` (dots become dashes)
+
+=== Configuration
+
+Required `gradle.properties`:
+
+[source,properties]
+----
+# Project identity
+groupId=dev.daymor.ultimanexus.jvm.gradle
+version=1.0.0
+
+# Plugin Portal metadata
+pluginWebsite=https://github.com/your/repo
+pluginVcsUrl=https://github.com/your/repo
+pluginTags=java,convention,quality
+
+# Per-plugin metadata (suffix is plugin ID without prefix)
+# For plugin ID: dev.daymor.ultimanexus.jvm.gradle.check.checkstyle
+# Property key: plugin.check.checkstyle.displayName
+plugin.check.checkstyle.displayName=Ultima Nexus - Checkstyle
+plugin.check.checkstyle.description=Configures Checkstyle code quality checks
+----
+
+=== Publishing
+
+[source,bash]
+----
+# Set credentials
+export GRADLE_PUBLISH_KEY=your-key
+export GRADLE_PUBLISH_SECRET=your-secret
+
+# Publish all plugins
+./gradlew publishPlugins
+----
+
+== Gradle Plugin Testing Convention
+
+Convention plugin for testing Gradle plugins with TestKit.
+
+=== Usage
+
+Apply in `build.gradle.kts`:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.test.gradle.plugin)
+}
+----
+
+=== Provides
+
+* JUnit 5 (Jupiter) test framework
+* Gradle TestKit for plugin testing
+* JUnit Jupiter Params for parameterized tests
+* AssertJ for fluent assertions
+
+=== Version Resolution
+
+Uses version catalog if available (`libs.junit-jupiter-params`, `libs.assertj-core`), otherwise falls back to built-in versions.
+
+== Unit Testing Convention
+
+Convention plugin for unit testing utility classes.
+
+=== Usage
+
+Apply in `build.gradle.kts`:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.test.unit)
+}
+----
+
+=== Provides
+
+* JUnit 5 (Jupiter) test framework
+* JUnit Jupiter Params for parameterized tests
+* AssertJ for fluent assertions
+* MockK for Kotlin-native mocking
+
+=== Version Resolution
+
+Uses version catalog if available (`libs.junit-jupiter-params`, `libs.assertj-core`, `libs.mockk`), otherwise falls back to built-in versions.
+
+== Shared Utilities
+
+The `plugins-core` module provides shared utilities used by all other modules:
+
+=== Configuration Classes
+
+[cols="1,3"]
+|===
+|Class |Description
+
+|`UltimaNexusConfig`
+|Central configuration accessor for plugin properties
+
+|`PropertyKeys`
+|Constants for all gradle.properties keys
+
+|`Defaults`
+|Default values for configuration properties
+
+|`Messages`
+|Standardized log messages
+|===
+
+=== Utility Classes
+
+[cols="1,3"]
+|===
+|Class |Description
+
+|`ProjectUtils`
+|Project structure and property utilities
+
+|`DependencyUtils`
+|Version catalog access and fallback version handling
+
+|`PropertyUtils`
+|Type-safe property reading with defaults
+|===
+
+=== Testing Infrastructure
+
+[cols="1,3"]
+|===
+|Class |Description
+
+|`GradleProjectFixture`
+|Test fixture for setting up Gradle test projects
+
+|`BuildResultExtensions`
+|Kotlin extensions for Gradle BuildResult assertions
+
+|`PluginIdLoader`
+|Utility to load plugin IDs from Gradle metadata
+|===
+
+== Properties Reference
+
+[cols="2,1,2,3"]
+|===
+|Property |Default |Plugin |Description
+
+|`rootProjectName`
+|_(required)_
+|`composite-build`
+|Root project name for settings plugin
+
+|`compositeBuildPrefix`
+|_(none)_
+|`composite-build`
+|Prefix pattern for auto-discovering composite builds
+
+|`sharedGradlePath`
+|`../gradle/`
+|`composite-build`
+|Path to shared gradle folder for subprojects
+
+|`includedBuilds`
+|_(none)_
+|`composite-build`
+|Comma-separated list of composite builds to include
+
+|`groupId`
+|_(required)_
+|`gradle-plugin-publish`
+|Project group ID for publishing
+
+|`version`
+|_(required)_
+|`gradle-plugin-publish`
+|Project version for publishing
+
+|`pluginWebsite`
+|_(required)_
+|`gradle-plugin-publish`
+|Website URL for Gradle Plugin Portal
+
+|`pluginVcsUrl`
+|_(required)_
+|`gradle-plugin-publish`
+|VCS URL for Gradle Plugin Portal
+
+|`pluginTags`
+|_(none)_
+|`gradle-plugin-publish`
+|Comma-separated tags for Gradle Plugin Portal
+|===
+
+== Dependency Fallbacks
+
+[cols="2,2,2"]
+|===
+|Dependency |Fallback Version |Used By
+
+|`junit-jupiter-params`
+|`5.12.2`
+|test.gradle-plugin, test.unit
+
+|`assertj-core`
+|`3.27.3`
+|test.gradle-plugin, test.unit
+
+|`mockk`
+|`1.13.13`
+|test.unit
+|===
+
+== Related Modules
+
+* link:../plugins-base/README.adoc[plugins-base] - Base infrastructure plugins (depends on plugins-core)
+* link:../plugins-publish/README.adoc[plugins-publish] - Maven Central and artifact publishing
+* link:../README.adoc[Root README] - Project overview and quick start

@@ -1,0 +1,301 @@
+= Ultima Nexus - Publish Module
+:toc: preamble
+:toclevels: 2
+
+Publishing plugins for Maven Central and artifact distribution.
+
+== Overview
+
+The `plugins-publish` module provides comprehensive publishing capabilities:
+
+* **Maven Publishing**: POM metadata and GPG signing for Maven Central
+* **Java Publishing**: Sources and Javadoc JAR generation
+* **Maven Central Aggregation**: Multi-module publishing to Maven Central
+
+All plugins support configuration via extension DSL or gradle.properties.
+
+== Plugins
+
+[cols="1,3"]
+|===
+|Plugin ID |Description
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.publish`
+|Maven Central publishing with signing and POM metadata
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.publish-java`
+|Java library publishing with sources and Javadoc JARs
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central-aggregation`
+|Aggregates and uploads publications to Maven Central (explicit module list)
+|===
+
+NOTE: For automatic Maven Central aggregation via settings plugin, see the link:../plugins-settings/README.adoc[plugins-settings] module.
+
+== Installation
+
+Add to your version catalog (`gradle/libs.versions.toml`):
+
+[source,toml]
+----
+[versions]
+ultima-nexus-plugins = "1.0.0"
+
+[plugins]
+ultimanexus-feature-publish = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.publish", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-publish-java = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.publish-java", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-publish-maven-central-aggregation = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central-aggregation", version.ref = "ultima-nexus-plugins" }
+----
+
+== Publish Plugin
+
+Configures Maven publishing with POM metadata and GPG signing for Maven Central compatibility.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.publish)
+}
+----
+
+=== Configuration via Extension
+
+[source,kotlin]
+----
+publishConfig {
+    // Project information
+    projectUrl.set("https://github.com/example/project")
+    inceptionYear.set("2025")
+
+    // License
+    licenseName.set("The Apache License, Version 2.0")
+    licenseUrl.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+
+    // Developer information
+    developerId.set("developer")
+    developerName.set("Developer Name")
+    developerEmail.set("developer@example.com")
+    developerUrl.set("https://example.com")
+    developerOrganization.set("Organization")
+    developerOrganizationUrl.set("https://organization.com")
+
+    // SCM information
+    scmUrl.set("https://github.com/example/project")
+    scmConnection.set("scm:git:git://github.com/example/project.git")
+    scmDeveloperConnection.set("scm:git:ssh://github.com/example/project.git")
+}
+----
+
+=== Configuration via gradle.properties
+
+[source,properties]
+----
+# Project information
+publish.projectUrl=https://github.com/example/project
+publish.inceptionYear=2025
+
+# License
+publish.licenseName=The Apache License, Version 2.0
+publish.licenseUrl=http://www.apache.org/licenses/LICENSE-2.0.txt
+
+# Developer information
+publish.developerId=developer
+publish.developerName=Developer Name
+publish.developerEmail=developer@example.com
+publish.developerUrl=https://example.com
+publish.developerOrganization=Organization
+publish.developerOrganizationUrl=https://organization.com
+
+# SCM information
+publish.scmUrl=https://github.com/example/project
+publish.scmConnection=scm:git:git://github.com/example/project.git
+publish.scmDeveloperConnection=scm:git:ssh://github.com/example/project.git
+----
+
+=== Signing Configuration
+
+Signing is configured via gradle.properties or environment variables:
+
+[source,properties]
+----
+# In gradle.properties
+signingKey=<armored-private-key>
+signingPassword=<key-password>
+----
+
+Or environment variables:
+
+[source,bash]
+----
+export SIGNINGKEY=<armored-private-key>
+export SIGNINGPASSWORD=<key-password>
+----
+
+== Java Publishing Plugin
+
+Extends the base publish plugin with sources and Javadoc JAR generation.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.publish.java)
+}
+----
+
+=== What It Does
+
+Automatically:
+
+* Applies the base publish plugin
+* Generates sources JAR (`sourcesJar` task)
+* Generates Javadoc JAR (`javadocJar` task)
+
+No additional configuration required beyond the publish plugin settings.
+
+== Maven Central Aggregation Plugin
+
+For multi-module projects, aggregates all publications and uploads them to Maven Central in a single operation.
+
+=== Usage
+
+Apply in root `build.gradle.kts`:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.publish.maven.central.aggregation)
+}
+----
+
+=== Configure Modules
+
+Option 1: In build file:
+
+[source,kotlin]
+----
+dependencies {
+    nmcpAggregation(project(":core"))
+    nmcpAggregation(project(":api"))
+    nmcpAggregation(project(":web"))
+}
+----
+
+Option 2: In gradle.properties:
+
+[source,properties]
+----
+publishModules=:core,:api,:web
+----
+
+=== Credentials
+
+Configure via gradle.properties:
+
+[source,properties]
+----
+mavenCentralUsername=<your-token-username>
+mavenCentralPassword=<your-token-password>
+----
+
+Or environment variables:
+
+[source,bash]
+----
+export MAVENCENTRALUSERNAME=<your-token-username>
+export MAVENCENTRALPASSWORD=<your-token-password>
+----
+
+=== Publishing
+
+[source,bash]
+----
+./gradlew publishAggregationToCentralPortal
+----
+
+== Publishing Approaches
+
+=== Option 1: Settings Plugin (Recommended)
+
+Uses automatic aggregation - no manual module listing required.
+
+[source,kotlin]
+----
+// settings.gradle.kts
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.publish.maven.central)
+}
+
+// Each submodule build.gradle.kts
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.publish.java)
+}
+----
+
+See link:../plugins-settings/README.adoc[plugins-settings] for the settings plugin.
+
+=== Option 2: Build Plugin (Explicit Control)
+
+For projects that need explicit control over which modules to publish.
+
+[source,kotlin]
+----
+// Root build.gradle.kts
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.publish.maven.central.aggregation)
+}
+
+dependencies {
+    nmcpAggregation(project(":core"))
+    nmcpAggregation(project(":api"))
+}
+
+// Each submodule build.gradle.kts
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.publish.java)
+}
+----
+
+== Properties Reference
+
+[cols="2,1,2,3"]
+|===
+|Property |Default |Plugin |Description
+
+|`publish.projectUrl` |_(none)_ |`publish` |Project URL for Maven POM
+|`publish.inceptionYear` |_(none)_ |`publish` |Project inception year
+|`publish.licenseName` |`The Apache License, Version 2.0` |`publish` |License name for Maven POM
+|`publish.licenseUrl` |`http://www.apache.org/licenses/LICENSE-2.0.txt` |`publish` |License URL for Maven POM
+|`publish.developerId` |_(none)_ |`publish` |Developer ID
+|`publish.developerName` |_(none)_ |`publish` |Developer name
+|`publish.developerEmail` |_(none)_ |`publish` |Developer email
+|`publish.developerUrl` |_(none)_ |`publish` |Developer URL
+|`publish.developerOrganization` |_(none)_ |`publish` |Developer organization name
+|`publish.developerOrganizationUrl` |_(none)_ |`publish` |Developer organization URL
+|`publish.scmUrl` |_(none)_ |`publish` |Source Control Management URL
+|`publish.scmConnection` |_(none)_ |`publish` |SCM connection string
+|`publish.scmDeveloperConnection` |_(none)_ |`publish` |SCM developer connection string
+|`signingKey` |_(env: SIGNINGKEY)_ |`publish` |PGP signing key (ASCII-armored)
+|`signingPassword` |_(env: SIGNINGPASSWORD)_ |`publish` |Password for the PGP signing key
+|`mavenCentralUsername` |_(env: MAVENCENTRALUSERNAME)_ |`publish-maven-central-aggregation` |Maven Central Portal username/token
+|`mavenCentralPassword` |_(env: MAVENCENTRALPASSWORD)_ |`publish-maven-central-aggregation` |Maven Central Portal password/token
+|`publishModules` |_(none)_ |`publish-maven-central-aggregation` |Comma-separated module paths for aggregation
+|===
+
+== Publishing Workflow
+
+1. Configure `groupId` and `version` in gradle.properties
+2. Configure publishing metadata (extension or gradle.properties)
+3. Set up signing credentials
+4. Set up Maven Central credentials
+5. Run `./gradlew publishAggregationToCentralPortal`
+
+== Related Modules
+
+* link:../plugins-core/README.adoc[plugins-core] - Core utilities (dependency)
+* link:../plugins-settings/README.adoc[plugins-settings] - Automatic Maven Central aggregation via settings plugin
+* link:../plugins-java/README.adoc[plugins-java] - Java project bundles (uses publish plugins)
+* link:../README.adoc[Root README] - Project overview and quick start

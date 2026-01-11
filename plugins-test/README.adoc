@@ -1,0 +1,307 @@
+= Ultima Nexus - Test Module
+:toc: preamble
+:toclevels: 2
+
+Testing infrastructure plugins for JVM projects with support for multiple test types.
+
+== Overview
+
+The `plugins-test` module provides comprehensive testing infrastructure:
+
+* **Unit Tests**: JUnit 5 with JaCoCo coverage and ByteBuddy agent
+* **Test Suites**: Configurable integration, functional, and performance tests
+* **Test Fixtures**: Shared test utilities across projects
+* **All Tests**: Aggregate task to run all test types
+
+All test plugins integrate with JaCoCo for code coverage.
+
+== Plugins
+
+[cols="1,3"]
+|===
+|Plugin ID |Description
+
+|`dev.daymor.ultimanexus.jvm.gradle.test.test`
+|JUnit 5 unit testing with JaCoCo coverage and ByteBuddy agent
+
+|`dev.daymor.ultimanexus.jvm.gradle.test.test-suites`
+|Configurable test suites (integration, functional, performance, custom)
+
+|`dev.daymor.ultimanexus.jvm.gradle.test.test-fixtures`
+|Shared test fixtures library support
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.test`
+|Bundle: All test types with `allTest` task
+|===
+
+== Installation
+
+Add to your version catalog (`gradle/libs.versions.toml`):
+
+[source,toml]
+----
+[versions]
+ultima-nexus-plugins = "1.0.0"
+
+[plugins]
+ultimanexus-bundle-test = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.test", version.ref = "ultima-nexus-plugins" }
+ultimanexus-test-test = { id = "dev.daymor.ultimanexus.jvm.gradle.test.test", version.ref = "ultima-nexus-plugins" }
+ultimanexus-test-test-suites = { id = "dev.daymor.ultimanexus.jvm.gradle.test.test-suites", version.ref = "ultima-nexus-plugins" }
+ultimanexus-test-test-fixtures = { id = "dev.daymor.ultimanexus.jvm.gradle.test.test-fixtures", version.ref = "ultima-nexus-plugins" }
+----
+
+== Test Bundle
+
+The recommended way to apply all testing infrastructure at once.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.test)
+}
+----
+
+=== Includes
+
+* Unit tests (JUnit 5 with JaCoCo)
+* Configurable test suites (integrationTest, functionalTest, performanceTest by default)
+* `allTest` task to run all test types
+
+=== Running Tests
+
+[source,bash]
+----
+# Run unit tests only
+./gradlew test
+
+# Run specific test suite
+./gradlew integrationTest
+./gradlew functionalTest
+./gradlew performanceTest
+
+# Run ALL tests (unit + all suites)
+./gradlew allTest
+----
+
+== Unit Test Plugin
+
+Configures the default `test` task with JUnit Jupiter, JaCoCo coverage, and ByteBuddy agent for mocking support.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.test.test)
+}
+----
+
+=== Configuration via Extension
+
+[source,kotlin]
+----
+testConfig {
+    maxHeapSize.set("2g")              // Maximum heap size for tests
+    maxParallelForks.set(4)            // Number of parallel test processes
+    showStandardStreams.set(false)     // Show stdout/stderr in test output
+    fileEncoding.set("UTF-8")          // File encoding for tests
+    useByteBuddyAgent.set(true)        // Enable ByteBuddy agent for mocking
+}
+----
+
+=== Configuration via gradle.properties
+
+[source,properties]
+----
+test.maxHeapSize=2g
+test.maxParallelForks=4
+test.showStandardStreams=false
+test.fileEncoding=UTF-8
+test.useByteBuddyAgent=true
+----
+
+=== Features
+
+* JUnit 5 (Jupiter) test framework
+* JaCoCo code coverage
+* ByteBuddy agent for mocking final classes/static methods
+* SLF4J Simple for test logging
+* Parallel test execution
+
+== Test Suites Plugin
+
+Creates configurable test suites beyond the default unit tests.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.test.test.suites)
+}
+----
+
+=== Default Suites
+
+By default, three test suites are created:
+
+* `integrationTest` - Integration tests (`src/integrationTest/java`)
+* `functionalTest` - Functional tests (`src/functionalTest/java`)
+* `performanceTest` - Performance tests (`src/performanceTest/java`)
+
+=== Custom Suites via Extension
+
+[source,kotlin]
+----
+testSuites {
+    // Override default suites
+    suites.set(listOf("integrationTest", "functionalTest", "smokeTest", "e2eTest"))
+
+    // Global defaults (inherited by all suites)
+    maxHeapSize.set("2g")
+    maxParallelForks.set(4)
+    showStandardStreams.set(true)
+    fileEncoding.set("UTF-8")
+    useByteBuddyAgent.set(true)
+
+    // Per-suite configuration
+    suiteConfig("performanceTest") {
+        useByteBuddyAgent.set(false)  // Disable mocking overhead for perf tests
+    }
+    suiteConfig("smokeTest") {
+        maxParallelForks.set(1)        // Run smoke tests sequentially
+        maxHeapSize.set("512m")
+    }
+}
+----
+
+=== Custom Suites via gradle.properties
+
+[source,properties]
+----
+# Override default suites
+test.suites=integrationTest,functionalTest,smokeTest,e2eTest
+
+# Global defaults
+test.maxHeapSize=2g
+test.maxParallelForks=4
+test.showStandardStreams=true
+test.fileEncoding=UTF-8
+test.useByteBuddyAgent=true
+
+# Per-suite overrides
+test.suite.performanceTest.useByteBuddyAgent=false
+test.suite.smokeTest.maxParallelForks=1
+test.suite.smokeTest.maxHeapSize=512m
+----
+
+=== Source Set Locations
+
+Each test suite creates a corresponding source set:
+
+[source]
+----
+src/
+├── test/java/              # Unit tests (default)
+├── integrationTest/java/   # Integration tests
+├── functionalTest/java/    # Functional tests
+├── performanceTest/java/   # Performance tests
+└── <customSuite>/java/     # Custom suite tests
+----
+
+=== ByteBuddy Agent
+
+The ByteBuddy agent is enabled by default for all suites EXCEPT performance tests. This allows mocking of final classes and static methods in tests.
+
+Performance tests disable ByteBuddy by default to avoid mocking overhead during benchmarks.
+
+== Test Fixtures Plugin
+
+Enables sharing test utilities across projects using Gradle's `java-test-fixtures` plugin.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.test.test.fixtures)
+}
+----
+
+=== Source Location
+
+[source]
+----
+src/testFixtures/java/     # Shared test utilities
+----
+
+=== Using Test Fixtures
+
+In consuming projects:
+
+[source,kotlin]
+----
+dependencies {
+    testImplementation(testFixtures(project(":my-library")))
+}
+----
+
+== Properties Reference
+
+[cols="2,1,2,3"]
+|===
+|Property |Default |Plugin |Description
+
+|`test.maxHeapSize` |`1g` |`test`, `test-suites` |Maximum heap size for test JVM
+|`test.maxParallelForks` |_(half of CPUs)_ |`test`, `test-suites` |Number of parallel test processes
+|`test.showStandardStreams` |`true` |`test`, `test-suites` |Show stdout/stderr in test output
+|`test.fileEncoding` |`UTF-8` |`test`, `test-suites` |File encoding for tests
+|`test.useByteBuddyAgent` |`true` |`test`, `test-suites` |Enable ByteBuddy agent for mocking
+|`test.suites` |`integrationTest,functionalTest,performanceTest` |`test-suites` |Comma-separated list of test suites to create
+|`test.suite.<name>.maxHeapSize` |_(inherits global)_ |`test-suites` |Per-suite maximum heap size
+|`test.suite.<name>.maxParallelForks` |_(inherits global)_ |`test-suites` |Per-suite parallel test processes
+|`test.suite.<name>.showStandardStreams` |_(inherits global)_ |`test-suites` |Per-suite stdout/stderr setting
+|`test.suite.<name>.fileEncoding` |_(inherits global)_ |`test-suites` |Per-suite file encoding
+|`test.suite.<name>.useByteBuddyAgent` |`true` (except performanceTest: `false`) |`test-suites` |Per-suite ByteBuddy agent setting
+|===
+
+== Dependency Fallbacks
+
+[cols="2,2,2"]
+|===
+|Dependency |Fallback Version |Description
+
+|`junit-jupiter-engine`
+|`5.12.2`
+|JUnit 5 test engine
+
+|`slf4j-simple`
+|`2.0.17`
+|Simple SLF4J logging for tests
+
+|`byte-buddy-agent`
+|`1.18.3`
+|ByteBuddy agent for mocking support
+|===
+
+== Directory Structure
+
+[source]
+----
+src/
+├── main/java/              # Main source code
+├── test/java/              # Unit tests
+├── integrationTest/java/   # Integration tests
+├── functionalTest/java/    # Functional tests
+├── performanceTest/java/   # Performance tests
+└── testFixtures/java/      # Shared test utilities
+----
+
+== Related Modules
+
+* link:../plugins-base/README.adoc[plugins-base] - Base lifecycle tasks (dependency)
+* link:../plugins-report/README.adoc[plugins-report] - Test reporting and code coverage aggregation
+* link:../plugins-java/README.adoc[plugins-java] - Java project bundles (uses test bundle)
+* link:../README.adoc[Root README] - Project overview and quick start

@@ -1,0 +1,446 @@
+= Ultima Nexus - Settings Module
+:toc: preamble
+:toclevels: 2
+
+Settings plugins for project configuration and structure.
+
+== Overview
+
+The `plugins-settings` module provides settings-level plugins:
+
+* **Project Structure**: Auto-discovery of subprojects in multi-module builds
+* **Git Hooks**: Pre-commit hooks for quality checks
+* **Build Cache**: Local and remote build cache configuration
+* **Develocity**: FREE Build Scans with CI auto-publishing
+* **Maven Central Publishing**: Automatic aggregation for multi-module Maven Central publishing
+* **Settings Bundle**: Combined settings plugins (project-structure + git-hooks + build-cache + develocity)
+* **Complete Bundle**: All-in-one for multi-module projects (settings + root + subprojects)
+
+All plugins are applied in `settings.gradle.kts`.
+
+== Plugins
+
+[cols="1,3"]
+|===
+|Plugin ID |Description
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.project-structure`
+|Auto-discover subprojects in multi-project builds
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.git-hooks`
+|Git pre-commit hooks for quality checks
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.build-cache`
+|Local and remote build cache configuration for CI/CD
+
+|`dev.daymor.ultimanexus.jvm.gradle.report.develocity`
+|FREE Gradle Build Scans with CI auto-publishing
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central`
+|Automatic Maven Central publishing for multi-module projects
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm`
+|Bundle: Project structure, git hooks, build cache, and develocity
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-complete`
+|Complete bundle: settings + root + all subprojects
+|===
+
+== Installation
+
+Add to your version catalog (`gradle/libs.versions.toml`):
+
+[source,toml]
+----
+[versions]
+ultima-nexus-plugins = "1.0.0"
+
+[plugins]
+ultimanexus-bundle-settings = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-project-structure = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.project-structure", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-git-hooks = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.git-hooks", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-publish-maven-central = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central", version.ref = "ultima-nexus-plugins" }
+ultimanexus-bundle-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-complete", version.ref = "ultima-nexus-plugins" }
+----
+
+== Settings Bundle (ultima-nexus-jvm)
+
+The recommended way to apply all settings plugins.
+
+=== Usage
+
+Apply in `settings.gradle.kts`:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.settings)
+}
+----
+
+=== Includes
+
+* Project structure discovery
+* Git pre-commit hooks
+* Build cache configuration
+* Develocity build scans
+* Maven Central publishing (auto-detected)
+
+=== Automatic Maven Central Publishing Detection
+
+The settings bundle automatically detects if any publish plugins are used in your project's build files and applies the `publish-maven-central` settings plugin when needed.
+
+This means you don't need to manually apply the Maven Central settings plugin - it's automatically enabled when you use any complete bundle or publish plugin in your project.
+
+NOTE: The detection scans build files up to the configured `projectStructureDepth` (default: 1).
+
+== Complete Bundle (ultima-nexus-complete)
+
+The all-in-one plugin for multi-module projects. Apply once, get everything.
+
+=== Usage
+
+Apply in `settings.gradle.kts`:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.complete)
+}
+----
+
+That's it! No need to configure individual `build.gradle.kts` files.
+
+=== What It Includes
+
+*Settings-level (always applied):*
+
+* Project structure discovery (auto-includes subprojects)
+* Git pre-commit hooks
+* Build cache configuration (local + remote)
+* Develocity build scans (FREE, auto-publish on CI)
+* Maven Central publishing aggregation (auto-detected)
+
+*Root project (automatically applied):*
+
+* `lifecycle.root` - Default tasks and build group aggregation
+* `dependencies.root` - Dependency analysis with strict enforcement
+* `format-gradle.root` - Plugin framework Gradle file formatting
+* `aggregation` - Multi-project report aggregation
+
+*Platform projects (auto-detected):*
+
+* Projects named `platform`, `bom`, `versions`, or `version-platform`
+* Projects with `projectType=platform` in gradle.properties
+* Projects using `java-platform` or `version-platform` plugins
+* Gets `bundle.platform` instead of `ultima-nexus`
+
+*All other subprojects (automatically applied):*
+
+* Full `ultima-nexus` bundle:
+** Spring Boot complete (all quality checks, testing, publishing)
+** Lombok support
+** JSpecify nullability annotations
+** Documentation support (if `antora-playbook.yml` exists)
+
+=== Example Project
+
+[source]
+----
+my-project/
+├── settings.gradle.kts    # Just apply ultima-nexus-complete here
+├── gradle.properties      # Configure groupId, etc.
+├── core/
+│   └── build.gradle.kts   # Empty or minimal - plugins applied automatically
+├── api/
+│   └── build.gradle.kts   # Empty or minimal
+└── web/
+    └── build.gradle.kts   # Empty or minimal
+----
+
+[source,kotlin]
+----
+// settings.gradle.kts - This is ALL you need!
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.complete)
+}
+----
+
+=== When to Use
+
+Use this bundle when:
+
+* You have a multi-module project
+* All subprojects use the same conventions (Spring Boot + Lombok)
+* You want zero-configuration for subprojects
+
+=== When NOT to Use
+
+Don't use this bundle when:
+
+* You have a single-module project (use `ultima-nexus` bundle instead)
+* Different subprojects need different bundles (use individual bundles)
+* You need fine-grained control over which plugins apply where
+
+== Project Structure Plugin
+
+Auto-discovers and includes subprojects based on directory structure.
+
+=== Usage
+
+Apply in `settings.gradle.kts`:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.project.structure)
+}
+----
+
+=== Configuration via gradle.properties
+
+[source,properties]
+----
+# Maximum directory depth to search for subprojects (default: 1)
+projectStructureDepth=6
+
+# Comma-separated exclusion patterns (default: gradle/plugins,*-gradle-plugins)
+projectStructureExclusions=gradle/plugins,*-gradle-plugins,build
+
+# Root project name (default: directory name)
+rootProjectName=my-project
+----
+
+=== Example Project Structure
+
+[source]
+----
+my-project/
+├── settings.gradle.kts    # Apply this plugin
+├── gradle.properties      # projectStructureDepth=3
+├── core/
+│   └── build.gradle.kts   # Included as :core
+├── api/
+│   └── build.gradle.kts   # Included as :api
+└── modules/
+    ├── web/
+    │   └── build.gradle.kts  # Included as :modules:web
+    └── data/
+        └── build.gradle.kts  # Included as :modules:data
+----
+
+=== Features
+
+* Auto-discovers subprojects by scanning for `build.gradle.kts` files
+* Enables typesafe project accessors (`TYPESAFE_PROJECT_ACCESSORS` feature preview)
+* Configures Maven Central for dependency resolution
+
+== Build Cache Plugin
+
+Configures local and remote build cache for CI/CD environments.
+
+=== Usage
+
+Apply in `settings.gradle.kts`:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.build.cache)
+}
+----
+
+=== Configuration via gradle.properties
+
+[source,properties]
+----
+# IMPORTANT: You must enable caching (cannot be set by plugin)
+org.gradle.caching=true
+
+# Local cache (enabled by default for local builds)
+buildCache.local.enabled=true
+
+# Remote cache (optional - for CI)
+buildCache.remote.url=https://cache.example.com/cache/
+buildCache.remote.username=<username>
+buildCache.remote.password=<password>
+buildCache.remote.push=true
+----
+
+=== Environment Variables
+
+Remote cache can also be configured via environment variables:
+
+* `GRADLE_CACHE_REMOTE_URL` - Remote cache URL
+* `GRADLE_CACHE_USERNAME` - Username for authentication
+* `GRADLE_CACHE_PASSWORD` - Password for authentication
+
+=== Behavior
+
+* **Local builds**: Local cache enabled by default
+* **CI builds**: Remote cache used if configured, only CI pushes to remote
+* **Local cache disabled on CI** when remote cache is configured
+
+== Develocity Plugin
+
+FREE Gradle Build Scans integration with automatic CI publishing.
+
+=== Usage
+
+Apply in `settings.gradle.kts`:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.report.develocity)
+}
+----
+
+=== Configuration via gradle.properties
+
+[source,properties]
+----
+# Enable/disable (default: true)
+develocity.enabled=true
+
+# Server URL (default: scans.gradle.com - FREE)
+develocity.serverUrl=https://scans.gradle.com
+----
+
+=== Behavior
+
+* **On CI**: Automatically publishes build scans
+* **Locally**: Opt-in via `--scan` flag
+* **Automatic tags**: CI/LOCAL, branch name
+* **GitHub Actions**: Adds repository, commit SHA, run ID
+* **GitLab CI**: Adds project path, commit SHA
+
+=== Using Build Scans
+
+[source,bash]
+----
+# Publish scan locally (opt-in)
+./gradlew build --scan
+
+# On CI, scans are automatically published
+----
+
+== Git Hooks Plugin
+
+Configures Git pre-commit hooks for quality checks.
+
+=== Usage
+
+Apply in `settings.gradle.kts`:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.git.hooks)
+}
+----
+
+=== What It Does
+
+Installs a pre-commit hook that runs `qualityCheck` before allowing commits, ensuring code quality.
+
+== Maven Central Publishing Plugin
+
+Automatic Maven Central publishing aggregation for multi-module projects.
+
+=== Usage
+
+Apply in `settings.gradle.kts`:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.publish.maven.central)
+}
+----
+
+=== What It Does
+
+Automatically aggregates all subprojects that use the `publish` plugin for Maven Central publishing.
+
+=== Each Submodule
+
+[source,kotlin]
+----
+// Each submodule build.gradle.kts
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.publish.java)
+}
+----
+
+=== Publishing
+
+[source,bash]
+----
+./gradlew publishAggregationToCentralPortal
+----
+
+NOTE: For explicit module control, use the `publish-maven-central-aggregation` build plugin from link:../plugins-publish/README.adoc[plugins-publish].
+
+== Properties Reference
+
+[cols="2,1,2,3"]
+|===
+|Property |Default |Plugin |Description
+
+|`projectStructureDepth`
+|`1`
+|`project-structure`
+|Maximum directory depth to search for subprojects
+
+|`projectStructureExclusions`
+|`gradle/plugins,*-gradle-plugins`
+|`project-structure`
+|Comma-separated directory patterns to exclude
+
+|`rootProjectName`
+|_(directory name)_
+|`project-structure`
+|Custom name for the root project
+
+|`buildCache.local.enabled`
+|`true`
+|`build-cache`
+|Enable local build cache
+
+|`buildCache.remote.url`
+|_(none)_
+|`build-cache`
+|Remote cache URL
+
+|`buildCache.remote.username`
+|_(none)_
+|`build-cache`
+|Remote cache username
+
+|`buildCache.remote.password`
+|_(none)_
+|`build-cache`
+|Remote cache password
+
+|`buildCache.remote.push`
+|`true` on CI
+|`build-cache`
+|Push to remote cache
+
+|`develocity.enabled`
+|`true`
+|`develocity`
+|Enable Develocity build scans
+
+|`develocity.serverUrl`
+|`https://scans.gradle.com`
+|`develocity`
+|Develocity server URL
+|===
+
+== Related Modules
+
+* link:../plugins-core/README.adoc[plugins-core] - Core utilities (dependency)
+* link:../plugins-publish/README.adoc[plugins-publish] - Build-level publishing plugins
+* link:../README.adoc[Root README] - Project overview and quick start

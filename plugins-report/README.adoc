@@ -1,0 +1,310 @@
+= Ultima Nexus - Report Module
+:toc: preamble
+:toclevels: 2
+
+Reporting and analysis plugins for JVM projects.
+
+== Overview
+
+The `plugins-report` module provides comprehensive reporting capabilities:
+
+* **Code Coverage**: JaCoCo coverage aggregation with auto-discovery of test suites
+* **SBOM**: Software Bill of Materials generation using CycloneDX
+* **Test Reports**: Aggregated test result reports across all test suites
+* **Plugin Analysis**: Plugin application order analysis and visualization
+
+All report plugins auto-discover test suites and create appropriate reports for each.
+
+== Plugins
+
+[cols="1,3"]
+|===
+|Plugin ID |Description
+
+|`dev.daymor.ultimanexus.jvm.gradle.report.code-coverage`
+|JaCoCo code coverage aggregation with auto-discovery
+
+|`dev.daymor.ultimanexus.jvm.gradle.report.sbom`
+|Software Bill of Materials generation (CycloneDX)
+
+|`dev.daymor.ultimanexus.jvm.gradle.report.test`
+|Aggregated test results report
+
+|`dev.daymor.ultimanexus.jvm.gradle.report.plugin-analysis`
+|Plugin application order analysis and diagram
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.report`
+|Bundle: All reporting plugins
+|===
+
+== Installation
+
+Add to your version catalog (`gradle/libs.versions.toml`):
+
+[source,toml]
+----
+[versions]
+ultima-nexus-plugins = "1.0.0"
+
+[plugins]
+ultimanexus-bundle-report = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.report", version.ref = "ultima-nexus-plugins" }
+ultimanexus-report-code-coverage = { id = "dev.daymor.ultimanexus.jvm.gradle.report.code-coverage", version.ref = "ultima-nexus-plugins" }
+ultimanexus-report-sbom = { id = "dev.daymor.ultimanexus.jvm.gradle.report.sbom", version.ref = "ultima-nexus-plugins" }
+ultimanexus-report-test = { id = "dev.daymor.ultimanexus.jvm.gradle.report.test", version.ref = "ultima-nexus-plugins" }
+----
+
+== Report Bundle
+
+The recommended way to apply all reporting plugins at once.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.report)
+}
+----
+
+=== Includes
+
+* JaCoCo code coverage aggregation
+* SBOM generation (CycloneDX)
+* Test report aggregation
+* Plugin application order analysis
+
+== Code Coverage Plugin
+
+JaCoCo code coverage aggregation that auto-discovers all registered test suites.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.report.code.coverage)
+}
+----
+
+=== Auto-Generated Tasks
+
+The plugin automatically creates coverage report tasks for each discovered test suite:
+
+[cols="1,3"]
+|===
+|Task |Description
+
+|`testCodeCoverageReport`
+|Coverage report for unit tests
+
+|`integrationTestCodeCoverageReport`
+|Coverage report for integration tests
+
+|`functionalTestCodeCoverageReport`
+|Coverage report for functional tests
+
+|`performanceTestCodeCoverageReport`
+|Coverage report for performance tests
+
+|`allTestCodeCoverageReport`
+|Combined coverage for ALL test types
+|===
+
+=== Configuration via Extension
+
+[source,kotlin]
+----
+codeCoverageConfig {
+    excludePatterns.set(listOf(
+        "**/**_.class",           // Underscore classes
+        "**/**MapperImpl.class",  // MapStruct implementations
+        "**/**Application.class"  // Spring Boot main classes
+    ))
+}
+----
+
+=== Configuration via gradle.properties
+
+[source,properties]
+----
+codeCoverage.excludePatterns=**/**_.class,**/**MapperImpl.class,**/**Application.class
+----
+
+=== Running Coverage Reports
+
+[source,bash]
+----
+# Coverage for unit tests
+./gradlew testCodeCoverageReport
+
+# Coverage for integration tests
+./gradlew integrationTestCodeCoverageReport
+
+# Combined coverage for all tests
+./gradlew allTestCodeCoverageReport
+----
+
+=== Prerequisites
+
+Requires the `internal` configuration from the lifecycle plugin for project dependency aggregation.
+
+== SBOM Plugin
+
+Software Bill of Materials generation using https://github.com/CycloneDX/cyclonedx-gradle-plugin[CycloneDX].
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.report.sbom)
+}
+----
+
+=== Tasks
+
+[cols="1,3"]
+|===
+|Task |Description
+
+|`cyclonedxBom`
+|Generates complete SBOM in JSON format
+
+|`cyclonedxDirectBom`
+|Generates direct dependencies SBOM
+|===
+
+=== Output
+
+SBOM files are generated at:
+
+* `build/reports/sbom/bom.json` - Complete dependency tree
+
+=== Running SBOM Generation
+
+[source,bash]
+----
+./gradlew cyclonedxBom
+----
+
+== Test Report Plugin
+
+Aggregated test result reports that auto-discover all registered test suites.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.report.test)
+}
+----
+
+=== Auto-Generated Tasks
+
+[cols="1,3"]
+|===
+|Task |Description
+
+|`testAggregateTestReport`
+|Aggregated report for unit tests
+
+|`integrationTestAggregateTestReport`
+|Aggregated report for integration tests
+
+|`functionalTestAggregateTestReport`
+|Aggregated report for functional tests
+
+|`performanceTestAggregateTestReport`
+|Aggregated report for performance tests
+
+|`allTestAggregateTestReport`
+|Combined report for ALL test types
+|===
+
+=== Running Test Reports
+
+[source,bash]
+----
+# Report for unit tests
+./gradlew testAggregateTestReport
+
+# Combined report for all tests
+./gradlew allTestAggregateTestReport
+----
+
+=== Prerequisites
+
+Requires the `internal` configuration from the lifecycle plugin for project dependency aggregation.
+
+== Plugin Analysis Plugin
+
+Analyzes and visualizes the order of plugin application in your build.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.report.plugin.analysis)
+}
+----
+
+=== Purpose
+
+Helps understand:
+
+* Which plugins are applied to your project
+* The order in which plugins are applied
+* Dependencies between plugins
+
+== Properties Reference
+
+[cols="2,1,2,3"]
+|===
+|Property |Default |Plugin |Description
+
+|`codeCoverage.excludePatterns`
+|`**/**_.class,**/**MapperImpl.class,**/**Application.class`
+|`code-coverage`
+|Comma-separated patterns for classes to exclude from coverage
+|===
+
+== Report Output Locations
+
+[source]
+----
+build/
+├── reports/
+│   ├── jacoco/
+│   │   ├── test/               # Unit test coverage
+│   │   ├── integrationTest/    # Integration test coverage
+│   │   └── allTest/            # Combined coverage
+│   ├── tests/
+│   │   ├── test/               # Unit test results
+│   │   ├── integrationTest/    # Integration test results
+│   │   └── allTest/            # Combined test results
+│   └── sbom/
+│       └── bom.json            # SBOM output
+----
+
+== Running All Reports
+
+[source,bash]
+----
+# Generate all coverage reports
+./gradlew allTestCodeCoverageReport
+
+# Generate all test reports
+./gradlew allTestAggregateTestReport
+
+# Generate SBOM
+./gradlew cyclonedxBom
+----
+
+== Related Modules
+
+* link:../plugins-base/README.adoc[plugins-base] - Base lifecycle tasks (dependency)
+* link:../plugins-test/README.adoc[plugins-test] - Test infrastructure that reports work with
+* link:../plugins-java/README.adoc[plugins-java] - Java project bundles (uses report bundle)
+* link:../README.adoc[Root README] - Project overview and quick start

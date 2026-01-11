@@ -1,0 +1,126 @@
+= Ultima Nexus - Documentation Module
+:toc: preamble
+:toclevels: 2
+
+Documentation generation plugins using Antora.
+
+== Overview
+
+The `plugins-documentation` module provides documentation tooling:
+
+* **Antora**: Documentation site generation
+* **Antora UI**: UI bundle building for Antora sites
+* **Bundle**: Combined documentation plugins
+
+== Plugins
+
+[cols="1,3"]
+|===
+|Plugin ID |Description
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.antora`
+|Antora documentation site generation
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.antora-ui`
+|Antora UI bundle generation
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.documentation`
+|Bundle: Antora documentation generation
+|===
+
+== Installation
+
+Add to your version catalog (`gradle/libs.versions.toml`):
+
+[source,toml]
+----
+[versions]
+ultima-nexus-plugins = "1.0.0"
+
+[plugins]
+ultimanexus-bundle-documentation = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.documentation", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-antora = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.antora", version.ref = "ultima-nexus-plugins" }
+ultimanexus-feature-antora-ui = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.antora-ui", version.ref = "ultima-nexus-plugins" }
+----
+
+== Documentation Bundle
+
+The recommended way to apply all documentation plugins.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.documentation)
+}
+----
+
+=== Includes
+
+* Antora documentation site generation
+* Antora UI bundle building
+
+== Antora Plugin
+
+Generates documentation sites using https://antora.org/[Antora].
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.antora)
+}
+----
+
+=== What Is Antora?
+
+Antora is a documentation site generator for creating multi-repository, multi-version documentation sites from AsciiDoc content.
+
+=== Project Structure
+
+[source]
+----
+docs/
+├── antora.yml                    # Component descriptor
+├── modules/
+│   └── ROOT/
+│       ├── nav.adoc              # Navigation
+│       └── pages/
+│           └── index.adoc        # Documentation pages
+└── antora-playbook.yml           # Site playbook
+----
+
+== Antora UI Plugin
+
+Builds custom Antora UI bundles.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.antora.ui)
+}
+----
+
+=== Purpose
+
+Create custom UI themes for your Antora documentation sites.
+
+== Building Documentation
+
+[source,bash]
+----
+# Generate documentation site
+./gradlew antora
+
+# Build UI bundle
+./gradlew antoraUi
+----
+
+== Related Modules
+
+* link:../plugins-base/README.adoc[plugins-base] - Base Gradle project conventions (dependency)
+* link:../README.adoc[Root README] - Project overview and quick start

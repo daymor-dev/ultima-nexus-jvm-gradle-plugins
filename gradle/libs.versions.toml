@@ -1,6 +1,8 @@
 [versions]
 # GRADLE PLUGIN VERSIONS (used by convention plugins)
 antora = "1.0.0"
+gradle-develocity = "4.3"
+gradle-plugin-publish = "2.0.0"
 classpath-collision-detector = "1.0.0"
 cyclonedx-gradle-plugin = "3.1.0"
 dependency-analysis-gradle-plugin = "3.5.1"
@@ -25,25 +27,56 @@ lombok = "1.18.42"
 slf4j = "2.0.17"
 spring-boot-dependencies = "4.0.1"
 
+# TEST LIBRARY VERSIONS (used by test convention plugins)
+assertj = "3.27.3"
+mockk = "1.13.13"
+
 [libraries]
 # GRADLE PLUGINS (implementation dependencies for convention plugins)
 antora = { module = "org.antora:gradle-antora-plugin", version.ref = "antora" }
+gradle-plugin-publish = { module = "com.gradle.plugin-publish:com.gradle.plugin-publish.gradle.plugin", version.ref = "gradle-plugin-publish" }
 classpath-collision-detector = { module = "io.fuchs.gradle.classpath-collision-detector:classpath-collision-detector", version.ref = "classpath-collision-detector" }
 cyclonedx-gradle-plugin = { module = "org.cyclonedx:cyclonedx-gradle-plugin", version.ref = "cyclonedx-gradle-plugin" }
 dependency-analysis-gradle-plugin = { module = "com.autonomousapps:dependency-analysis-gradle-plugin", version.ref = "dependency-analysis-gradle-plugin" }
 gradle-pre-commit-git-hooks = { module = "org.danilopianini.gradle-pre-commit-git-hooks:org.danilopianini.gradle-pre-commit-git-hooks.gradle.plugin", version.ref = "gradle-pre-commit-git-hooks" }
 gradleup-nmcp-aggregation = { module = "com.gradleup.nmcp.aggregation:com.gradleup.nmcp.aggregation.gradle.plugin", version.ref = "gradleup-nmcp" }
+gradleup-nmcp-settings = { module = "com.gradleup.nmcp.settings:com.gradleup.nmcp.settings.gradle.plugin", version.ref = "gradleup-nmcp" }
 jvm-dependency-conflict-resolution = { module = "org.gradlex:jvm-dependency-conflict-resolution", version.ref = "jvm-dependency-conflict-resolution" }
 node = { module = "com.github.node-gradle:gradle-node-plugin", version.ref = "node" }
 spotbugs-gradle-plugin = { module = "com.github.spotbugs:com.github.spotbugs.gradle.plugin", version.ref = "spotbugs-gradle-plugin" }
 spotless-plugin-gradle = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless-plugin-gradle" }
 spring-boot-gradle-plugin = { module = "org.springframework.boot:spring-boot-gradle-plugin", version.ref = "spring-boot" }
+gradle-develocity = { module = "com.gradle.develocity:com.gradle.develocity.gradle.plugin", version.ref = "gradle-develocity" }
 
 # FALLBACK LIBRARIES (used when consumer's version catalog doesn't define them)
 byte-buddy-agent = { module = "net.bytebuddy:byte-buddy-agent", version.ref = "byte-buddy-agent" }
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter" }
+junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit-jupiter" }
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools", version.ref = "spring-boot-dependencies" }
+
+# TEST LIBRARIES (used by test convention plugins)
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+
+# Plugin module dependencies (versions resolved from composite builds - no version needed)
+ultima-nexus-jvm-core = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-core" }
+ultima-nexus-jvm-base = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-base" }
+ultima-nexus-jvm-check = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-check" }
+ultima-nexus-jvm-test = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-test" }
+ultima-nexus-jvm-report = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-report" }
+ultima-nexus-jvm-publish = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-publish" }
+ultima-nexus-jvm-spring-boot = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-spring-boot" }
+ultima-nexus-jvm-lombok = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-lombok" }
+ultima-nexus-jvm-java = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-java" }
+
+[plugins]
+# External plugins
+gradle-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
+
+# Ultima Nexus convention plugins (versions resolved from composite builds)
+ultimanexus-jvm-composite-build = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.composite-build" }
+ultimanexus-jvm-gradle-plugin = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.gradle-plugin-publish" }

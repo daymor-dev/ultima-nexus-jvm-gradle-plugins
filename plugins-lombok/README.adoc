@@ -1,0 +1,175 @@
+= Ultima Nexus - Lombok Module
+:toc: preamble
+:toclevels: 2
+
+Lombok annotation processing plugins for Java projects.
+
+== Overview
+
+The `plugins-lombok` module provides Lombok integration:
+
+* **Lombok**: Annotation processor for main sources
+* **Lombok Test**: Annotation processor for test sources
+* **Bundle**: Combined Lombok support for main and test sources
+
+All plugins resolve versions from the version catalog with fallback support.
+
+== Plugins
+
+[cols="1,3"]
+|===
+|Plugin ID |Description
+
+|`dev.daymor.ultimanexus.jvm.gradle.dependency.lombok`
+|Lombok annotation processor for main sources
+
+|`dev.daymor.ultimanexus.jvm.gradle.dependency.lombok-test`
+|Lombok annotation processor for test sources
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.lombok`
+|Bundle: Lombok for main and test sources
+|===
+
+== Installation
+
+Add to your version catalog (`gradle/libs.versions.toml`):
+
+[source,toml]
+----
+[versions]
+ultima-nexus-plugins = "1.0.0"
+lombok = "1.18.42"
+
+[plugins]
+ultimanexus-bundle-lombok = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.lombok", version.ref = "ultima-nexus-plugins" }
+ultimanexus-dependency-lombok = { id = "dev.daymor.ultimanexus.jvm.gradle.dependency.lombok", version.ref = "ultima-nexus-plugins" }
+
+[libraries]
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
+----
+
+== Lombok Bundle
+
+The recommended way to apply Lombok support for both main and test sources.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.lombok)
+}
+----
+
+=== Includes
+
+* Lombok annotation processor for main sources
+* Lombok annotation processor for test sources
+
+== Lombok Plugin (Main Sources)
+
+Adds Lombok as a compile-only dependency and annotation processor for main source sets.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.dependency.lombok)
+}
+----
+
+=== What It Does
+
+Configures Lombok for main sources:
+
+[source,kotlin]
+----
+dependencies {
+    compileOnly("org.projectlombok:lombok:...")
+    annotationProcessor("org.projectlombok:lombok:...")
+}
+----
+
+== Lombok Test Plugin
+
+Adds Lombok as a compile-only dependency and annotation processor for test source sets.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.dependency.lombok-test")
+}
+----
+
+=== What It Does
+
+Configures Lombok for test sources:
+
+[source,kotlin]
+----
+dependencies {
+    testCompileOnly("org.projectlombok:lombok:...")
+    testAnnotationProcessor("org.projectlombok:lombok:...")
+}
+----
+
+== Using Lombok Annotations
+
+With the plugin applied, you can use Lombok annotations:
+
+[source,java]
+----
+import lombok.Data;
+import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
+
+@Data
+@Builder
+@Slf4j
+public class MyClass {
+    private String name;
+    private int value;
+
+    public void doSomething() {
+        log.info("Processing: {}", name);
+    }
+}
+----
+
+== Version Resolution
+
+The plugin resolves the Lombok version in this order:
+
+1. Version from `libs.versions.toml` (library name: `lombok`)
+2. Fallback version: `1.18.42`
+
+=== Custom Version
+
+To use a specific Lombok version, add to your version catalog:
+
+[source,toml]
+----
+[libraries]
+lombok = { module = "org.projectlombok:lombok", version = "1.18.42" }
+----
+
+== Dependency Fallbacks
+
+[cols="2,2,2"]
+|===
+|Dependency |Fallback Version |Description
+
+|`lombok`
+|`1.18.42`
+|Lombok annotation processor
+|===
+
+== Related Modules
+
+* link:../plugins-base/README.adoc[plugins-base] - Base Gradle project conventions (dependency)
+* link:../plugins-misc/README.adoc[plugins-misc] - Full `ultima-nexus` bundle (includes Lombok)
+* link:../plugins-spring-boot/README.adoc[plugins-spring-boot] - Spring Boot conventions
+* link:../README.adoc[Root README] - Project overview and quick start
