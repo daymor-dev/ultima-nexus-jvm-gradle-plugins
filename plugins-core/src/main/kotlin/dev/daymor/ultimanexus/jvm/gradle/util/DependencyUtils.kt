@@ -40,14 +40,14 @@ object DependencyUtils {
         getLibsCatalogOrNull(project) ?: throw GradleException(Messages.VERSION_CATALOG_NOT_FOUND)
 
     object FallbackVersions {
-        const val ASSERTJ = "3.27.3"
+        const val ASSERTJ = "3.27.6"
         const val BYTE_BUDDY_AGENT = "1.18.3"
         const val CHECKSTYLE = "12.3.0"
         const val JSPECIFY = "1.0.0"
         const val JSR305 = "3.0.2"
         const val JUNIT_JUPITER = "6.0.2"
         const val LOMBOK = "1.18.42"
-        const val MOCKK = "1.13.13"
+        const val MOCKK = "1.14.7"
         const val PMD = "7.19.0"
         const val SLF4J = "2.0.17"
         const val SPRING_BOOT = "4.0.1"
