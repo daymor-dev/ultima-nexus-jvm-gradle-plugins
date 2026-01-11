@@ -14,38 +14,56 @@
  * limitations under the License.
  */
 
-tasks.register("buildAll") {
+tasks.register("build") {
     group = "composite"
     description = "Build all included builds"
     dependsOn(gradle.includedBuilds.map { it.task(":build") })
 }
 
-tasks.register("testAll") {
+tasks.register("test") {
     group = "composite"
     description = "Test all included builds"
     dependsOn(gradle.includedBuilds.map { it.task(":test") })
 }
 
-tasks.register("checkAll") {
+tasks.register("check") {
     group = "composite"
     description = "Run checks on all included builds"
     dependsOn(gradle.includedBuilds.map { it.task(":check") })
 }
 
-tasks.register("validateAll") {
+tasks.register("validate") {
     group = "composite"
     description = "Validate plugins in all included builds"
     dependsOn(gradle.includedBuilds.map { it.task(":validatePlugins") })
 }
 
-tasks.register("cleanAll") {
+tasks.register("clean") {
     group = "composite"
     description = "Clean all included builds"
     dependsOn(gradle.includedBuilds.map { it.task(":clean") })
 }
 
-tasks.register("publishAll") {
+tasks.register("publish") {
     group = "composite"
     description = "Publish all included builds to Gradle Plugin Portal"
     dependsOn(gradle.includedBuilds.map { it.task(":publishPlugins") })
+}
+
+tasks.register("testClasses") {
+    group = "composite"
+    description = "Compile test classes for all included builds"
+    dependsOn(gradle.includedBuilds.map { it.task(":testClasses") })
+}
+
+tasks.register("classes") {
+    group = "composite"
+    description = "Compile classes for all included builds"
+    dependsOn(gradle.includedBuilds.map { it.task(":classes") })
+}
+
+tasks.register("assemble") {
+    group = "composite"
+    description = "Assemble all included builds"
+    dependsOn(gradle.includedBuilds.map { it.task(":assemble") })
 }
