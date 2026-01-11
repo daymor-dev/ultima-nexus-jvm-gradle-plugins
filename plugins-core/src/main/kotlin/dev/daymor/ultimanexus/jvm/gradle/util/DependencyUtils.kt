@@ -45,7 +45,7 @@ object DependencyUtils {
         const val CHECKSTYLE = "12.3.0"
         const val JSPECIFY = "1.0.0"
         const val JSR305 = "3.0.2"
-        const val JUNIT_JUPITER = "6.0.1"
+        const val JUNIT_JUPITER = "6.0.2"
         const val LOMBOK = "1.18.42"
         const val MOCKK = "1.13.13"
         const val PMD = "7.19.0"
