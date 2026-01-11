@@ -100,12 +100,29 @@ class PluginSmokeTest {
         @Test
         fun `publish-maven-central-aggregation plugin applies successfully`() {
             fixture()
-                .withSettings("rootProject.name = \"test-project\"")
+                .withSettings(
+                    """
+                    rootProject.name = "test-project"
+                    include(":dummy")
+                    """.trimIndent()
+                )
+                .withSubproject(
+                    "dummy",
+                    """
+                    plugins {
+                        `java-library`
+                    }
+                    """.trimIndent()
+                )
                 .withBuildScript(
                     """
                     plugins {
                         `java-library`
                         id("${PluginIds.Feature.PUBLISH_MAVEN_CENTRAL_AGGREGATION}")
+                    }
+
+                    dependencies {
+                        nmcpAggregation(project(":dummy"))
                     }
                     """.trimIndent()
                 )
