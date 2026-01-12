@@ -74,12 +74,13 @@ private val PUBLISH_PATTERNS = listOf(
     "bundle.ultima-nexus"
 )
 
-fun detectPublishUsage(): Boolean {
-    val depth = settings.providers.gradleProperty(PropertyKeys.Build.PROJECT_STRUCTURE_DEPTH)
-        .orElse(Defaults.PROJECT_STRUCTURE_DEPTH.toString())
-        .get()
-        .toInt()
+// Extract depth at settings time to avoid capturing settings object in function closure
+private val depth = settings.providers.gradleProperty(PropertyKeys.Build.PROJECT_STRUCTURE_DEPTH)
+    .orElse(Defaults.PROJECT_STRUCTURE_DEPTH.toString())
+    .get()
+    .toInt()
 
+fun detectPublishUsage(): Boolean {
     return rootDir.walk()
         .maxDepth(depth)
         .filter { it.name == "build.gradle.kts" }

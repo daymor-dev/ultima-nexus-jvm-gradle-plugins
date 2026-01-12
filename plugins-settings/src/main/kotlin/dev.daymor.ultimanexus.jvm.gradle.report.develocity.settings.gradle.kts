@@ -46,6 +46,8 @@ if (isEnabled) {
         .get()
 
     val isCI = providers.environmentVariable("CI").isPresent
+    // Extract at settings time to avoid capturing gradle object in lambda closure
+    val isBuildScanRequested = gradle.startParameter.isBuildScan
 
     develocity {
         server = serverUrl
@@ -55,7 +57,7 @@ if (isEnabled) {
             termsOfUseAgree = "yes"
 
             // Auto-publish on CI, opt-in locally via --scan
-            publishing.onlyIf { isCI || gradle.startParameter.isBuildScan }
+            publishing.onlyIf { isCI || isBuildScanRequested }
 
             // Add useful tags
             tag(if (isCI) "CI" else "LOCAL")
