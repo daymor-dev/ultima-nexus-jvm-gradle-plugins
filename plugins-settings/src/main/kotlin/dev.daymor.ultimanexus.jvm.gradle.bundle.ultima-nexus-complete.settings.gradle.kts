@@ -38,7 +38,7 @@ import dev.daymor.ultimanexus.jvm.gradle.config.PluginIds
  * Usage in settings.gradle.kts:
  * ```kotlin
  * plugins {
- *     alias(libs.plugins.ultimanexus.jvm.bundle.complete)
+ *     id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-complete") version "latest.release"
  * }
  * ```
  *

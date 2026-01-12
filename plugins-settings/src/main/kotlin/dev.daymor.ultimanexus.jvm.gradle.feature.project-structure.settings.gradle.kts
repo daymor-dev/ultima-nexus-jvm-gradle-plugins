@@ -32,7 +32,7 @@ import dev.daymor.ultimanexus.jvm.gradle.util.ProjectUtils.includeDir
  * Usage in settings.gradle.kts:
  * ```kotlin
  * plugins {
- *     alias(libs.plugins.ultimanexus.jvm.feature.project.structure)
+ *     id("dev.daymor.ultimanexus.jvm.gradle.feature.project-structure") version "latest.release"
  * }
  * ```
  *

@@ -39,7 +39,7 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 [source,toml]
 ----
 [versions]
-ultima-nexus-plugins = "1.0.0"
+ultima-nexus-plugins = "latest.release"
 
 [plugins]
 ultimanexus-feature-publish = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.publish", version.ref = "ultima-nexus-plugins" }
@@ -226,7 +226,7 @@ Uses automatic aggregation - no manual module listing required.
 ----
 // settings.gradle.kts
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.feature.publish.maven.central)
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central") version "latest.release"
 }
 
 // Each submodule build.gradle.kts

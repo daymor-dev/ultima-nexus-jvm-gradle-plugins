@@ -41,7 +41,7 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 [source,toml]
 ----
 [versions]
-ultima-nexus-plugins = "1.0.0"
+ultima-nexus-plugins = "latest.release"
 
 [plugins]
 ultimanexus-feature-composite-build = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.composite-build", version.ref = "ultima-nexus-plugins" }
@@ -61,7 +61,7 @@ Apply in `settings.gradle.kts`:
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.feature.composite.build)
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.composite-build") version "latest.release"
 }
 ----
 
@@ -138,7 +138,7 @@ Required `gradle.properties`:
 ----
 # Project identity
 groupId=dev.daymor.ultimanexus.jvm.gradle
-version=1.0.0
+version=latest.release
 
 # Plugin Portal metadata
 pluginWebsite=https://github.com/your/repo
@@ -321,25 +321,6 @@ The `plugins-core` module provides shared utilities used by all other modules:
 |_(none)_
 |`gradle-plugin-publish`
 |Comma-separated tags for Gradle Plugin Portal
-|===
-
-== Dependency Fallbacks
-
-[cols="2,2,2"]
-|===
-|Dependency |Fallback Version |Used By
-
-|`junit-jupiter-params`
-|`5.12.2`
-|test.gradle-plugin, test.unit
-
-|`assertj-core`
-|`3.27.3`
-|test.gradle-plugin, test.unit
-
-|`mockk`
-|`1.13.13`
-|test.unit
 |===
 
 == Related Modules

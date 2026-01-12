@@ -27,7 +27,7 @@
  * Usage in settings.gradle.kts:
  * ```kotlin
  * plugins {
- *     alias(libs.plugins.ultimanexus.jvm.feature.git.hooks)
+ *     id("dev.daymor.ultimanexus.jvm.gradle.feature.git-hooks") version "latest.release"
  * }
  * ```
  *

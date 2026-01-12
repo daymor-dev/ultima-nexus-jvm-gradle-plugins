@@ -50,13 +50,15 @@ Complete setup for a new multi-module project with just ONE plugin:
 [source,toml]
 ----
 [versions]
-ultima-nexus-plugins = "1.0.0"
+ultima-nexus-plugins = "latest.release"
 
 [plugins]
 ultimanexus-bundle-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-complete", version.ref = "ultima-nexus-plugins" }
 ----
 
 ==== Step 2: Settings Script (`settings.gradle.kts`)
+
+NOTE: Version catalogs (`libs`) cannot be used in `settings.gradle.kts` plugins block because it runs before the catalog is loaded. Use the direct `id("...") version "..."` syntax for settings plugins. The `alias(libs.plugins.xxx)` syntax works only in `build.gradle.kts` files.
 
 [source,kotlin]
 ----
@@ -67,7 +69,7 @@ pluginManagement {
 }
 
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.bundle.complete)
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-complete") version "latest.release"
 }
 ----
 
@@ -77,7 +79,7 @@ plugins {
 ----
 # Project identity
 groupId=com.example.myproject
-version=1.0.0
+version=latest.release
 description=My project description
 
 # Gradle 9.x performance settings (recommended)
@@ -222,6 +224,23 @@ Level 3 - Framework Bundles:
 
 Level 4 - Full Bundle:
 └── ultima-nexus       (spring-boot-complete + lombok + documentation [auto-detected])
+----
+
+
+== Dependency Fallbacks
+
+The plugins provide built-in fallback versions for common dependencies when not specified in your version catalog.
+This allows zero-configuration usage while still allowing version overrides.
+
+The fallback versions are defined in link:plugins-core/src/main/kotlin/dev/daymor/ultimanexus/jvm/gradle/util/DependencyUtils.kt[DependencyUtils.kt].
+
+To override any fallback version, add the dependency to your `libs.versions.toml`:
+
+[source,toml]
+----
+[libraries]
+lombok = { module = "org.projectlombok:lombok", version = "1.18.42" }
+jspecify = { module = "org.jspecify:jspecify", version = "1.0.0" }
 ----
 
 == Module Documentation

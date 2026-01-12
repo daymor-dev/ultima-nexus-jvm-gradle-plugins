@@ -48,7 +48,7 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 [source,toml]
 ----
 [versions]
-ultima-nexus-plugins = "1.0.0"
+ultima-nexus-plugins = "latest.release"
 
 [plugins]
 ultimanexus-base-identity = { id = "dev.daymor.ultimanexus.jvm.gradle.base.identity", version.ref = "ultima-nexus-plugins" }
@@ -96,7 +96,7 @@ plugins {
 ----
 ultimaNexus {
     groupId = "com.example.myproject"     // Required
-    version = "1.0.0"                      // Optional
+    version = "latest.release"             // Optional
     description = "My project description" // Optional
 }
 ----
@@ -106,7 +106,7 @@ ultimaNexus {
 [source,properties]
 ----
 groupId=com.example.myproject
-version=1.0.0
+version=latest.release
 description=My project description
 ----
 

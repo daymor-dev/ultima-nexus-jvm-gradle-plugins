@@ -23,7 +23,7 @@ import dev.daymor.ultimanexus.jvm.gradle.config.UltimaNexusConfig
  * ```kotlin
  * ultimaNexus {
  *     groupId = "com.example.yourproject"
- *     version = "1.0.0"
+ *     version = "latest.release"
  *     description = "My project description"
  * }
  * ```
@@ -31,7 +31,7 @@ import dev.daymor.ultimanexus.jvm.gradle.config.UltimaNexusConfig
  * Or via gradle.properties:
  * ```properties
  * groupId = com.example.yourproject
- * version = 1.0.0
+ * version = latest.release
  * description = My project description
  * ```
  */

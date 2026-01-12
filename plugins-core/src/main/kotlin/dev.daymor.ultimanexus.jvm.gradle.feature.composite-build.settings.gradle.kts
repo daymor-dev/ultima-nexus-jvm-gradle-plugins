@@ -37,7 +37,7 @@ import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
  * Usage in settings.gradle.kts:
  * ```kotlin
  * plugins {
- *     alias(libs.plugins.ultimanexus.jvm.feature.composite.build)
+ *     id("dev.daymor.ultimanexus.jvm.gradle.feature.composite-build") version "latest.release"
  * }
  * ```
  */

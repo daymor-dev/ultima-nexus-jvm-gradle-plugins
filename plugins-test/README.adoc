@@ -41,7 +41,7 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 [source,toml]
 ----
 [versions]
-ultima-nexus-plugins = "1.0.0"
+ultima-nexus-plugins = "latest.release"
 
 [plugins]
 ultimanexus-bundle-test = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.test", version.ref = "ultima-nexus-plugins" }
@@ -265,25 +265,6 @@ dependencies {
 |`test.suite.<name>.showStandardStreams` |_(inherits global)_ |`test-suites` |Per-suite stdout/stderr setting
 |`test.suite.<name>.fileEncoding` |_(inherits global)_ |`test-suites` |Per-suite file encoding
 |`test.suite.<name>.useByteBuddyAgent` |`true` (except performanceTest: `false`) |`test-suites` |Per-suite ByteBuddy agent setting
-|===
-
-== Dependency Fallbacks
-
-[cols="2,2,2"]
-|===
-|Dependency |Fallback Version |Description
-
-|`junit-jupiter-engine`
-|`5.12.2`
-|JUnit 5 test engine
-
-|`slf4j-simple`
-|`2.0.17`
-|Simple SLF4J logging for tests
-
-|`byte-buddy-agent`
-|`1.18.3`
-|ByteBuddy agent for mocking support
 |===
 
 == Directory Structure

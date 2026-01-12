@@ -22,7 +22,7 @@ import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
  * Use this if you want to explicitly control which modules to publish.
  *
  * For automatic aggregation (recommended), use the settings plugin:
- *   alias(libs.plugins.ultimanexus.jvm.feature.publish.maven.central)
+ *   id("dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central") version "latest.release"
  *
  * Usage in root build.gradle.kts:
  * ```kotlin

@@ -53,7 +53,7 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 [source,toml]
 ----
 [versions]
-ultima-nexus-plugins = "1.0.0"
+ultima-nexus-plugins = "latest.release"
 
 [plugins]
 ultimanexus-bundle-settings = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm", version.ref = "ultima-nexus-plugins" }
@@ -74,7 +74,7 @@ Apply in `settings.gradle.kts`:
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.bundle.settings)
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm") version "latest.release"
 }
 ----
 
@@ -105,7 +105,7 @@ Apply in `settings.gradle.kts`:
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.bundle.complete)
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-complete") version "latest.release"
 }
 ----
 
@@ -162,7 +162,7 @@ my-project/
 ----
 // settings.gradle.kts - This is ALL you need!
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.bundle.complete)
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-complete") version "latest.release"
 }
 ----
 
@@ -193,7 +193,7 @@ Apply in `settings.gradle.kts`:
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.feature.project.structure)
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.project-structure") version "latest.release"
 }
 ----
 
@@ -246,7 +246,7 @@ Apply in `settings.gradle.kts`:
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.feature.build.cache)
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.build-cache") version "latest.release"
 }
 ----
 
@@ -292,7 +292,7 @@ Apply in `settings.gradle.kts`:
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.report.develocity)
+    id("dev.daymor.ultimanexus.jvm.gradle.report.develocity") version "latest.release"
 }
 ----
 
@@ -336,7 +336,7 @@ Apply in `settings.gradle.kts`:
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.feature.git.hooks)
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.git-hooks") version "latest.release"
 }
 ----
 
@@ -355,7 +355,7 @@ Apply in `settings.gradle.kts`:
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.feature.publish.maven.central)
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central") version "latest.release"
 }
 ----
 

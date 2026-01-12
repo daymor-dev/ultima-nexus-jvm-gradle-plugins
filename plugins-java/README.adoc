@@ -48,7 +48,7 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 [source,toml]
 ----
 [versions]
-ultima-nexus-plugins = "1.0.0"
+ultima-nexus-plugins = "latest.release"
 
 [plugins]
 ultimanexus-bundle-java-simple = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple", version.ref = "ultima-nexus-plugins" }
@@ -279,10 +279,6 @@ public class MyClass {
 }
 ----
 
-=== Fallback Version
-
-If not specified in your version catalog, falls back to version `1.0.0`.
-
 == Properties Reference
 
 [cols="2,1,2,3"]
@@ -322,17 +318,6 @@ If not specified in your version catalog, falls back to version `1.0.0`.
 # Build distribution (application mode only)
 ./gradlew distZip
 ----
-
-== Dependency Fallbacks
-
-[cols="2,2,2"]
-|===
-|Dependency |Fallback Version |Description
-
-|`jspecify`
-|`1.0.0`
-|JSpecify nullability annotations
-|===
 
 == Related Modules
 

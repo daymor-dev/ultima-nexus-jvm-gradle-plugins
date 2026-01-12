@@ -35,7 +35,7 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 [source,toml]
 ----
 [versions]
-ultima-nexus-plugins = "1.0.0"
+ultima-nexus-plugins = "latest.release"
 
 [plugins]
 ultimanexus-bundle-documentation = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.documentation", version.ref = "ultima-nexus-plugins" }

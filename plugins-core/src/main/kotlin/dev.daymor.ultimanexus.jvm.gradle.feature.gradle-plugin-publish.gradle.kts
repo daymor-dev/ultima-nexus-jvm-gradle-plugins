@@ -28,7 +28,7 @@ import dev.daymor.ultimanexus.jvm.gradle.config.UltimaNexusConfig
  * Required gradle.properties:
  * ```properties
  * groupId = your.group.id
- * version = 1.0.0
+ * version = latest.release
  * pluginWebsite = https://your-website.com
  * pluginVcsUrl = https://github.com/your/repo
  * pluginTags = java,convention,quality

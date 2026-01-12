@@ -40,7 +40,7 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 [source,toml]
 ----
 [versions]
-ultima-nexus-plugins = "1.0.0"
+ultima-nexus-plugins = "latest.release"
 
 [plugins]
 ultimanexus-bundle-spring-boot-simple = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple", version.ref = "ultima-nexus-plugins" }
@@ -239,25 +239,6 @@ Adds the following test dependencies:
 # Run all tests
 ./gradlew allTest
 ----
-
-== Dependency Fallbacks
-
-[cols="2,2,2"]
-|===
-|Dependency |Fallback Version |Description
-
-|`jspecify`
-|`1.0.0`
-|JSpecify nullability annotations
-
-|`jsr305`
-|`3.0.2`
-|JSR-305 annotations
-
-|`spring-boot-devtools`
-|`4.0.1`
-|Spring Boot DevTools for development
-|===
 
 == Spring Boot Version
 

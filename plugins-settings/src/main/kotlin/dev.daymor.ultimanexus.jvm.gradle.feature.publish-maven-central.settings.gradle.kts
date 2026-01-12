@@ -24,7 +24,7 @@ import nmcp.NmcpSettings
  * Usage in settings.gradle.kts:
  * ```kotlin
  * plugins {
- *     alias(libs.plugins.ultimanexus.jvm.feature.publish.maven.central)
+ *     id("dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central") version "latest.release"
  * }
  * ```
  *

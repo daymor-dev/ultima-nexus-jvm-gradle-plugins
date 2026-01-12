@@ -37,7 +37,7 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 [source,toml]
 ----
 [versions]
-ultima-nexus-plugins = "1.0.0"
+ultima-nexus-plugins = "latest.release"
 lombok = "1.18.42"
 
 [plugins]
@@ -144,7 +144,7 @@ public class MyClass {
 The plugin resolves the Lombok version in this order:
 
 1. Version from `libs.versions.toml` (library name: `lombok`)
-2. Fallback version: `1.18.42`
+2. Built-in fallback version (see link:../README.adoc#_dependency_fallbacks[Dependency Fallbacks] in root README)
 
 === Custom Version
 
@@ -155,17 +155,6 @@ To use a specific Lombok version, add to your version catalog:
 [libraries]
 lombok = { module = "org.projectlombok:lombok", version = "1.18.42" }
 ----
-
-== Dependency Fallbacks
-
-[cols="2,2,2"]
-|===
-|Dependency |Fallback Version |Description
-
-|`lombok`
-|`1.18.42`
-|Lombok annotation processor
-|===
 
 == Related Modules
 
