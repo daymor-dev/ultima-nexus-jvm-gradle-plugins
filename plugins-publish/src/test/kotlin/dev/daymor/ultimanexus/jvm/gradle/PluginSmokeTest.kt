@@ -39,6 +39,7 @@ class PluginSmokeTest {
         fun `publish plugin applies successfully`() {
             fixture()
                 .withSettings("rootProject.name = \"test-project\"")
+                .withProperties("groupId" to "com.example.test")
                 .withBuildScript(
                     """
                     plugins {
@@ -57,6 +58,7 @@ class PluginSmokeTest {
         fun `publish plugin registers publishing tasks`() {
             fixture()
                 .withSettings("rootProject.name = \"test-project\"")
+                .withProperties("groupId" to "com.example.test")
                 .withBuildScript(
                     """
                     plugins {
@@ -79,6 +81,7 @@ class PluginSmokeTest {
         fun `publish-java plugin applies successfully`() {
             fixture()
                 .withSettings("rootProject.name = \"test-project\"")
+                .withProperties("groupId" to "com.example.test")
                 .withBuildScript(
                     """
                     plugins {

@@ -52,7 +52,34 @@ gradlePlugin {
     vcsUrl = ultimaNexus.pluginVcsUrl.get()
 }
 
+publishing {
+    publications.withType<MavenPublication>().configureEach {
+        versionMapping {
+            allVariants {
+                fromResolutionResult()
+            }
+        }
+    }
+}
+
 afterEvaluate {
+    val configuredGroupId = ultimaNexus.groupId.orNull
+
+    require(configuredGroupId != null) {
+        """
+        |Project group ID is not configured.
+        |Please configure it in one of these ways:
+        |
+        |1. In build.gradle.kts:
+        |   ultimaNexus {
+        |       groupId = "com.example.yourproject"
+        |   }
+        |
+        |2. In gradle.properties:
+        |   groupId=com.example.yourproject
+        """.trimMargin()
+    }
+
     gradlePlugin {
         plugins.configureEach {
             val pluginIdPrefix = ultimaNexus.pluginIdPrefix.get()

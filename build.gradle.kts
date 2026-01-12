@@ -67,3 +67,9 @@ tasks.register("assemble") {
     description = "Assemble all included builds"
     dependsOn(gradle.includedBuilds.map { it.task(":assemble") })
 }
+
+tasks.register("publishToMavenLocal") {
+    group = "composite"
+    description = "Publish all included builds to Maven Local"
+    dependsOn(gradle.includedBuilds.map { it.task(":publishToMavenLocal") })
+}

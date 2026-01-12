@@ -21,6 +21,7 @@ plugins {
 
 dependencies {
     implementation(libs.ultima.nexus.jvm.core)
+    implementation(libs.ultima.nexus.jvm.base)
     implementation(libs.gradleup.nmcp.aggregation)
     implementation(libs.gradle.plugin.publish)
 }

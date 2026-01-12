@@ -27,6 +27,7 @@ If you want to contribute by correcting a bug or improving this project, please 
 Remember to:
 
 * Run `./gradlew build` to verify changes before committing
+* Run `./gradlew publishToMavenLocal` to test plugins locally in other projects
 * Create one branch and one pull request by bug or feature
 
 == Code of conduct

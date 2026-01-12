@@ -72,15 +72,13 @@ import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.gradlePropertyOrNull
  */
 
 plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.base.identity")
     java
     `maven-publish`
     signing
 }
 
 val ultimaNexus = UltimaNexusConfig.get(project)
-
-ultimaNexus.groupId.orNull?.let { group = it }
-ultimaNexus.version.orNull?.let { version = it }
 
 interface PublishExtension {
     val projectUrl: Property<String>
