@@ -59,6 +59,10 @@ plugins {
     id("com.gradleup.nmcp.aggregation")
 }
 
+repositories {
+    mavenCentral()
+}
+
 nmcpAggregation {
     centralPortal {
         username =
@@ -83,5 +87,7 @@ providers.gradleProperty(PropertyKeys.Publish.MODULES).orNull?.let { modules ->
         }
 }
 
-tasks.matching { it.name.startsWith("publishAllPublicationsTo") }
-    .configureEach { group = Defaults.TaskGroup.PUBLISHING_OTHER }
+tasks.matching {
+    it.name.startsWith("publishAllPublicationsTo") ||
+        it.name == "publishAggregationToCentralSnapshots"
+}.configureEach { group = Defaults.TaskGroup.PUBLISHING_OTHER }

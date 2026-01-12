@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
 import nmcp.NmcpSettings
 
@@ -47,6 +48,8 @@ plugins {
     id("com.gradleup.nmcp.settings")
 }
 
+dependencyResolutionManagement.repositories.mavenCentral()
+
 val mavenCentralUsername = providers.gradleProperty(PropertyKeys.Publish.MAVEN_CENTRAL_USERNAME).orNull
     ?: System.getenv("MAVENCENTRALUSERNAME")
     ?: ""
@@ -60,4 +63,11 @@ extensions.configure<NmcpSettings>("nmcpSettings") {
         password = mavenCentralPassword
         publishingType = "AUTOMATIC"
     }
+}
+
+gradle.afterProject {
+    tasks.matching {
+        it.name.startsWith("publishAllPublicationsTo") ||
+            it.name == "publishAggregationToCentralSnapshots"
+    }.configureEach { group = Defaults.TaskGroup.PUBLISHING_OTHER }
 }
