@@ -264,5 +264,5 @@ spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-star
 * link:../plugins-check/README.adoc[plugins-check] - Quality checks (used by spring-boot-complete)
 * link:../plugins-test/README.adoc[plugins-test] - Testing infrastructure (used by spring-boot-complete)
 * link:../plugins-lombok/README.adoc[plugins-lombok] - Lombok support
-* link:../plugins-misc/README.adoc[plugins-misc] - Full `ultima-nexus` bundle (Spring Boot + Lombok)
+* link:../plugins-misc/README.adoc[plugins-misc] - Full `ultima-nexus-jvm` bundle (Spring Boot + Lombok)
 * link:../README.adoc[Root README] - Project overview and quick start

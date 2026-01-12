@@ -64,7 +64,7 @@ private val COMPLETE_BUNDLES = listOf(
     "bundle.report",
     "bundle.java-complete",
     "bundle.spring-boot-complete",
-    "bundle.ultima-nexus"
+    "bundle.ultima-nexus-jvm"
 )
 
 data class ReportPluginConfig(

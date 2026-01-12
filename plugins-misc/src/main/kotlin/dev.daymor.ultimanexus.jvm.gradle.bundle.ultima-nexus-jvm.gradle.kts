@@ -29,7 +29,7 @@ import dev.daymor.ultimanexus.jvm.gradle.config.PluginIds
  * Usage:
  * ```kotlin
  * plugins {
- *     alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus)
+ *     alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm)
  * }
  * ```
  */

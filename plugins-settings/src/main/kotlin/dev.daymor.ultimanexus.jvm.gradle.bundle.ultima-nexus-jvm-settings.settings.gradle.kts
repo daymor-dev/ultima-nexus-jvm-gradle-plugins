@@ -37,7 +37,7 @@ import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
  * Usage in settings.gradle.kts:
  * ```kotlin
  * plugins {
- *     id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm") version "latest.release"
+ *     id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-settings") version "latest.release"
  * }
  * ```
  *
@@ -71,10 +71,9 @@ private val PUBLISH_PATTERNS = listOf(
     "feature.publish",
     "bundle.java-complete",
     "bundle.spring-boot-complete",
-    "bundle.ultima-nexus"
+    "bundle.ultima-nexus-jvm"
 )
 
-// Extract depth at settings time to avoid capturing settings object in function closure
 private val depth = settings.providers.gradleProperty(PropertyKeys.Build.PROJECT_STRUCTURE_DEPTH)
     .orElse(Defaults.PROJECT_STRUCTURE_DEPTH.toString())
     .get()

@@ -106,7 +106,7 @@ class PluginSmokeTest {
                 .withBuildScript(
                     """
                     plugins {
-                        id("${PluginIds.Bundle.ULTIMA_NEXUS}")
+                        id("${PluginIds.Bundle.ULTIMA_NEXUS_JVM}")
                     }
 
                     ultimaNexus {

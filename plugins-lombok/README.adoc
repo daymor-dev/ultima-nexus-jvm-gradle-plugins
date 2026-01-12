@@ -159,6 +159,6 @@ lombok = { module = "org.projectlombok:lombok", version = "1.18.42" }
 == Related Modules
 
 * link:../plugins-base/README.adoc[plugins-base] - Base Gradle project conventions (dependency)
-* link:../plugins-misc/README.adoc[plugins-misc] - Full `ultima-nexus` bundle (includes Lombok)
+* link:../plugins-misc/README.adoc[plugins-misc] - Full `ultima-nexus-jvm` bundle (includes Lombok)
 * link:../plugins-spring-boot/README.adoc[plugins-spring-boot] - Spring Boot conventions
 * link:../README.adoc[Root README] - Project overview and quick start

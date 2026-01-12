@@ -41,14 +41,14 @@ import java.io.File
  * Usage in settings.gradle.kts:
  * ```kotlin
  * plugins {
- *     id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-complete") version "latest.release"
+ *     id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-complete") version "latest.release"
  * }
  * ```
  *
  * That's it! No need to configure individual build.gradle.kts files.
  */
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm")
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-settings")
 }
 
 val platformProjectNames = listOf("platform", "bom", "versions", "version-platform")
@@ -60,18 +60,14 @@ val platformPluginPatterns = listOf(
     "bundle.platform"
 )
 
-// Get depth using same property as project-structure plugin
 private val depth = settings.providers.gradleProperty(PropertyKeys.Build.PROJECT_STRUCTURE_DEPTH)
     .orElse(Defaults.PROJECT_STRUCTURE_DEPTH.toString())
     .get()
     .toInt()
 
-// Function operates on File, not Project - can be called at settings time
 private fun isPlatformDirectory(dir: File): Boolean {
-    // Check by directory name
     if (platformProjectNames.any { dir.name.equals(it, ignoreCase = true) }) return true
 
-    // Check gradle.properties for projectType=platform
     val propsFile = File(dir, "gradle.properties")
     if (propsFile.exists()) {
         val props = java.util.Properties().apply { propsFile.inputStream().use { load(it) } }
@@ -80,7 +76,6 @@ private fun isPlatformDirectory(dir: File): Boolean {
         }
     }
 
-    // Check build.gradle.kts content for platform patterns
     val buildFile = File(dir, "build.gradle.kts")
     if (buildFile.exists()) {
         val content = buildFile.readText()
@@ -90,21 +85,18 @@ private fun isPlatformDirectory(dir: File): Boolean {
     return false
 }
 
-// Pre-compute set of platform project names at settings time
-// Scan directories same way includeDir does, using the same depth property
 private val platformProjectPaths: Set<String> = rootDir.walk()
     .maxDepth(depth)
     .filter { it.isDirectory && it != rootDir }
     .filter { File(it, "build.gradle.kts").exists() }
     .filter { isPlatformDirectory(it) }
-    .map { ":${it.name}" }  // Project paths use :moduleName format (matches includeDir behavior)
+    .map { ":${it.name}" }
     .toSet()
 
-// Callback only captures serializable Set<String> and String constants
 gradle.beforeProject {
     when {
         this == rootProject -> apply(plugin = PluginIds.Bundle.GRADLE_PROJECT_ROOT)
         path in platformProjectPaths -> apply(plugin = PluginIds.Bundle.PLATFORM)
-        else -> apply(plugin = PluginIds.Bundle.ULTIMA_NEXUS)
+        else -> apply(plugin = PluginIds.Bundle.ULTIMA_NEXUS_JVM)
     }
 }

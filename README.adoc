@@ -53,7 +53,7 @@ Complete setup for a new multi-module project with just ONE plugin:
 ultima-nexus-plugins = "latest.release"
 
 [plugins]
-ultimanexus-bundle-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-complete", version.ref = "ultima-nexus-plugins" }
+ultimanexus-bundle-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-complete", version.ref = "ultima-nexus-plugins" }
 ----
 
 ==== Step 2: Settings Script (`settings.gradle.kts`)
@@ -69,7 +69,7 @@ pluginManagement {
 }
 
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-complete") version "latest.release"
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-complete") version "latest.release"
 }
 ----
 
@@ -198,8 +198,8 @@ Bundle plugins combine multiple individual plugins for common use cases:
 [source]
 ----
 Settings Bundles (apply in settings.gradle.kts):
-├── ultima-nexus-jvm       (project-structure + git-hooks + build-cache + develocity)
-└── ultima-nexus-complete  (ALL-IN-ONE: settings + root + all subprojects)
+├── ultima-nexus-jvm-settings  (project-structure + git-hooks + build-cache + develocity)
+└── ultima-nexus-jvm-complete  (ALL-IN-ONE: settings + root + all subprojects)
 
 Build Plugins (apply in build.gradle.kts):
 
@@ -223,7 +223,7 @@ Level 3 - Framework Bundles:
 └── spring-boot-complete   (check + test + report + compile-java + publish + spring-boot-unified) [app/lib mode]
 
 Level 4 - Full Bundle:
-└── ultima-nexus       (spring-boot-complete + lombok + documentation [auto-detected])
+└── ultima-nexus-jvm   (spring-boot-complete + lombok + documentation [auto-detected])
 ----
 
 
@@ -285,7 +285,7 @@ For detailed documentation on each module, see the individual README files:
 |Settings: Project structure, git hooks, build cache, Develocity, Maven Central aggregation
 
 |link:plugins-misc/README.adoc[plugins-misc]
-|Miscellaneous: Aggregation, version platform, `jvm-complete` bundle, full `ultima-nexus` bundle
+|Miscellaneous: Aggregation, version platform, `jvm-complete` bundle, full `ultima-nexus-jvm` bundle
 |===
 
 == Requirements

@@ -48,13 +48,11 @@ import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
 
 val isCI = providers.environmentVariable("CI").isPresent
 
-// Local cache configuration
 val localEnabled = providers.gradleProperty(PropertyKeys.BuildCache.LOCAL_ENABLED)
     .orElse("true")
     .map { it.toBoolean() }
     .get()
 
-// Remote cache configuration (properties or environment variables)
 val remoteUrl = providers.environmentVariable("GRADLE_CACHE_REMOTE_URL")
     .orElse(providers.gradleProperty(PropertyKeys.BuildCache.REMOTE_URL))
     .orNull
@@ -74,7 +72,6 @@ val remotePush = providers.gradleProperty(PropertyKeys.BuildCache.REMOTE_PUSH)
 
 buildCache {
     local {
-        // Enable local cache, but disable on CI if remote is configured
         isEnabled = localEnabled && !(isCI && remoteUrl != null)
     }
 

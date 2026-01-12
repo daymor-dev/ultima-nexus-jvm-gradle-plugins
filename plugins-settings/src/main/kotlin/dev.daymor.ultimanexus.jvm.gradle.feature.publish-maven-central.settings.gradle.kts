@@ -47,7 +47,6 @@ plugins {
     id("com.gradleup.nmcp.settings")
 }
 
-// Get credentials from properties or environment
 val mavenCentralUsername = providers.gradleProperty(PropertyKeys.Publish.MAVEN_CENTRAL_USERNAME).orNull
     ?: System.getenv("MAVENCENTRALUSERNAME")
     ?: ""

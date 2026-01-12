@@ -12,7 +12,7 @@ The `plugins-misc` module provides:
 * **Version Platform**: Centralized version management via Java Platform (Spring Boot BOM auto-detected)
 * **Catalog Versions**: Apply all version catalog constraints
 * **JVM Complete Bundle**: Language-agnostic JVM bundle for Kotlin, Scala, Groovy, etc.
-* **Full Bundle**: Complete `ultima-nexus` bundle (Spring Boot + Lombok + documentation)
+* **Full Bundle**: Complete `ultima-nexus-jvm` bundle (Spring Boot + Lombok + documentation)
 * **Root Bundle**: Root project conventions for multi-module builds
 * **Platform Bundle**: Bundle for BOM/platform projects with version management
 
@@ -34,7 +34,7 @@ The `plugins-misc` module provides:
 |`dev.daymor.ultimanexus.jvm.gradle.bundle.jvm-complete`
 |Language-agnostic JVM bundle with quality checks, testing, and reporting
 
-|`dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus`
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm`
 |Complete Ultima Nexus JVM Framework experience (Spring Boot + Lombok)
 
 |`dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project-root`
@@ -55,7 +55,7 @@ ultima-nexus-plugins = "latest.release"
 
 [plugins]
 ultimanexus-bundle-jvm-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.jvm-complete", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-ultima-nexus = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus", version.ref = "ultima-nexus-plugins" }
+ultimanexus-bundle-ultima-nexus-jvm = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm", version.ref = "ultima-nexus-plugins" }
 ultimanexus-feature-aggregation = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.aggregation", version.ref = "ultima-nexus-plugins" }
 ultimanexus-feature-version-platform = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.version-platform", version.ref = "ultima-nexus-plugins" }
 ultimanexus-feature-use-all-catalog-versions = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.use-all-catalog-versions", version.ref = "ultima-nexus-plugins" }
@@ -105,7 +105,7 @@ Add your language-specific plugins on top of this bundle.
 * Multi-language JVM projects
 
 For pure Java projects, use `java-complete` instead.
-For Spring Boot Java projects, use `ultima-nexus` instead.
+For Spring Boot Java projects, use `ultima-nexus-jvm` instead.
 
 == Ultima Nexus Full Bundle
 
@@ -116,7 +116,7 @@ The complete Ultima Nexus JVM Framework experience with all conventions (Spring 
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus)
+    alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm)
 }
 ----
 
@@ -203,9 +203,9 @@ Use this bundle for dedicated BOM/platform subprojects:
 my-project/
 ├── platform/              # Uses bundle.platform
 │   └── build.gradle.kts
-├── core/                  # Uses ultima-nexus
+├── core/                  # Uses ultima-nexus-jvm
 │   └── build.gradle.kts
-└── api/                   # Uses ultima-nexus
+└── api/                   # Uses ultima-nexus-jvm
     └── build.gradle.kts
 ----
 
@@ -352,7 +352,7 @@ IMPORTANT: This plugin *cannot* be used with `java`, `java-library`, or any bund
 
 == Related Modules
 
-* link:../plugins-spring-boot/README.adoc[plugins-spring-boot] - Spring Boot conventions (used by ultima-nexus bundle)
-* link:../plugins-lombok/README.adoc[plugins-lombok] - Lombok support (used by ultima-nexus bundle)
+* link:../plugins-spring-boot/README.adoc[plugins-spring-boot] - Spring Boot conventions (used by ultima-nexus-jvm bundle)
+* link:../plugins-lombok/README.adoc[plugins-lombok] - Lombok support (used by ultima-nexus-jvm bundle)
 * link:../plugins-report/README.adoc[plugins-report] - Report plugins (used by aggregation)
 * link:../README.adoc[Root README] - Project overview and quick start

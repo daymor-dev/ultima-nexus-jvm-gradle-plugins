@@ -39,10 +39,10 @@ All plugins are applied in `settings.gradle.kts`.
 |`dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central`
 |Automatic Maven Central publishing for multi-module projects
 
-|`dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm`
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-settings`
 |Bundle: Project structure, git hooks, build cache, and develocity
 
-|`dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-complete`
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-complete`
 |Complete bundle: settings + root + all subprojects
 |===
 
@@ -56,14 +56,14 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 ultima-nexus-plugins = "latest.release"
 
 [plugins]
-ultimanexus-bundle-settings = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm", version.ref = "ultima-nexus-plugins" }
+ultimanexus-bundle-settings = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-settings", version.ref = "ultima-nexus-plugins" }
 ultimanexus-feature-project-structure = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.project-structure", version.ref = "ultima-nexus-plugins" }
 ultimanexus-feature-git-hooks = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.git-hooks", version.ref = "ultima-nexus-plugins" }
 ultimanexus-feature-publish-maven-central = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-complete", version.ref = "ultima-nexus-plugins" }
+ultimanexus-bundle-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-complete", version.ref = "ultima-nexus-plugins" }
 ----
 
-== Settings Bundle (ultima-nexus-jvm)
+== Settings Bundle (ultima-nexus-jvm-settings)
 
 The recommended way to apply all settings plugins.
 
@@ -74,7 +74,7 @@ Apply in `settings.gradle.kts`:
 [source,kotlin]
 ----
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm") version "latest.release"
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-settings") version "latest.release"
 }
 ----
 
@@ -94,7 +94,7 @@ This means you don't need to manually apply the Maven Central settings plugin - 
 
 NOTE: The detection scans build files up to the configured `projectStructureDepth` (default: 1).
 
-== Complete Bundle (ultima-nexus-complete)
+== Complete Bundle (ultima-nexus-jvm-complete)
 
 The all-in-one plugin for multi-module projects. Apply once, get everything.
 
@@ -105,7 +105,7 @@ Apply in `settings.gradle.kts`:
 [source,kotlin]
 ----
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-complete") version "latest.release"
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-complete") version "latest.release"
 }
 ----
 
@@ -133,11 +133,11 @@ That's it! No need to configure individual `build.gradle.kts` files.
 * Projects named `platform`, `bom`, `versions`, or `version-platform`
 * Projects with `projectType=platform` in gradle.properties
 * Projects using `java-platform` or `version-platform` plugins
-* Gets `bundle.platform` instead of `ultima-nexus`
+* Gets `bundle.platform` instead of `ultima-nexus-jvm`
 
 *All other subprojects (automatically applied):*
 
-* Full `ultima-nexus` bundle:
+* Full `ultima-nexus-jvm` bundle:
 ** Spring Boot complete (all quality checks, testing, publishing)
 ** Lombok support
 ** JSpecify nullability annotations
@@ -148,7 +148,7 @@ That's it! No need to configure individual `build.gradle.kts` files.
 [source]
 ----
 my-project/
-├── settings.gradle.kts    # Just apply ultima-nexus-complete here
+├── settings.gradle.kts    # Just apply ultima-nexus-jvm-complete here
 ├── gradle.properties      # Configure groupId, etc.
 ├── core/
 │   └── build.gradle.kts   # Empty or minimal - plugins applied automatically
@@ -162,7 +162,7 @@ my-project/
 ----
 // settings.gradle.kts - This is ALL you need!
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-complete") version "latest.release"
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-complete") version "latest.release"
 }
 ----
 
@@ -178,7 +178,7 @@ Use this bundle when:
 
 Don't use this bundle when:
 
-* You have a single-module project (use `ultima-nexus` bundle instead)
+* You have a single-module project (use `ultima-nexus-jvm` bundle instead)
 * Different subprojects need different bundles (use individual bundles)
 * You need fine-grained control over which plugins apply where
 

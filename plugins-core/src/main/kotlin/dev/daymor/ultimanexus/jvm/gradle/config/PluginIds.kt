@@ -41,9 +41,9 @@ object PluginIds {
         const val LOMBOK = "$PREFIX.bundle.lombok"
         const val DOCUMENTATION = "$PREFIX.bundle.documentation"
         const val PLATFORM = "$PREFIX.bundle.platform"
+        const val ULTIMA_NEXUS_JVM_SETTINGS = "$PREFIX.bundle.ultima-nexus-jvm-settings"
         const val ULTIMA_NEXUS_JVM = "$PREFIX.bundle.ultima-nexus-jvm"
-        const val ULTIMA_NEXUS = "$PREFIX.bundle.ultima-nexus"
-        const val ULTIMA_NEXUS_COMPLETE = "$PREFIX.bundle.ultima-nexus-complete"
+        const val ULTIMA_NEXUS_JVM_COMPLETE = "$PREFIX.bundle.ultima-nexus-jvm-complete"
     }
 
     object Feature {

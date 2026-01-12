@@ -46,7 +46,6 @@ if (isEnabled) {
         .get()
 
     val isCI = providers.environmentVariable("CI").isPresent
-    // Extract at settings time to avoid capturing gradle object in lambda closure
     val isBuildScanRequested = gradle.startParameter.isBuildScan
 
     develocity {
@@ -56,19 +55,15 @@ if (isEnabled) {
             termsOfUseUrl = "https://gradle.com/help/legal-terms-of-use"
             termsOfUseAgree = "yes"
 
-            // Auto-publish on CI, opt-in locally via --scan
             publishing.onlyIf { isCI || isBuildScanRequested }
 
-            // Add useful tags
             tag(if (isCI) "CI" else "LOCAL")
 
-            // GitHub Actions integration
             providers.environmentVariable("GITHUB_REF_NAME").orNull?.let { tag(it) }
             providers.environmentVariable("GITHUB_REPOSITORY").orNull?.let { value("repository", it) }
             providers.environmentVariable("GITHUB_SHA").orNull?.let { value("commit", it.take(7)) }
             providers.environmentVariable("GITHUB_RUN_ID").orNull?.let { value("run", it) }
 
-            // GitLab CI integration
             providers.environmentVariable("CI_COMMIT_REF_NAME").orNull?.let { tag(it) }
             providers.environmentVariable("CI_PROJECT_PATH").orNull?.let { value("repository", it) }
             providers.environmentVariable("CI_COMMIT_SHORT_SHA").orNull?.let { value("commit", it) }
