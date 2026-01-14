@@ -1,17 +1,18 @@
 ---
 name: Question
-about: A question about the project
+about: Ask a question about the project
 title: ''
 labels: question
-assignees: malcolmR4
-
+assignees: ''
 ---
 
-**Your question**
-A clear and concise description of what the question is.
+## Question
+A clear and concise description of your question.
 
-**Minimal reproducible example**
-If applicable, it can help a lot to have a link to a project.
+## Related Plugin
+Plugin name or category if applicable.
 
-**Additional context**
-Add any other context or screenshots about the question here.
+## Context
+Any relevant code or configuration.
+
+## Additional Context

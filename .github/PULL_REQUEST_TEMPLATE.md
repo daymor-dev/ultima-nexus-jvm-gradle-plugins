@@ -1,13 +1,29 @@
-**Describe the PR**
-A clear and concise description of what the pull request is.
+## Description
+A clear and concise description of what this pull request does.
 
-**Scope**
-The scope of the feature.
+## Related Issue
+Closes #
 
-**Additional context**
-Add any other context about the problem here.
+## Type of Change
+- [ ] Bug fix
+- [ ] New plugin
+- [ ] Plugin enhancement
+- [ ] Breaking change
+- [ ] Documentation update
+- [ ] Other
 
-### Required
-- [ ] The code format have been respected.
-- [ ] The new feature or the corrected bug is tested.
-- [ ] The readme have been updated.
+## Affected Plugin Category
+- [ ] Base
+- [ ] Check
+- [ ] Component
+- [ ] Dependency
+- [ ] Feature
+- [ ] Report
+- [ ] Test
+
+## Checklist
+- [ ] The plugin has been tested in a sample project
+- [ ] KDoc has been added/updated
+- [ ] Documentation has been updated if needed
+
+## Additional Context
