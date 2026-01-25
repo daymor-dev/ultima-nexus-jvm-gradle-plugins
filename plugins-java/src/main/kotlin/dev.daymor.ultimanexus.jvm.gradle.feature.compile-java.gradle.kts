@@ -15,7 +15,9 @@
  */
 
 
+import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyAsInt
 
 /*
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.feature.compile-java
@@ -44,20 +46,21 @@ interface CompileJavaConfigExtension {
 
 val compileJavaConfig = extensions.create<CompileJavaConfigExtension>("compileJavaConfig")
 
-val jdkVersionFromProperty: String? = providers.gradleProperty(PropertyKeys.JDK_VERSION).orNull
+compileJavaConfig.jdkVersion.convention(
+    project.findPropertyAsInt(PropertyKeys.JDK_VERSION, Defaults.JDK_VERSION)
+)
 
-afterEvaluate {
-    val version = compileJavaConfig.jdkVersion.orNull
-        ?: jdkVersionFromProperty?.toIntOrNull()
-        ?: 25
-    java.toolchain.languageVersion = JavaLanguageVersion.of(version)
+java {
+    toolchain {
+        languageVersion = compileJavaConfig.jdkVersion.map { JavaLanguageVersion.of(it) }
+    }
 }
 
 tasks {
     withType<JavaCompile>().configureEach {
         options.apply {
             isFork = true
-            encoding = "UTF-8"
+            encoding = Defaults.FILE_ENCODING
             compilerArgs.add("-parameters")
             compilerArgs.add("-implicit:none")
             compilerArgs.add("-Werror")

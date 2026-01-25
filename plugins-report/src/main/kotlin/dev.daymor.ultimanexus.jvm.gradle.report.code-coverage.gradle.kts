@@ -15,6 +15,7 @@
  */
 
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 
 /*
  * Plugin for aggregating JaCoCo code coverage reports across test suites.
@@ -49,7 +50,7 @@ interface CodeCoverageConfigExtension {
 val codeCoverageConfig = extensions.create<CodeCoverageConfigExtension>("codeCoverageConfig")
 
 val defaultExcludes = listOf("**/**_.class", "**/**MapperImpl.class", "**/**Application.class")
-val excludesFromProps = providers.gradleProperty(PropertyKeys.CodeCoverage.EXCLUDE_PATTERNS).orNull
+val excludesFromProps = project.findPropertyOrNull(PropertyKeys.CodeCoverage.EXCLUDE_PATTERNS)
     ?.split(",")
     ?.map { it.trim() }
     ?: defaultExcludes
@@ -83,51 +84,49 @@ fun configureReport(report: JacocoCoverageReport) {
     }
 }
 
-// Auto-discover and create coverage reports for all test suites
-afterEvaluate {
-    val suiteReports = mutableListOf<JacocoCoverageReport>()
+val suiteReports = mutableListOf<JacocoCoverageReport>()
 
-    reporting {
-        reports {
-            // Always configure the default test suite
-            val testCodeCoverageReport by getting(JacocoCoverageReport::class) {
-                configureReport(this)
-            }
-            suiteReports.add(testCodeCoverageReport)
-
-            // Auto-discover other JvmTestSuites
-            testing.suites.withType<JvmTestSuite>().forEach { suite ->
-                val suiteName = suite.name
-                if (suiteName != "test" && suiteName != "allTest") {
-                    val reportName = "${suiteName}CodeCoverageReport"
-                    val report = findByName(reportName) as? JacocoCoverageReport
-                        ?: register(reportName, JacocoCoverageReport::class) {
-                            testSuiteName = suiteName
-                        }.get()
-                    configureReport(report)
-                    suiteReports.add(report)
-                }
-            }
-
-            // Create aggregated report for all tests
-            val allTestCodeCoverageReport = findByName("allTestCodeCoverageReport")
-                as? JacocoCoverageReport
-                ?: register("allTestCodeCoverageReport", JacocoCoverageReport::class) {
-                    testSuiteName = "allTest"
-                }.get()
-
-            allTestCodeCoverageReport.reportTask {
-                group = "reporting"
-                excludeFiles(classDirectories)
-
-                classDirectories.setFrom(
-                    suiteReports.map { it.reportTask.get().classDirectories }
-                )
-
-                executionData.setFrom(
-                    suiteReports.map { it.reportTask.get().executionData }
-                )
-            }
+reporting {
+    reports {
+        val testCodeCoverageReport by getting(JacocoCoverageReport::class) {
+            configureReport(this)
         }
+        suiteReports.add(testCodeCoverageReport)
+    }
+}
+
+testing.suites.withType<JvmTestSuite>().configureEach {
+    val suiteName = name
+    if (suiteName != "test" && suiteName != "allTest") {
+        val reportName = "${suiteName}CodeCoverageReport"
+        reporting.reports {
+            val report = findByName(reportName) as? JacocoCoverageReport
+                ?: register(reportName, JacocoCoverageReport::class) {
+                    testSuiteName = suiteName
+                }.get()
+            configureReport(report)
+            suiteReports.add(report)
+        }
+    }
+}
+
+reporting.reports {
+    val allTestCodeCoverageReport = findByName("allTestCodeCoverageReport")
+        as? JacocoCoverageReport
+        ?: register("allTestCodeCoverageReport", JacocoCoverageReport::class) {
+            testSuiteName = "allTest"
+        }.get()
+
+    allTestCodeCoverageReport.reportTask {
+        group = "reporting"
+        excludeFiles(classDirectories)
+
+        classDirectories.setFrom(
+            provider { suiteReports.map { it.reportTask.get().classDirectories } }
+        )
+
+        executionData.setFrom(
+            provider { suiteReports.map { it.reportTask.get().executionData } }
+        )
     }
 }

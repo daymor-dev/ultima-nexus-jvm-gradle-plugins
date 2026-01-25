@@ -97,6 +97,6 @@ gradle.beforeProject {
     when {
         this == rootProject -> apply(plugin = PluginIds.Bundle.GRADLE_PROJECT_ROOT)
         path in platformProjectPaths -> apply(plugin = PluginIds.Bundle.PLATFORM)
-        else -> apply(plugin = PluginIds.Bundle.ULTIMA_NEXUS_JVM)
+        else -> apply(plugin = PluginIds.Bundle.ULTIMA_NEXUS_JVM_APPLICATION)
     }
 }

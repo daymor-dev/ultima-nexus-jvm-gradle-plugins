@@ -16,6 +16,7 @@ spring-boot = "4.0.2"
 
 # TOOL VERSIONS (used by check plugins)
 checkstyle = "12.3.0"
+eclipse-jdt = "4.38"
 pmd = "7.19.0"
 
 # FALLBACK VERSIONS (used when consumer's version catalog doesn't define them)
@@ -25,11 +26,13 @@ jsr305 = "3.0.2"
 junit-jupiter = "6.0.2"
 lombok = "1.18.42"
 slf4j = "2.0.17"
-spring-boot-dependencies = "4.0.2"
 
 # TEST LIBRARY VERSIONS (used by test convention plugins)
 assertj = "3.27.7"
 mockk = "1.14.7"
+
+# FIX FOR CYCLONEDX MISSING TRANSITIVE DEPENDENCY
+plexus-xml = "4.1.0"
 
 [libraries]
 # GRADLE PLUGINS (implementation dependencies for convention plugins)
@@ -46,6 +49,7 @@ node = { module = "com.github.node-gradle:gradle-node-plugin", version.ref = "no
 spotbugs-gradle-plugin = { module = "com.github.spotbugs:com.github.spotbugs.gradle.plugin", version.ref = "spotbugs-gradle-plugin" }
 spotless-plugin-gradle = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless-plugin-gradle" }
 spring-boot-gradle-plugin = { module = "org.springframework.boot:spring-boot-gradle-plugin", version.ref = "spring-boot" }
+spring-dependency-management = { module = "io.spring.dependency-management:io.spring.dependency-management.gradle.plugin", version = "1.1.7" }
 gradle-develocity = { module = "com.gradle.develocity:com.gradle.develocity.gradle.plugin", version.ref = "gradle-develocity" }
 
 # FALLBACK LIBRARIES (used when consumer's version catalog doesn't define them)
@@ -56,11 +60,15 @@ junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", vers
 junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit-jupiter" }
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
-spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools", version.ref = "spring-boot-dependencies" }
+spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools", version.ref = "spring-boot" }
 
 # TEST LIBRARIES (used by test convention plugins)
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+
+# FIX FOR CYCLONEDX MISSING TRANSITIVE DEPENDENCY
+plexus-xml = { module = "org.codehaus.plexus:plexus-xml", version.ref = "plexus-xml" }
 
 # Plugin module dependencies (versions resolved from composite builds - no version needed)
 ultima-nexus-jvm-core = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-core" }

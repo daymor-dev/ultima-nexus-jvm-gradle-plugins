@@ -99,12 +99,9 @@ class PluginSmokeTest {
                     plugins {
                         id("${PluginIds.Base.IDENTITY}")
                     }
-
-                    ultimaNexus {
-                        groupId.set("com.example.test")
-                    }
                     """.trimIndent()
                 )
+                .withProperties("groupId" to "com.example.test")
 
             val result = fixture().help()
 
@@ -184,12 +181,9 @@ class PluginSmokeTest {
                     plugins {
                         id("${PluginIds.Bundle.GRADLE_PROJECT}")
                     }
-
-                    ultimaNexus {
-                        groupId.set("com.example.test")
-                    }
                     """.trimIndent()
                 )
+                .withProperties("groupId" to "com.example.test")
 
             val result = fixture().help()
 

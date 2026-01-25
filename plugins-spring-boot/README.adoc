@@ -8,9 +8,9 @@ Spring Boot convention plugins for JVM projects.
 
 The `plugins-spring-boot` module provides Spring Boot development conventions:
 
-* **Spring Boot Unified**: Switchable application/library mode
+* **Spring Boot Application/Library**: Explicit plugins for application or library mode
 * **Spring Boot Test**: Pre-configured test dependencies
-* **Bundles**: Pre-configured `spring-boot-simple` and `spring-boot-complete` bundles
+* **Bundles**: Pre-configured bundles for applications and libraries
 
 All plugins support configuration via extension DSL or gradle.properties.
 
@@ -20,17 +20,26 @@ All plugins support configuration via extension DSL or gradle.properties.
 |===
 |Plugin ID |Description
 
-|`dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-unified`
-|Spring Boot with configurable application/library mode
+|`dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-application`
+|Spring Boot application mode (bootJar, bootRun, fat JAR)
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-library`
+|Spring Boot library mode (dependency management, standard JAR)
 
 |`dev.daymor.ultimanexus.jvm.gradle.dependency.spring-boot-test`
 |Spring Boot test dependencies
 
-|`dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple`
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple-application`
+|Simple Spring Boot application without quality checks
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple-library`
 |Simple Spring Boot library without quality checks
 
-|`dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete`
-|Complete Spring Boot development with app/library mode
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete-application`
+|Complete Spring Boot application with quality checks
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete-library`
+|Complete Spring Boot library with quality checks and publishing
 |===
 
 == Installation
@@ -43,150 +52,138 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 ultima-nexus-plugins = "latest.release"
 
 [plugins]
-ultimanexus-bundle-spring-boot-simple = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-spring-boot-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete", version.ref = "ultima-nexus-plugins" }
-ultimanexus-feature-spring-boot-unified = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-unified", version.ref = "ultima-nexus-plugins" }
+ultimanexus-bundle-spring-boot-simple-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple-application", version.ref = "ultima-nexus-plugins" }
+ultimanexus-bundle-spring-boot-simple-library = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple-library", version.ref = "ultima-nexus-plugins" }
+ultimanexus-bundle-spring-boot-complete-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete-application", version.ref = "ultima-nexus-plugins" }
+ultimanexus-bundle-spring-boot-complete-library = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete-library", version.ref = "ultima-nexus-plugins" }
 ----
 
-== Spring Boot Complete Bundle
+== Spring Boot Complete Bundles
 
-The recommended bundle for full-featured Spring Boot development.
+Full-featured Spring Boot development bundles with quality checks, testing, and reporting.
 
-=== Usage
+=== Spring Boot Complete Application
+
+For standalone Spring Boot applications:
 
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.bundle.spring.boot.complete)
+    alias(libs.plugins.ultimanexus.jvm.bundle.spring.boot.complete.application)
 }
 ----
 
-=== Includes
+Includes:
 
-* Base Gradle project conventions (`gradle-project` bundle)
-* All quality checks (`check` bundle)
-* All test types (`test` bundle)
-* All reports (`report` bundle)
-* Java compilation configuration
-* Javadoc generation
-* Maven Central publishing
-* Spring Boot with configurable application/library mode
-* JSpecify nullability annotations
-* Spring Boot test dependencies
-
-=== Application vs Library Mode
-
-By default, `spring-boot-complete` runs in **application mode**. This enables:
-
-* `bootJar` task for creating executable fat JAR
-* `bootRun` task for running the application
+* Base Gradle project conventions
+* All quality checks, tests, and reports
+* Java compilation and Javadoc
+* Full Spring Boot plugin (`bootJar`, `bootRun`)
 * Spring Boot DevTools for development
+* JSpecify nullability annotations
 
-For Spring Boot libraries or starters, switch to **library mode**:
+=== Spring Boot Complete Library
+
+For Spring Boot starters and shared libraries:
 
 [source,kotlin]
 ----
-ultimaNexus {
-    applicationMode.set(false)
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.spring.boot.complete.library)
 }
 ----
 
-Or via gradle.properties:
+Includes:
 
-[source,properties]
-----
-springBoot.isApplication=false
-----
+* Everything in application bundle (except bootJar/bootRun)
+* Spring Dependency Management (without full Spring Boot plugin)
+* Maven Central publishing with sources and Javadoc JARs
 
 === Mode Comparison
 
 [cols="1,2,1,1,2"]
 |===
-|Mode |JAR Type |bootJar |Publishing |Use Case
+|Bundle |JAR Type |bootJar |Publishing |Use Case
 
-|Application (default)
+|`spring-boot-complete-application`
 |Executable fat JAR
 |Enabled
 |Not included
 |Standalone Spring Boot apps
 
-|Library
+|`spring-boot-complete-library`
 |Standard JAR
 |Disabled
-|`publish-java` enabled
+|Included
 |Shared libraries, starters
 |===
 
-NOTE: In library mode, the `publish-java` plugin is automatically included, enabling Maven Central publishing with sources and Javadoc JARs.
-
-== Spring Boot Simple Bundle
+== Spring Boot Simple Bundles
 
 Minimal Spring Boot setup without quality checks.
 
-=== Usage
+=== Spring Boot Simple Application
 
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.bundle.spring.boot.simple)
+    alias(libs.plugins.ultimanexus.jvm.bundle.spring.boot.simple.application)
+}
+----
+
+=== Spring Boot Simple Library
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.spring.boot.simple.library)
 }
 ----
 
 === Includes
 
-* Java simple bundle
-* Spring Boot unified plugin
+* Java simple bundle (application or library)
+* Spring Boot application or library plugin
 * Spring Boot test dependencies
 
-== Spring Boot Unified Plugin
+== Spring Boot Application Plugin
 
-Unified Spring Boot plugin with configurable application/library mode.
+Full Spring Boot support for executable applications.
 
 === Usage
 
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.feature.spring.boot.unified)
+    alias(libs.plugins.ultimanexus.jvm.feature.spring.boot.application)
 }
 ----
 
-=== Configuration via Extension
-
-[source,kotlin]
-----
-ultimaNexus {
-    applicationMode.set(false)  // Library mode
-}
-----
-
-=== Configuration via gradle.properties
-
-[source,properties]
-----
-springBoot.isApplication=false
-----
-
-=== Application Mode (Default)
+=== Features
 
 * Enables `bootJar` and `bootRun` tasks
 * Creates executable fat JAR
 * Configures `productionRuntimeClasspath` and `developmentOnly` configurations
 * Adds Spring Boot DevTools
 
-=== Library Mode
+== Spring Boot Library Plugin
 
-* Disables `bootJar` and `bootRun` tasks
-* Creates standard JAR without classifier
-* Uses standard dependency management
+Spring Boot dependency management for libraries and starters.
 
-=== Automatic Dependencies
+=== Usage
 
-The plugin automatically adds:
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.spring.boot.library)
+}
+----
 
-* JSpecify annotations (compile-only)
-* JSR-305 annotations (compile-only)
-* Spring Boot DevTools (development-only, application mode)
+=== Features
+
+* Spring Dependency Management (without full Spring Boot plugin)
+* Creates standard JAR (no bootJar)
+* `java-library` plugin for API/implementation separation
 
 == Spring Boot Test Dependencies Plugin
 
@@ -210,15 +207,7 @@ Adds the following test dependencies:
 
 == Properties Reference
 
-[cols="2,1,2,3"]
-|===
-|Property |Default |Plugin |Description
-
-|`springBoot.isApplication`
-|`true`
-|`spring-boot-unified`
-|Application mode (true) or library mode (false)
-|===
+No configuration properties required - use the appropriate plugin for your project type.
 
 == Running Common Tasks
 

@@ -17,8 +17,8 @@
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
 import dev.daymor.ultimanexus.jvm.gradle.config.UltimaNexusConfig
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromGradleProperty
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.gradlePropertyOrNull
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromProperty
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 
 /*
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.feature.publish
@@ -98,32 +98,28 @@ interface PublishExtension {
 
 val publishConfig = extensions.create<PublishExtension>("publishConfig")
 
-publishConfig.projectUrl.conventionFromGradleProperty(providers, PropertyKeys.Publish.PROJECT_URL)
-publishConfig.inceptionYear.conventionFromGradleProperty(providers, PropertyKeys.Publish.INCEPTION_YEAR)
-publishConfig.licenseName.conventionFromGradleProperty(providers, PropertyKeys.Publish.LICENSE_NAME)
-publishConfig.licenseUrl.conventionFromGradleProperty(providers, PropertyKeys.Publish.LICENSE_URL)
-publishConfig.developerId.conventionFromGradleProperty(providers, PropertyKeys.Publish.DEVELOPER_ID)
-publishConfig.developerName.conventionFromGradleProperty(providers, PropertyKeys.Publish.DEVELOPER_NAME)
-publishConfig.developerEmail.conventionFromGradleProperty(providers, PropertyKeys.Publish.DEVELOPER_EMAIL)
-publishConfig.developerUrl.conventionFromGradleProperty(providers, PropertyKeys.Publish.DEVELOPER_URL)
-publishConfig.developerOrganization.conventionFromGradleProperty(providers, PropertyKeys.Publish.DEVELOPER_ORGANIZATION)
-publishConfig.developerOrganizationUrl.conventionFromGradleProperty(providers, PropertyKeys.Publish.DEVELOPER_ORGANIZATION_URL)
-publishConfig.scmUrl.conventionFromGradleProperty(providers, PropertyKeys.Publish.SCM_URL)
-publishConfig.scmConnection.conventionFromGradleProperty(providers, PropertyKeys.Publish.SCM_CONNECTION)
-publishConfig.scmDeveloperConnection.conventionFromGradleProperty(providers, PropertyKeys.Publish.SCM_DEVELOPER_CONNECTION)
+publishConfig.projectUrl.conventionFromProperty(project, PropertyKeys.Publish.PROJECT_URL)
+publishConfig.inceptionYear.conventionFromProperty(project, PropertyKeys.Publish.INCEPTION_YEAR)
+publishConfig.licenseName.conventionFromProperty(project, PropertyKeys.Publish.LICENSE_NAME)
+publishConfig.licenseUrl.conventionFromProperty(project, PropertyKeys.Publish.LICENSE_URL)
+publishConfig.developerId.conventionFromProperty(project, PropertyKeys.Publish.DEVELOPER_ID)
+publishConfig.developerName.conventionFromProperty(project, PropertyKeys.Publish.DEVELOPER_NAME)
+publishConfig.developerEmail.conventionFromProperty(project, PropertyKeys.Publish.DEVELOPER_EMAIL)
+publishConfig.developerUrl.conventionFromProperty(project, PropertyKeys.Publish.DEVELOPER_URL)
+publishConfig.developerOrganization.conventionFromProperty(project, PropertyKeys.Publish.DEVELOPER_ORGANIZATION)
+publishConfig.developerOrganizationUrl.conventionFromProperty(project, PropertyKeys.Publish.DEVELOPER_ORGANIZATION_URL)
+publishConfig.scmUrl.conventionFromProperty(project, PropertyKeys.Publish.SCM_URL)
+publishConfig.scmConnection.conventionFromProperty(project, PropertyKeys.Publish.SCM_CONNECTION)
+publishConfig.scmDeveloperConnection.conventionFromProperty(project, PropertyKeys.Publish.SCM_DEVELOPER_CONNECTION)
 
 publishing {
     publications.register<MavenPublication>("mavenJava") {
         from(components["java"])
         versionMapping { allVariants { fromResolutionResult() } }
-    }
-}
 
-afterEvaluate {
-    publishing.publications.named<MavenPublication>("mavenJava") {
         pom {
             name = project.name
-            description = project.description
+            description = provider { project.description }
             inceptionYear = publishConfig.inceptionYear.getOrElse("")
             url = publishConfig.projectUrl.getOrElse("")
 
@@ -131,7 +127,7 @@ afterEvaluate {
                 license {
                     name = publishConfig.licenseName
                         .getOrElse("The Apache License, Version 2.0")
-                    url = publishConfig.licenseUrl
+                    this.url = publishConfig.licenseUrl
                         .getOrElse("http://www.apache.org/licenses/LICENSE-2.0.txt")
                     distribution = publishConfig.licenseUrl
                         .getOrElse("http://www.apache.org/licenses/LICENSE-2.0.txt")
@@ -142,13 +138,13 @@ afterEvaluate {
                     id = publishConfig.developerId.getOrElse("")
                     name = publishConfig.developerName.getOrElse("")
                     email = publishConfig.developerEmail.getOrElse("")
-                    url = publishConfig.developerUrl.getOrElse("")
+                    this.url = publishConfig.developerUrl.getOrElse("")
                     organization = publishConfig.developerOrganization.getOrElse("")
                     organizationUrl = publishConfig.developerOrganizationUrl.getOrElse("")
                 }
             }
             scm {
-                url = publishConfig.scmUrl.getOrElse("")
+                this.url = publishConfig.scmUrl.getOrElse("")
                 connection = publishConfig.scmConnection.getOrElse("")
                 developerConnection = publishConfig.scmDeveloperConnection.getOrElse("")
             }
@@ -158,10 +154,10 @@ afterEvaluate {
 
 signing {
     useInMemoryPgpKeys(
-        providers.gradlePropertyOrNull(PropertyKeys.Publish.SIGNING_KEY)
+        project.findPropertyOrNull(PropertyKeys.Publish.SIGNING_KEY)
             ?: System.getenv("SIGNINGKEY")
             ?: "",
-        providers.gradlePropertyOrNull(PropertyKeys.Publish.SIGNING_PASSWORD)
+        project.findPropertyOrNull(PropertyKeys.Publish.SIGNING_PASSWORD)
             ?: System.getenv("SIGNINGPASSWORD")
             ?: "",
     )

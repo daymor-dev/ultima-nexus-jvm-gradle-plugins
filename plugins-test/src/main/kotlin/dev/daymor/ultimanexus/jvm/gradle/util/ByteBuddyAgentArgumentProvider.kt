@@ -16,13 +16,24 @@
 
 package dev.daymor.ultimanexus.jvm.gradle.util
 
-import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
-import org.gradle.api.Project
-import org.gradle.api.artifacts.Configuration
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.tasks.Classpath
+import org.gradle.process.CommandLineArgumentProvider
 
-object TestSuiteUtils {
+abstract class ByteBuddyAgentArgumentProvider : CommandLineArgumentProvider {
 
-    fun getOrCreateByteBuddyAgentConfiguration(project: Project): Configuration =
-        project.configurations.findByName(Defaults.ConfigurationName.BYTE_BUDDY_AGENT)
-            ?: project.configurations.create(Defaults.ConfigurationName.BYTE_BUDDY_AGENT)
+    @get:Classpath
+    abstract val agentClasspath: ConfigurableFileCollection
+
+    override fun asArguments(): Iterable<String> {
+        val files = agentClasspath.files
+        return if (files.size == 1) {
+            listOf(
+                "-javaagent:${files.first().absolutePath}",
+                "-Xshare:off"
+            )
+        } else {
+            emptyList()
+        }
+    }
 }

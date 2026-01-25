@@ -31,7 +31,6 @@ abstract class UltimaNexusConfig(private val project: Project) {
     abstract val pluginTags: ListProperty<String>
     abstract val pluginIdPrefix: Property<String>
     abstract val checkArtifactName: Property<String>
-    abstract val applicationMode: Property<Boolean>
 
     init {
         groupId.convention(getPropertyProvider(PropertyKeys.Identity.GROUP_ID))
@@ -44,13 +43,6 @@ abstract class UltimaNexusConfig(private val project: Project) {
         )
         pluginIdPrefix.convention(getPropertyProvider(PropertyKeys.Plugin.ID_PREFIX))
         checkArtifactName.convention(getPropertyProvider(PropertyKeys.CHECK_ARTIFACT_NAME))
-        applicationMode.convention(resolveApplicationMode())
-    }
-
-    private fun resolveApplicationMode(): Boolean {
-        val javaIsApp = project.providers.gradleProperty(PropertyKeys.JAVA_IS_APPLICATION).orNull?.toBoolean()
-        val springBootIsApp = project.providers.gradleProperty(PropertyKeys.SpringBoot.IS_APPLICATION).orNull?.toBoolean()
-        return javaIsApp ?: springBootIsApp ?: true
     }
 
     private fun getPropertyProvider(key: String): Provider<String> =

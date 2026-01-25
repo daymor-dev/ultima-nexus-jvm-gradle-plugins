@@ -15,14 +15,17 @@
  */
 
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
+import dev.daymor.ultimanexus.jvm.gradle.spotless.JavaImportOrderStep
 import dev.daymor.ultimanexus.jvm.gradle.spotless.RegexFormatterStep
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.createCheckConfiguration
-import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.getCheckArtifactName
+import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.getCheckArtifactNameOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.readFromJar
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.resolveCheckJar
+import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.FallbackVersions
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromGradleProperty
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.gradlePropertyOrNull
+import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getVersionOrNull
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromProperty
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 import org.gradle.api.artifacts.Configuration
 
 /**
@@ -34,15 +37,21 @@ import org.gradle.api.artifacts.Configuration
  *     formatterConfigFile = "config/eclipse-formatter.xml"
  *     licenseHeaderFile = "config/license-header.txt"
  *     licenseHeaderText = "/* Copyright (C) \$YEAR Company */"
+ *     importSamePackageDepth = 3
+ *     importStandardPackageRegex = "^java\\."
+ *     importSpecialImportsRegex = "^(javax|jakarta)\\."
  * }
  * ```
  *
  * Or via gradle.properties:
  * ```properties
- * format.java.formatterConfigFile = config/eclipse-formatter.xml
- * format.java.licenseHeaderFile = config/license-header.txt
- * format.java.licenseHeaderText = /* Copyright (C) $YEAR Company */
- * format.company = My Company
+ * formatJava.formatterConfigFile = config/eclipse-formatter.xml
+ * formatJava.licenseHeaderFile = config/license-header.txt
+ * formatJava.licenseHeaderText = /* Copyright (C) $YEAR Company */
+ * formatJava.importSamePackageDepth = 3
+ * formatJava.importStandardPackageRegex = ^java\.
+ * formatJava.importSpecialImportsRegex = ^(javax|jakarta)\.
+ * company = My Company
  * ```
  */
 plugins { id("dev.daymor.ultimanexus.jvm.gradle.check.spotless-base") }
@@ -51,13 +60,19 @@ interface FormatJavaConfigExtension {
     val formatterConfigFile: Property<String>
     val licenseHeaderFile: Property<String>
     val licenseHeaderText: Property<String>
+    val importSamePackageDepth: Property<Int>
+    val importStandardPackageRegex: Property<String>
+    val importSpecialImportsRegex: Property<String>
 }
 
 val formatJavaConfig = extensions.create<FormatJavaConfigExtension>("formatJavaConfig")
 
-formatJavaConfig.formatterConfigFile.conventionFromGradleProperty(providers, PropertyKeys.Format.JAVA_FORMATTER_CONFIG)
-formatJavaConfig.licenseHeaderFile.conventionFromGradleProperty(providers, PropertyKeys.Format.JAVA_LICENSE_HEADER_FILE)
-formatJavaConfig.licenseHeaderText.conventionFromGradleProperty(providers, PropertyKeys.Format.JAVA_LICENSE_HEADER_TEXT)
+formatJavaConfig.formatterConfigFile.conventionFromProperty(project, PropertyKeys.Format.JAVA_FORMATTER_CONFIG)
+formatJavaConfig.licenseHeaderFile.conventionFromProperty(project, PropertyKeys.Format.JAVA_LICENSE_HEADER_FILE)
+formatJavaConfig.licenseHeaderText.conventionFromProperty(project, PropertyKeys.Format.JAVA_LICENSE_HEADER_TEXT)
+formatJavaConfig.importSamePackageDepth.conventionFromProperty(project, PropertyKeys.Format.IMPORT_SAME_PACKAGE_DEPTH, 3)
+formatJavaConfig.importStandardPackageRegex.conventionFromProperty(project, PropertyKeys.Format.IMPORT_STANDARD_PACKAGE_REGEX)
+formatJavaConfig.importSpecialImportsRegex.conventionFromProperty(project, PropertyKeys.Format.IMPORT_SPECIAL_IMPORTS_REGEX)
 
 val libs: VersionCatalog? = getLibsCatalogOrNull(project)
 
@@ -79,52 +94,64 @@ val checkJarFile: File? by lazy {
     }
 }
 
-val checkArtifactName: String by lazy { getCheckArtifactName(project) }
+val checkArtifactName: String? by lazy { getCheckArtifactNameOrNull(project) }
 
-val companyName: String = providers.gradlePropertyOrNull(PropertyKeys.Format.COMPANY) ?: ""
+val companyName: String = project.findPropertyOrNull(PropertyKeys.Format.COMPANY) ?: ""
 
 val rawLicenseHeaderTemplate: String by lazy {
     checkJarFile?.let { readFromJar(it, "apache-license-header.txt") }
-        ?: rootProject.file("$checkArtifactName/src/main/resources/apache-license-header.txt")
-            .takeIf { it.exists() }?.readText()
+        ?: checkArtifactName?.let {
+            rootProject.file("$it/src/main/resources/apache-license-header.txt")
+                .takeIf { f -> f.exists() }?.readText()
+        }
         ?: "/*\n * Copyright (C) \$YEAR \$COMPANY.\n */"
 }
 val defaultLicenseHeader: String by lazy {
     rawLicenseHeaderTemplate.replace($$"$COMPANY", companyName)
 }
 
-afterEvaluate {
-    spotless.java {
-        val customFormatterFile = formatJavaConfig.formatterConfigFile.orNull
-        when {
-            customFormatterFile != null -> eclipse().configFile(file(customFormatterFile))
-            checkJarFile != null -> eclipse()
-                .configFile(
-                    zipTree(checkJarFile!!)
-                        .matching { include("java-formatter.xml") }
-                        .singleFile
-                )
-            else -> eclipse()
-                .configFile(
-                    rootProject.file("$checkArtifactName/src/main/resources/java-formatter.xml")
-                )
-        }
+val eclipseVersion = libs?.let { getVersionOrNull(it, "eclipse-jdt") } ?: FallbackVersions.ECLIPSE_JDT
 
-        addStep(
-            RegexFormatterStep.create(
-                "javadoc-lines",
-                """(\s*\*\s.*)(\r?\n)(\s*\*\s<p>)""" to "$1$2*$2$3",
-                """(\s*\*.*?)[ \t]+(\r?\n)""" to "$1$2",
-            )
+spotless.java {
+    addStep(
+        JavaImportOrderStep.create(
+            samePackageDepth = formatJavaConfig.importSamePackageDepth.get(),
+            standardPackageRegex = formatJavaConfig.importStandardPackageRegex.getOrElse("^java\\."),
+            specialImportsRegex = formatJavaConfig.importSpecialImportsRegex.getOrElse("^(javax|jakarta)\\."),
         )
+    )
+    removeUnusedImports()
 
-        val customHeaderText = formatJavaConfig.licenseHeaderText.orNull
-        val customHeaderFile = formatJavaConfig.licenseHeaderFile.orNull
-        val headerToUse = when {
-            customHeaderText != null -> customHeaderText
-            customHeaderFile != null -> file(customHeaderFile).readText()
-            else -> defaultLicenseHeader
-        }
-        licenseHeader(headerToUse, "package")
+    val customFormatterFile = formatJavaConfig.formatterConfigFile.orNull
+    when {
+        customFormatterFile != null -> eclipse(eclipseVersion).configFile(file(customFormatterFile))
+        checkJarFile != null -> eclipse(eclipseVersion)
+            .configFile(
+                zipTree(checkJarFile!!)
+                    .matching { include("java-formatter.xml") }
+                    .singleFile
+            )
+        checkArtifactName != null -> eclipse(eclipseVersion)
+            .configFile(
+                rootProject.file("$checkArtifactName/src/main/resources/java-formatter.xml")
+            )
+        else -> eclipse(eclipseVersion)
     }
+
+    addStep(
+        RegexFormatterStep.create(
+            "javadoc-lines",
+            """(\s*\*\s.*)(\r?\n)(\s*\*\s<p>)""" to "$1$2*$2$3",
+            """(\s*\*[^\r\n]*)[ \t]+(\r?\n)""" to "$1$2",
+        )
+    )
+
+    val customHeaderText = formatJavaConfig.licenseHeaderText.orNull
+    val customHeaderFile = formatJavaConfig.licenseHeaderFile.orNull
+    val headerToUse = when {
+        customHeaderText != null -> customHeaderText
+        customHeaderFile != null -> file(customHeaderFile).readText()
+        else -> defaultLicenseHeader
+    }
+    licenseHeader(headerToUse, "package")
 }

@@ -95,9 +95,9 @@ plugins {
 [source,kotlin]
 ----
 ultimaNexus {
-    groupId = "com.example.myproject"     // Required
-    version = "latest.release"             // Optional
-    description = "My project description" // Optional
+    groupId.set("com.example.myproject")     // Optional
+    version.set("latest.release")            // Optional
+    description.set("My project description") // Optional
 }
 ----
 
@@ -110,7 +110,7 @@ version=latest.release
 description=My project description
 ----
 
-NOTE: The `groupId` property is required. The plugin will fail with a helpful error message if not configured.
+NOTE: The `groupId`, `version`, and `description` properties are all optional. Configure them via the extension DSL or `gradle.properties`/`shared.properties`. Values can also be set directly in your `build.gradle.kts` using standard Gradle project properties.
 
 == Lifecycle Plugin
 
@@ -445,7 +445,7 @@ repositoriesConfig {
 |Property |Default |Plugin |Description
 
 |`groupId`
-|_(required)_
+|_(optional)_
 |`identity`
 |Project group ID (e.g., `com.example.myproject`)
 

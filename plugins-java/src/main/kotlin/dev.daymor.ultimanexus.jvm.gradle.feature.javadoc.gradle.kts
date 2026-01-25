@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
+
 /*
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.feature.javadoc
  *
@@ -28,7 +30,7 @@ plugins {
 tasks.withType<Javadoc>().configureEach {
     options {
         this as StandardJavadocDocletOptions
-        encoding = "UTF-8"
+        encoding = Defaults.FILE_ENCODING
         addStringOption("Xwerror", "-Xdoclint:all,-missing")
     }
 }

@@ -22,13 +22,13 @@ import dev.daymor.ultimanexus.jvm.gradle.config.UltimaNexusConfig
  * Configuration via ultimaNexus extension:
  * ```kotlin
  * ultimaNexus {
- *     groupId = "com.example.yourproject"
- *     version = "latest.release"
- *     description = "My project description"
+ *     groupId.set("com.example.yourproject")
+ *     version.set("latest.release")
+ *     description.set("My project description")
  * }
  * ```
  *
- * Or via gradle.properties:
+ * Or via gradle.properties or shared.properties:
  * ```properties
  * groupId = com.example.yourproject
  * version = latest.release
@@ -39,25 +39,6 @@ plugins { base }
 
 val ultimaNexus = UltimaNexusConfig.get(project)
 
-afterEvaluate {
-    val configuredGroupId = ultimaNexus.groupId.orNull
-
-    require(configuredGroupId != null) {
-        """
-        |Project group ID is not configured.
-        |Please configure it in one of these ways:
-        |
-        |1. In build.gradle.kts:
-        |   ultimaNexus {
-        |       groupId = "com.example.yourproject"
-        |   }
-        |
-        |2. In gradle.properties:
-        |   groupId=com.example.yourproject
-        """.trimMargin()
-    }
-    group = configuredGroupId
-
-    ultimaNexus.version.orNull?.let { version = it }
-    ultimaNexus.description.orNull?.let { description = it }
-}
+ultimaNexus.groupId.orNull?.let { group = it }
+ultimaNexus.version.orNull?.let { version = it }
+ultimaNexus.description.orNull?.let { description = it }

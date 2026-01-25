@@ -41,7 +41,7 @@ import dev.daymor.ultimanexus.jvm.gradle.util.ProjectUtils.includeDir
  * # Maximum directory depth to search for subprojects (default: 1)
  * projectStructureDepth=3
  *
- * # Comma-separated exclusion patterns (default: gradle/plugins,*-gradle-plugins)
+ * # Comma-separated exclusion patterns (default: gradle/plugins,*-gradle-plugins,build)
  * projectStructureExclusions=gradle/plugins,*-gradle-plugins,build
  *
  * # Root project name (default: directory name)

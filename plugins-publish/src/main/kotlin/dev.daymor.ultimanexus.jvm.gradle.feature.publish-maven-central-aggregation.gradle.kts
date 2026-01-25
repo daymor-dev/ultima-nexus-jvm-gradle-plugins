@@ -16,6 +16,7 @@
 
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 
 /**
  * Build plugin for explicit Maven Central publishing aggregation.
@@ -66,18 +67,18 @@ repositories {
 nmcpAggregation {
     centralPortal {
         username =
-            providers.gradleProperty(PropertyKeys.Publish.MAVEN_CENTRAL_USERNAME).orNull
+            project.findPropertyOrNull(PropertyKeys.Publish.MAVEN_CENTRAL_USERNAME)
                 ?: System.getenv("MAVENCENTRALUSERNAME")
                 ?: ""
         password =
-            providers.gradleProperty(PropertyKeys.Publish.MAVEN_CENTRAL_PASSWORD).orNull
+            project.findPropertyOrNull(PropertyKeys.Publish.MAVEN_CENTRAL_PASSWORD)
                 ?: System.getenv("MAVENCENTRALPASSWORD")
                 ?: ""
         publishingType = "AUTOMATIC"
     }
 }
 
-providers.gradleProperty(PropertyKeys.Publish.MODULES).orNull?.let { modules ->
+project.findPropertyOrNull(PropertyKeys.Publish.MODULES)?.let { modules ->
     modules
         .split(",")
         .map { it.trim() }

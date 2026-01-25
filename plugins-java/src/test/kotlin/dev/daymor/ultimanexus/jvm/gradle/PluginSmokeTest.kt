@@ -137,16 +137,16 @@ class PluginSmokeTest {
     }
 
     @Nested
-    inner class JavaUnifiedPlugin {
+    inner class JavaApplicationPlugin {
 
         @Test
-        fun `java-unified plugin applies successfully`() {
+        fun `java-application plugin applies successfully`() {
             fixture()
                 .withSettings("rootProject.name = \"test-project\"")
                 .withBuildScript(
                     """
                     plugins {
-                        id("${PluginIds.Feature.JAVA_UNIFIED}")
+                        id("${PluginIds.Feature.JAVA_APPLICATION}")
                     }
                     """.trimIndent()
                 )
@@ -158,20 +158,16 @@ class PluginSmokeTest {
     }
 
     @Nested
-    inner class JavaSimpleBundle {
+    inner class JavaLibraryPlugin {
 
         @Test
-        fun `java-simple bundle applies successfully`() {
+        fun `java-library plugin applies successfully`() {
             fixture()
                 .withSettings("rootProject.name = \"test-project\"")
                 .withBuildScript(
                     """
                     plugins {
-                        id("${PluginIds.Bundle.JAVA_SIMPLE}")
-                    }
-
-                    ultimaNexus {
-                        groupId.set("com.example.test")
+                        id("${PluginIds.Feature.JAVA_LIBRARY}")
                     }
                     """.trimIndent()
                 )
@@ -183,24 +179,98 @@ class PluginSmokeTest {
     }
 
     @Nested
-    inner class JavaCompleteBundle {
+    inner class JavaSimpleApplicationBundle {
 
         @Test
-        fun `java-complete bundle applies successfully`() {
+        fun `java-simple-application bundle applies successfully`() {
             fixture()
                 .withSettings("rootProject.name = \"test-project\"")
                 .withBuildScript(
                     """
                     plugins {
-                        id("${PluginIds.Bundle.JAVA_COMPLETE}")
-                    }
-
-                    ultimaNexus {
-                        groupId.set("com.example.test")
+                        id("${PluginIds.Bundle.JAVA_SIMPLE_APPLICATION}")
                     }
                     """.trimIndent()
                 )
-                .withProperties("checkArtifactName" to "my-check-artifact")
+                .withProperties("groupId" to "com.example.test")
+
+            val result = fixture().help()
+
+            assertThat(result.taskSucceeded(":help")).isTrue()
+        }
+    }
+
+    @Nested
+    inner class JavaSimpleLibraryBundle {
+
+        @Test
+        fun `java-simple-library bundle applies successfully`() {
+            fixture()
+                .withSettings("rootProject.name = \"test-project\"")
+                .withBuildScript(
+                    """
+                    plugins {
+                        id("${PluginIds.Bundle.JAVA_SIMPLE_LIBRARY}")
+                    }
+                    """.trimIndent()
+                )
+                .withProperties("groupId" to "com.example.test")
+
+            val result = fixture().help()
+
+            assertThat(result.taskSucceeded(":help")).isTrue()
+        }
+    }
+
+    @Nested
+    inner class JavaCompleteApplicationBundle {
+
+        @Test
+        fun `java-complete-application bundle applies successfully`() {
+            fixture()
+                .withSettings("rootProject.name = \"test-project\"")
+                .withBuildScript(
+                    """
+                    plugins {
+                        id("${PluginIds.Bundle.JAVA_COMPLETE_APPLICATION}")
+                    }
+                    """.trimIndent()
+                )
+                .withProperties(
+                    "groupId" to "com.example.test",
+                    "checkArtifactName" to "my-check-artifact"
+                )
+                .withVersionCatalog(
+                    """
+                    [libraries]
+                    my-check-artifact = "org.example:check-artifact:1.0.0"
+                    """.trimIndent()
+                )
+
+            val result = fixture().help()
+
+            assertThat(result.taskSucceeded(":help")).isTrue()
+        }
+    }
+
+    @Nested
+    inner class JavaCompleteLibraryBundle {
+
+        @Test
+        fun `java-complete-library bundle applies successfully`() {
+            fixture()
+                .withSettings("rootProject.name = \"test-project\"")
+                .withBuildScript(
+                    """
+                    plugins {
+                        id("${PluginIds.Bundle.JAVA_COMPLETE_LIBRARY}")
+                    }
+                    """.trimIndent()
+                )
+                .withProperties(
+                    "groupId" to "com.example.test",
+                    "checkArtifactName" to "my-check-artifact"
+                )
                 .withVersionCatalog(
                     """
                     [libraries]

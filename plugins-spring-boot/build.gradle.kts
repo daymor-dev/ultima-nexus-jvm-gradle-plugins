@@ -28,6 +28,7 @@ dependencies {
     implementation(libs.ultima.nexus.jvm.publish)
     implementation(libs.ultima.nexus.jvm.java)
     implementation(libs.spring.boot.gradle.plugin)
+    implementation(libs.spring.dependency.management)
 }
 
 testing.suites.named<JvmTestSuite>("test") {

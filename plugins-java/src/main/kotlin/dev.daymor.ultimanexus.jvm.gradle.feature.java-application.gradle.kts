@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
+
+/*
+ * Plugin: dev.daymor.ultimanexus.jvm.gradle.feature.java-application
+ *
+ * Java application plugin for runnable projects (CLI tools, services).
+ * Applies the 'application' plugin which provides:
+ * - 'run' task for executing the application
+ * - Distribution tasks (distZip, distTar)
+ * - Application packaging
+ *
+ * Usage:
+ * ```kotlin
+ * plugins {
+ *     alias(libs.plugins.ultimanexus.feature.java.application)
+ * }
+ * ```
+ */
 plugins {
-    `kotlin-dsl`
-    alias(libs.plugins.ultimanexus.jvm.gradle.plugin)
-}
-
-dependencies {
-    implementation(libs.ultima.nexus.jvm.core)
-    implementation(libs.ultima.nexus.jvm.base)
-    implementation(libs.cyclonedx.gradle.plugin)
-    // Required for CycloneDX POM parsing - XmlStreamReader is in plexus-xml
-    api(libs.plexus.xml)
-}
-
-testing.suites.named<JvmTestSuite>("test") {
-    useJUnitJupiter()
-    dependencies {
-        implementation(libs.junit.jupiter.params)
-        implementation(libs.assertj.core)
-    }
+    application
+    id("dev.daymor.ultimanexus.jvm.gradle.base.dependency-rules")
 }

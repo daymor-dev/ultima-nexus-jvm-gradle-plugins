@@ -20,12 +20,12 @@ import com.diffplug.gradle.spotless.SpotlessTask
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.createCheckConfiguration
-import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.getCheckArtifactName
+import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.getCheckArtifactNameOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.resolveCheckJar
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.FallbackVersions
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getVersionOrNull
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromGradleProperty
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromProperty
 import dev.daymor.ultimanexus.jvm.gradle.util.TaskConfigUtils.configureCheckTaskWithJavaPlugin
 import org.gradle.api.artifacts.Configuration
 
@@ -64,10 +64,10 @@ interface CheckstyleConfigExtension {
 
 val checkstyleConfig = extensions.create<CheckstyleConfigExtension>("checkstyleConfig")
 
-checkstyleConfig.configFile.conventionFromGradleProperty(providers, PropertyKeys.Checkstyle.CONFIG_FILE)
-checkstyleConfig.headerFile.conventionFromGradleProperty(providers, PropertyKeys.Checkstyle.HEADER_FILE)
-checkstyleConfig.suppressionsFile.conventionFromGradleProperty(providers, PropertyKeys.Checkstyle.SUPPRESSIONS_FILE)
-checkstyleConfig.fileSuppressionsFile.conventionFromGradleProperty(providers, PropertyKeys.Checkstyle.FILE_SUPPRESSIONS_FILE)
+checkstyleConfig.configFile.conventionFromProperty(project, PropertyKeys.Checkstyle.CONFIG_FILE)
+checkstyleConfig.headerFile.conventionFromProperty(project, PropertyKeys.Checkstyle.HEADER_FILE)
+checkstyleConfig.suppressionsFile.conventionFromProperty(project, PropertyKeys.Checkstyle.SUPPRESSIONS_FILE)
+checkstyleConfig.fileSuppressionsFile.conventionFromProperty(project, PropertyKeys.Checkstyle.FILE_SUPPRESSIONS_FILE)
 
 val libs: VersionCatalog? = getLibsCatalogOrNull(project)
 
@@ -89,36 +89,35 @@ val checkJarFile: File? by lazy {
     }
 }
 
-val checkArtifactName: String by lazy { getCheckArtifactName(project) }
+val checkArtifactName: String? by lazy { getCheckArtifactNameOrNull(project) }
 
 val defaultCheckstyleVersion = FallbackVersions.CHECKSTYLE
 
-afterEvaluate {
-    checkstyle {
-        toolVersion = libs?.let { getVersionOrNull(it, "checkstyle") } ?: defaultCheckstyleVersion
+checkstyle {
+    toolVersion = libs?.let { getVersionOrNull(it, "checkstyle") } ?: defaultCheckstyleVersion
 
-        val customConfigFile = checkstyleConfig.configFile.orNull
-        when {
-            customConfigFile != null -> configFile = file(customConfigFile)
-            checkJarFile != null -> config =
-                resources.text.fromArchiveEntry(checkJarFile!!, "checkstyle.xml")
-            else -> configFile =
-                rootProject.file("$checkArtifactName/src/main/resources/checkstyle.xml")
-        }
-
-        configProperties =
-            mapOf(
-                "checkstyle.header.file" to checkstyleConfig.headerFile
-                    .getOrElse("$rootDir/checkstyle/headerFile.txt"),
-                "checkstyle.suppressions" to checkstyleConfig.suppressionsFile
-                    .getOrElse("$rootDir/checkstyle/checkstyle-suppressions.xml"),
-                "checkstyle.file.suppressions" to checkstyleConfig.fileSuppressionsFile
-                    .getOrElse("$rootDir/checkstyle/checkstyle-file-suppressions.xml"),
-            )
-        isIgnoreFailures = false
-        maxErrors = 0
-        maxWarnings = 0
+    val customConfigFile = checkstyleConfig.configFile.orNull
+    when {
+        customConfigFile != null -> configFile = file(customConfigFile)
+        checkJarFile != null -> config =
+            resources.text.fromArchiveEntry(checkJarFile!!, "checkstyle.xml")
+        checkArtifactName != null -> configFile =
+            rootProject.file("$checkArtifactName/src/main/resources/checkstyle.xml")
+        else -> {}
     }
+
+    configProperties =
+        mapOf(
+            "checkstyle.header.file" to checkstyleConfig.headerFile
+                .getOrElse("$rootDir/checkstyle/headerFile.txt"),
+            "checkstyle.suppressions" to checkstyleConfig.suppressionsFile
+                .getOrElse("$rootDir/checkstyle/checkstyle-suppressions.xml"),
+            "checkstyle.file.suppressions" to checkstyleConfig.fileSuppressionsFile
+                .getOrElse("$rootDir/checkstyle/checkstyle-file-suppressions.xml"),
+        )
+    isIgnoreFailures = false
+    maxErrors = 0
+    maxWarnings = 0
 }
 
 tasks.withType<Checkstyle> {

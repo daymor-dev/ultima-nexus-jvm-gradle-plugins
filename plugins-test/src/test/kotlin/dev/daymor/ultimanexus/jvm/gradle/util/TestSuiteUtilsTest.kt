@@ -17,13 +17,7 @@
 package dev.daymor.ultimanexus.jvm.gradle.util
 
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
-import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
-import io.mockk.every
-import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
-import org.gradle.api.provider.Provider
-import org.gradle.api.provider.ProviderFactory
-import org.gradle.api.tasks.testing.Test as GradleTest
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -66,105 +60,6 @@ class TestSuiteUtilsTest {
             val config2 = TestSuiteUtils.getOrCreateByteBuddyAgentConfiguration(project)
 
             assertThat(config1).isSameAs(config2)
-        }
-    }
-
-    @Nested
-    inner class ConfigureTestTask {
-
-        private fun createTestTask(): GradleTest {
-            val project = ProjectBuilder.builder().withProjectDir(tempDir).build()
-            project.plugins.apply("java")
-            return project.tasks.named("test", GradleTest::class.java).get()
-        }
-
-        private fun mockProviders(vararg properties: Pair<String, String?>): ProviderFactory {
-            val providers = mockk<ProviderFactory>()
-            val propertyMap = mapOf(
-                PropertyKeys.Test.MAX_HEAP_SIZE to null,
-                PropertyKeys.Test.MAX_PARALLEL_FORKS to null,
-                PropertyKeys.Test.SHOW_STANDARD_STREAMS to null,
-                PropertyKeys.Test.FILE_ENCODING to null,
-                PropertyKeys.Test.USE_BYTE_BUDDY_AGENT to null
-            ) + properties.toMap()
-
-            propertyMap.forEach { (key, value) ->
-                val provider = mockk<Provider<String>>()
-                every { providers.gradleProperty(key) } returns provider
-                every { provider.orNull } returns value
-            }
-            return providers
-        }
-
-        @Test
-        fun `configures max heap size from property`() {
-            val testTask = createTestTask()
-            val providers = mockProviders(PropertyKeys.Test.MAX_HEAP_SIZE to "4g")
-
-            TestSuiteUtils.configureTestTask(testTask, null, providers, useByteBuddy = false)
-
-            assertThat(testTask.maxHeapSize).isEqualTo("4g")
-        }
-
-        @Test
-        fun `uses default max heap size when property not set`() {
-            val testTask = createTestTask()
-            val providers = mockProviders()
-
-            TestSuiteUtils.configureTestTask(testTask, null, providers, useByteBuddy = false)
-
-            assertThat(testTask.maxHeapSize).isEqualTo(Defaults.TEST_MAX_HEAP_SIZE)
-        }
-
-        @Test
-        fun `sets task group to verification`() {
-            val testTask = createTestTask()
-            val providers = mockProviders()
-
-            TestSuiteUtils.configureTestTask(testTask, null, providers, useByteBuddy = false)
-
-            assertThat(testTask.group).isEqualTo(Defaults.TaskGroup.VERIFICATION)
-        }
-
-        @Test
-        fun `configures file encoding system property`() {
-            val testTask = createTestTask()
-            val providers = mockProviders(PropertyKeys.Test.FILE_ENCODING to "ISO-8859-1")
-
-            TestSuiteUtils.configureTestTask(testTask, null, providers, useByteBuddy = false)
-
-            assertThat(testTask.allJvmArgs.toString()).contains("-Dfile.encoding=ISO-8859-1")
-        }
-
-        @Test
-        fun `uses default file encoding when property not set`() {
-            val testTask = createTestTask()
-            val providers = mockProviders()
-
-            TestSuiteUtils.configureTestTask(testTask, null, providers, useByteBuddy = false)
-
-            assertThat(testTask.allJvmArgs.toString()).contains("-Dfile.encoding=${Defaults.TEST_FILE_ENCODING}")
-        }
-
-        @Test
-        fun `calculates parallel forks from available processors`() {
-            val testTask = createTestTask()
-            val providers = mockProviders()
-
-            TestSuiteUtils.configureTestTask(testTask, null, providers, useByteBuddy = false)
-
-            val expectedForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
-            assertThat(testTask.maxParallelForks).isEqualTo(expectedForks)
-        }
-
-        @Test
-        fun `configures parallel forks from property`() {
-            val testTask = createTestTask()
-            val providers = mockProviders(PropertyKeys.Test.MAX_PARALLEL_FORKS to "8")
-
-            TestSuiteUtils.configureTestTask(testTask, null, providers, useByteBuddy = false)
-
-            assertThat(testTask.maxParallelForks).isEqualTo(8)
         }
     }
 }

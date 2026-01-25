@@ -114,14 +114,12 @@ fun findUsedReportPlugins(buildContents: List<String>): Set<String> {
         .toSet()
 }
 
-afterEvaluate {
-    val buildContents = collectBuildFileContents()
+val buildContents = collectBuildFileContents()
 
-    findUsedReportPlugins(buildContents).forEach { pluginId ->
-        apply(plugin = pluginId)
-    }
+findUsedReportPlugins(buildContents).forEach { pluginId ->
+    apply(plugin = pluginId)
+}
 
-    aggregation.directories.forEach { (name, depth) ->
-        aggregateDir(name, depth)
-    }
+aggregation.directories.forEach { (name, depth) ->
+    aggregateDir(name, depth)
 }

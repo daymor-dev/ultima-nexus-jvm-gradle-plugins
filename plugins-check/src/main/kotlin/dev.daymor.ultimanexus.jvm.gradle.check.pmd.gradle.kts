@@ -17,11 +17,12 @@
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.createCheckConfiguration
-import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.getCheckArtifactName
+import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.getCheckArtifactNameOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.resolveCheckJar
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.FallbackVersions
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getVersionOrNull
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.TaskConfigUtils.configureCheckTaskWithJavaPlugin
 import org.gradle.api.artifacts.Configuration
 
@@ -51,7 +52,7 @@ interface PmdConfigExtension {
 
 val pmdConfig = extensions.create<PmdConfigExtension>("pmdConfig")
 
-val ruleSetFileFromProps = providers.gradleProperty(PropertyKeys.Pmd.RULE_SET_FILE).orNull
+val ruleSetFileFromProps = project.findPropertyOrNull(PropertyKeys.Pmd.RULE_SET_FILE)
 
 if (ruleSetFileFromProps != null) pmdConfig.ruleSetFile.convention(ruleSetFileFromProps)
 
@@ -75,26 +76,27 @@ val checkJarFile: File? by lazy {
     }
 }
 
-val checkArtifactName: String by lazy { getCheckArtifactName(project) }
+val checkArtifactName: String? by lazy { getCheckArtifactNameOrNull(project) }
 
 val defaultPmdVersion = FallbackVersions.PMD
 
-afterEvaluate {
-    pmd {
-        toolVersion = libs?.let { getVersionOrNull(it, "pmd") } ?: defaultPmdVersion
-        ruleSets = emptyList()
+pmd {
+    toolVersion = libs?.let { getVersionOrNull(it, "pmd") } ?: defaultPmdVersion
+    ruleSets = emptyList()
 
-        val customRuleSetFile = pmdConfig.ruleSetFile.orNull
-        when {
-            customRuleSetFile != null -> ruleSetFiles = files(customRuleSetFile)
-            checkJarFile != null -> ruleSetConfig =
-                resources.text.fromArchiveEntry(checkJarFile!!, "pmdRuleset.xml")
-            else -> ruleSetFiles =
-                files(rootProject.file("$checkArtifactName/src/main/resources/pmdRuleset.xml"))
+    val customRuleSetFile = pmdConfig.ruleSetFile.orNull
+    when {
+        customRuleSetFile != null -> ruleSetFiles = files(customRuleSetFile)
+        checkJarFile != null -> ruleSetConfig =
+            resources.text.fromArchiveEntry(checkJarFile!!, "pmdRuleset.xml")
+        checkArtifactName != null -> ruleSetFiles =
+            files(rootProject.file("$checkArtifactName/src/main/resources/pmdRuleset.xml"))
+        else -> {
+            ruleSets = listOf("category/java/bestpractices.xml")
         }
-
-        threads = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
     }
+
+    threads = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
 }
 
 tasks.withType<Pmd> {

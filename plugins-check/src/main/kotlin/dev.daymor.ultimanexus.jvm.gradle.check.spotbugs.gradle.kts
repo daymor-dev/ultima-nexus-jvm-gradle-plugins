@@ -20,12 +20,12 @@ import com.github.spotbugs.snom.SpotBugsTask
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.createCheckConfiguration
-import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.getCheckArtifactName
+import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.getCheckArtifactNameOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.resolveCheckJar
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibraryOrNull
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromGradleProperty
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.gradlePropertyOrNull
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromProperty
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.TaskConfigUtils.configureCheckTaskWithJavaPlugin
 import org.gradle.api.artifacts.Configuration
 
@@ -71,12 +71,12 @@ interface SpotbugsConfigExtension {
 
 val spotbugsConfig = extensions.create<SpotbugsConfigExtension>("spotbugsConfig")
 
-spotbugsConfig.ignoreFailures.conventionFromGradleProperty(providers, PropertyKeys.SpotBugs.IGNORE_FAILURES, false)
-spotbugsConfig.showStackTraces.conventionFromGradleProperty(providers, PropertyKeys.SpotBugs.SHOW_STACK_TRACES, true)
-spotbugsConfig.showProgress.conventionFromGradleProperty(providers, PropertyKeys.SpotBugs.SHOW_PROGRESS, true)
-spotbugsConfig.effort.convention(providers.gradlePropertyOrNull(PropertyKeys.SpotBugs.EFFORT) ?: Defaults.SPOTBUGS_EFFORT)
-spotbugsConfig.reportLevel.convention(providers.gradlePropertyOrNull(PropertyKeys.SpotBugs.REPORT_LEVEL) ?: Defaults.SPOTBUGS_REPORT_LEVEL)
-spotbugsConfig.excludeFilterFile.conventionFromGradleProperty(providers, PropertyKeys.SpotBugs.EXCLUDE_FILTER_FILE)
+spotbugsConfig.ignoreFailures.conventionFromProperty(project, PropertyKeys.SpotBugs.IGNORE_FAILURES, false)
+spotbugsConfig.showStackTraces.conventionFromProperty(project, PropertyKeys.SpotBugs.SHOW_STACK_TRACES, true)
+spotbugsConfig.showProgress.conventionFromProperty(project, PropertyKeys.SpotBugs.SHOW_PROGRESS, true)
+spotbugsConfig.effort.convention(project.findPropertyOrNull(PropertyKeys.SpotBugs.EFFORT) ?: Defaults.SPOTBUGS_EFFORT)
+spotbugsConfig.reportLevel.convention(project.findPropertyOrNull(PropertyKeys.SpotBugs.REPORT_LEVEL) ?: Defaults.SPOTBUGS_REPORT_LEVEL)
+spotbugsConfig.excludeFilterFile.conventionFromProperty(project, PropertyKeys.SpotBugs.EXCLUDE_FILTER_FILE)
 
 val libs: VersionCatalog? = getLibsCatalogOrNull(project)
 
@@ -98,34 +98,33 @@ val checkJarFile: File? by lazy {
     }
 }
 
-val checkArtifactName: String by lazy { getCheckArtifactName(project) }
+val checkArtifactName: String? by lazy { getCheckArtifactNameOrNull(project) }
 
-afterEvaluate {
-    spotbugs {
-        ignoreFailures = spotbugsConfig.ignoreFailures.get()
-        showStackTraces = spotbugsConfig.showStackTraces.get()
-        showProgress = spotbugsConfig.showProgress.get()
-        effort = Effort.valueOf(spotbugsConfig.effort.get().uppercase())
-        reportLevel = Confidence.valueOf(spotbugsConfig.reportLevel.get().uppercase())
+spotbugs {
+    ignoreFailures = spotbugsConfig.ignoreFailures.get()
+    showStackTraces = spotbugsConfig.showStackTraces.get()
+    showProgress = spotbugsConfig.showProgress.get()
+    effort = Effort.valueOf(spotbugsConfig.effort.get().uppercase())
+    reportLevel = Confidence.valueOf(spotbugsConfig.reportLevel.get().uppercase())
 
-        val customExcludeFilterFile = spotbugsConfig.excludeFilterFile.orNull
-        when {
-            customExcludeFilterFile != null -> excludeFilter = file(customExcludeFilterFile)
-            checkJarFile != null -> {
-                val filterFile = zipTree(checkJarFile!!)
-                    .matching { include("spotbugs-filter.xml") }
-                    .singleOrNull()
-                if (filterFile != null) {
-                    excludeFilter = filterFile
-                }
-            }
-            else -> {
-                val fallbackFile = rootProject.file("$checkArtifactName/src/main/resources/spotbugs-filter.xml")
-                if (fallbackFile.exists()) {
-                    excludeFilter = fallbackFile
-                }
+    val customExcludeFilterFile = spotbugsConfig.excludeFilterFile.orNull
+    when {
+        customExcludeFilterFile != null -> excludeFilter = file(customExcludeFilterFile)
+        checkJarFile != null -> {
+            val filterFile = zipTree(checkJarFile!!)
+                .matching { include("spotbugs-filter.xml") }
+                .singleOrNull()
+            if (filterFile != null) {
+                excludeFilter = filterFile
             }
         }
+        checkArtifactName != null -> {
+            val fallbackFile = rootProject.file("$checkArtifactName/src/main/resources/spotbugs-filter.xml")
+            if (fallbackFile.exists()) {
+                excludeFilter = fallbackFile
+            }
+        }
+        else -> {}
     }
 }
 

@@ -17,24 +17,24 @@
 import dev.daymor.ultimanexus.jvm.gradle.config.PluginIds
 
 /*
- * Bundle plugin for full Ultima Nexus framework experience.
- * Includes all quality checks, testing, Spring Boot setup,
- * jspecify nullability, lombok support, and documentation (auto-detected).
+ * Plugin: dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-library
  *
- * Included plugins:
- *   - dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete
- *   - dev.daymor.ultimanexus.jvm.gradle.bundle.lombok
- *   - dev.daymor.ultimanexus.jvm.gradle.bundle.documentation (if antora-playbook.yml exists)
+ * Bundle plugin for full Ultima Nexus framework library experience.
+ * Includes all quality checks, testing, Spring Boot library setup,
+ * jspecify nullability, lombok support, Maven publishing,
+ * and documentation (auto-detected).
+ *
+ * For Spring Boot starters and shared libraries with the complete Ultima Nexus toolchain.
  *
  * Usage:
  * ```kotlin
  * plugins {
- *     alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm)
+ *     alias(libs.plugins.ultimanexus.bundle.ultima.nexus.jvm.library)
  * }
  * ```
  */
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete")
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete-library")
     id("dev.daymor.ultimanexus.jvm.gradle.bundle.lombok")
 }
 

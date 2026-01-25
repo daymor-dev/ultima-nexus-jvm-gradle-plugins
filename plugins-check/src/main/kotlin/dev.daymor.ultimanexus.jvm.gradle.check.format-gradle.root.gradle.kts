@@ -15,6 +15,7 @@
  */
 
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 
 /**
  * Convention plugin for root project Gradle and Kotlin file formatting using Spotless with ktfmt.
@@ -43,29 +44,27 @@ interface FormatGradleRootExtension {
 val formatGradleRoot =
     extensions.create<FormatGradleRootExtension>("formatGradleRoot")
 
-val kotlinGradleTargetFromProps = providers.gradleProperty(PropertyKeys.Format.GRADLE_KOTLIN_TARGET).orNull
-val kotlinTargetFromProps = providers.gradleProperty(PropertyKeys.Format.GRADLE_KOTLIN_VERSION).orNull
+val kotlinGradleTargetFromProps = project.findPropertyOrNull(PropertyKeys.Format.GRADLE_KOTLIN_TARGET)
+val kotlinTargetFromProps = project.findPropertyOrNull(PropertyKeys.Format.GRADLE_KOTLIN_VERSION)
 
 if (kotlinGradleTargetFromProps != null) formatGradleRoot.kotlinGradleTarget.convention(kotlinGradleTargetFromProps)
 if (kotlinTargetFromProps != null) formatGradleRoot.kotlinTarget.convention(kotlinTargetFromProps)
 
-afterEvaluate {
-    spotless {
-        kotlinGradle {
-            ktfmt().kotlinlangStyle().configure { it.setMaxWidth(80) }
-            target(
-                formatGradleRoot.kotlinGradleTarget.getOrElse(
-                    "gradle/plugins/src/main/**/*.gradle.kts"
-                )
+spotless {
+    kotlinGradle {
+        ktfmt().kotlinlangStyle().configure { it.setMaxWidth(80) }
+        target(
+            formatGradleRoot.kotlinGradleTarget.getOrElse(
+                "gradle/plugins/src/main/**/*.gradle.kts"
             )
-        }
-        kotlin {
-            ktfmt().kotlinlangStyle().configure { it.setMaxWidth(80) }
-            target(
-                formatGradleRoot.kotlinTarget.getOrElse(
-                    "gradle/plugins/src/main/**/*.kt"
-                )
+        )
+    }
+    kotlin {
+        ktfmt().kotlinlangStyle().configure { it.setMaxWidth(80) }
+        target(
+            formatGradleRoot.kotlinTarget.getOrElse(
+                "gradle/plugins/src/main/**/*.kt"
             )
-        }
+        )
     }
 }

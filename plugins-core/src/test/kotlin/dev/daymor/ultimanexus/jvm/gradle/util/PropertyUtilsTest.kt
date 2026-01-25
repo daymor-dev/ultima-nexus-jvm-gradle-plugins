@@ -16,150 +16,139 @@
 
 package dev.daymor.ultimanexus.jvm.gradle.util
 
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromGradleProperty
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromProperty
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionIfNotNull
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.gradlePropertyAsBoolean
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.gradlePropertyAsInt
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.gradlePropertyOrNull
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyAsBoolean
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyAsInt
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.gradle.api.Project
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
-import org.gradle.api.provider.ProviderFactory
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 class PropertyUtilsTest {
 
     @Nested
-    inner class GradlePropertyOrNull {
+    inner class FindPropertyOrNull {
 
         @Test
         fun `returns null when property not set`() {
-            val providers = mockk<ProviderFactory>()
-            val provider = mockk<Provider<String>>()
-            every { providers.gradleProperty("test.key") } returns provider
-            every { provider.orNull } returns null
+            val project = mockk<Project>()
+            every { project.findProperty("test.key") } returns null
 
-            val result = providers.gradlePropertyOrNull("test.key")
+            val result = project.findPropertyOrNull("test.key")
 
             assertThat(result).isNull()
         }
 
         @Test
         fun `returns value when property is set`() {
-            val providers = mockk<ProviderFactory>()
-            val provider = mockk<Provider<String>>()
-            every { providers.gradleProperty("test.key") } returns provider
-            every { provider.orNull } returns "test-value"
+            val project = mockk<Project>()
+            every { project.findProperty("test.key") } returns "test-value"
 
-            val result = providers.gradlePropertyOrNull("test.key")
+            val result = project.findPropertyOrNull("test.key")
 
             assertThat(result).isEqualTo("test-value")
+        }
+
+        @Test
+        fun `converts non-string values to string`() {
+            val project = mockk<Project>()
+            every { project.findProperty("test.key") } returns 42
+
+            val result = project.findPropertyOrNull("test.key")
+
+            assertThat(result).isEqualTo("42")
         }
     }
 
     @Nested
-    inner class GradlePropertyAsBoolean {
+    inner class FindPropertyAsBoolean {
 
         @Test
         fun `returns true when property is true`() {
-            val providers = mockk<ProviderFactory>()
-            val provider = mockk<Provider<String>>()
-            every { providers.gradleProperty("test.enabled") } returns provider
-            every { provider.orNull } returns "true"
+            val project = mockk<Project>()
+            every { project.findProperty("test.enabled") } returns "true"
 
-            val result = providers.gradlePropertyAsBoolean("test.enabled", false)
+            val result = project.findPropertyAsBoolean("test.enabled", false)
 
             assertThat(result).isTrue()
         }
 
         @Test
         fun `returns false when property is false`() {
-            val providers = mockk<ProviderFactory>()
-            val provider = mockk<Provider<String>>()
-            every { providers.gradleProperty("test.enabled") } returns provider
-            every { provider.orNull } returns "false"
+            val project = mockk<Project>()
+            every { project.findProperty("test.enabled") } returns "false"
 
-            val result = providers.gradlePropertyAsBoolean("test.enabled", true)
+            val result = project.findPropertyAsBoolean("test.enabled", true)
 
             assertThat(result).isFalse()
         }
 
         @Test
         fun `returns default when property not set`() {
-            val providers = mockk<ProviderFactory>()
-            val provider = mockk<Provider<String>>()
-            every { providers.gradleProperty("test.enabled") } returns provider
-            every { provider.orNull } returns null
+            val project = mockk<Project>()
+            every { project.findProperty("test.enabled") } returns null
 
-            val result = providers.gradlePropertyAsBoolean("test.enabled", true)
+            val result = project.findPropertyAsBoolean("test.enabled", true)
 
             assertThat(result).isTrue()
         }
 
         @Test
         fun `returns false for invalid boolean value`() {
-            val providers = mockk<ProviderFactory>()
-            val provider = mockk<Provider<String>>()
-            every { providers.gradleProperty("test.enabled") } returns provider
-            every { provider.orNull } returns "invalid"
+            val project = mockk<Project>()
+            every { project.findProperty("test.enabled") } returns "invalid"
 
-            val result = providers.gradlePropertyAsBoolean("test.enabled", true)
+            val result = project.findPropertyAsBoolean("test.enabled", true)
 
             assertThat(result).isFalse()
         }
     }
 
     @Nested
-    inner class GradlePropertyAsInt {
+    inner class FindPropertyAsInt {
 
         @Test
         fun `returns int value when property is valid integer`() {
-            val providers = mockk<ProviderFactory>()
-            val provider = mockk<Provider<String>>()
-            every { providers.gradleProperty("test.count") } returns provider
-            every { provider.orNull } returns "42"
+            val project = mockk<Project>()
+            every { project.findProperty("test.count") } returns "42"
 
-            val result = providers.gradlePropertyAsInt("test.count", 0)
+            val result = project.findPropertyAsInt("test.count", 0)
 
             assertThat(result).isEqualTo(42)
         }
 
         @Test
         fun `returns default when property not set`() {
-            val providers = mockk<ProviderFactory>()
-            val provider = mockk<Provider<String>>()
-            every { providers.gradleProperty("test.count") } returns provider
-            every { provider.orNull } returns null
+            val project = mockk<Project>()
+            every { project.findProperty("test.count") } returns null
 
-            val result = providers.gradlePropertyAsInt("test.count", 10)
+            val result = project.findPropertyAsInt("test.count", 10)
 
             assertThat(result).isEqualTo(10)
         }
 
         @Test
         fun `returns default for invalid integer value`() {
-            val providers = mockk<ProviderFactory>()
-            val provider = mockk<Provider<String>>()
-            every { providers.gradleProperty("test.count") } returns provider
-            every { provider.orNull } returns "not-a-number"
+            val project = mockk<Project>()
+            every { project.findProperty("test.count") } returns "not-a-number"
 
-            val result = providers.gradlePropertyAsInt("test.count", 5)
+            val result = project.findPropertyAsInt("test.count", 5)
 
             assertThat(result).isEqualTo(5)
         }
 
         @Test
         fun `returns default for empty value`() {
-            val providers = mockk<ProviderFactory>()
-            val provider = mockk<Provider<String>>()
-            every { providers.gradleProperty("test.count") } returns provider
-            every { provider.orNull } returns ""
+            val project = mockk<Project>()
+            every { project.findProperty("test.count") } returns ""
 
-            val result = providers.gradlePropertyAsInt("test.count", 7)
+            val result = project.findPropertyAsInt("test.count", 7)
 
             assertThat(result).isEqualTo(7)
         }
@@ -188,17 +177,15 @@ class PropertyUtilsTest {
     }
 
     @Nested
-    inner class StringConventionFromGradleProperty {
+    inner class StringConventionFromProperty {
 
         @Test
         fun `sets convention when property exists`() {
             val property = mockk<Property<String>>(relaxed = true)
-            val providers = mockk<ProviderFactory>()
-            val provider = mockk<Provider<String>>()
-            every { providers.gradleProperty("test.key") } returns provider
-            every { provider.orNull } returns "value-from-property"
+            val project = mockk<Project>()
+            every { project.findProperty("test.key") } returns "value-from-property"
 
-            property.conventionFromGradleProperty(providers, "test.key")
+            property.conventionFromProperty(project, "test.key")
 
             verify { property.convention("value-from-property") }
         }
@@ -206,29 +193,25 @@ class PropertyUtilsTest {
         @Test
         fun `skips convention when property not set`() {
             val property = mockk<Property<String>>(relaxed = true)
-            val providers = mockk<ProviderFactory>()
-            val provider = mockk<Provider<String>>()
-            every { providers.gradleProperty("test.key") } returns provider
-            every { provider.orNull } returns null
+            val project = mockk<Project>()
+            every { project.findProperty("test.key") } returns null
 
-            property.conventionFromGradleProperty(providers, "test.key")
+            property.conventionFromProperty(project, "test.key")
 
             verify(exactly = 0) { property.convention(any<String>()) }
         }
     }
 
     @Nested
-    inner class BooleanConventionFromGradleProperty {
+    inner class BooleanConventionFromProperty {
 
         @Test
         fun `sets convention to true from property`() {
             val property = mockk<Property<Boolean>>(relaxed = true)
-            val providers = mockk<ProviderFactory>()
-            val provider = mockk<Provider<String>>()
-            every { providers.gradleProperty("test.enabled") } returns provider
-            every { provider.orNull } returns "true"
+            val project = mockk<Project>()
+            every { project.findProperty("test.enabled") } returns "true"
 
-            property.conventionFromGradleProperty(providers, "test.enabled", false)
+            property.conventionFromProperty(project, "test.enabled", false)
 
             verify { property.convention(true) }
         }
@@ -236,29 +219,25 @@ class PropertyUtilsTest {
         @Test
         fun `sets convention to default when property not set`() {
             val property = mockk<Property<Boolean>>(relaxed = true)
-            val providers = mockk<ProviderFactory>()
-            val provider = mockk<Provider<String>>()
-            every { providers.gradleProperty("test.enabled") } returns provider
-            every { provider.orNull } returns null
+            val project = mockk<Project>()
+            every { project.findProperty("test.enabled") } returns null
 
-            property.conventionFromGradleProperty(providers, "test.enabled", true)
+            property.conventionFromProperty(project, "test.enabled", true)
 
             verify { property.convention(true) }
         }
     }
 
     @Nested
-    inner class IntConventionFromGradleProperty {
+    inner class IntConventionFromProperty {
 
         @Test
         fun `sets convention from property value`() {
             val property = mockk<Property<Int>>(relaxed = true)
-            val providers = mockk<ProviderFactory>()
-            val provider = mockk<Provider<String>>()
-            every { providers.gradleProperty("test.count") } returns provider
-            every { provider.orNull } returns "99"
+            val project = mockk<Project>()
+            every { project.findProperty("test.count") } returns "99"
 
-            property.conventionFromGradleProperty(providers, "test.count", 0)
+            property.conventionFromProperty(project, "test.count", 0)
 
             verify { property.convention(99) }
         }
@@ -266,12 +245,10 @@ class PropertyUtilsTest {
         @Test
         fun `sets convention to default when property not set`() {
             val property = mockk<Property<Int>>(relaxed = true)
-            val providers = mockk<ProviderFactory>()
-            val provider = mockk<Provider<String>>()
-            every { providers.gradleProperty("test.count") } returns provider
-            every { provider.orNull } returns null
+            val project = mockk<Project>()
+            every { project.findProperty("test.count") } returns null
 
-            property.conventionFromGradleProperty(providers, "test.count", 25)
+            property.conventionFromProperty(project, "test.count", 25)
 
             verify { property.convention(25) }
         }
