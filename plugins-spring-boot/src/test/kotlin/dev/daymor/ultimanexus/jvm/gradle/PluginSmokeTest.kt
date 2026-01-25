@@ -33,16 +33,16 @@ class PluginSmokeTest {
     private fun fixture() = GradleProjectFixture(tempDir)
 
     @Nested
-    inner class SpringBootUnifiedPlugin {
+    inner class SpringBootApplicationPlugin {
 
         @Test
-        fun `spring-boot-unified plugin applies successfully`() {
+        fun `spring-boot-application plugin applies successfully`() {
             fixture()
                 .withSettings("rootProject.name = \"test-project\"")
                 .withBuildScript(
                     """
                     plugins {
-                        id("${PluginIds.Feature.SPRING_BOOT_UNIFIED}")
+                        id("${PluginIds.Feature.SPRING_BOOT_APPLICATION}")
                     }
                     """.trimIndent()
                 )
@@ -51,40 +51,22 @@ class PluginSmokeTest {
 
             assertThat(result.taskSucceeded(":help")).isTrue()
         }
+    }
+
+    @Nested
+    inner class SpringBootLibraryPlugin {
 
         @Test
-        fun `spring-boot-unified plugin configures application mode via extension`() {
+        fun `spring-boot-library plugin applies successfully`() {
             fixture()
                 .withSettings("rootProject.name = \"test-project\"")
                 .withBuildScript(
                     """
                     plugins {
-                        id("${PluginIds.Feature.SPRING_BOOT_UNIFIED}")
-                    }
-
-                    ultimaNexus {
-                        applicationMode.set(true)
+                        id("${PluginIds.Feature.SPRING_BOOT_LIBRARY}")
                     }
                     """.trimIndent()
                 )
-
-            val result = fixture().help()
-
-            assertThat(result.taskSucceeded(":help")).isTrue()
-        }
-
-        @Test
-        fun `spring-boot-unified plugin configures application mode via property`() {
-            fixture()
-                .withSettings("rootProject.name = \"test-project\"")
-                .withBuildScript(
-                    """
-                    plugins {
-                        id("${PluginIds.Feature.SPRING_BOOT_UNIFIED}")
-                    }
-                    """.trimIndent()
-                )
-                .withProperties("springBoot.isApplication" to "true")
 
             val result = fixture().help()
 
@@ -115,21 +97,71 @@ class PluginSmokeTest {
     }
 
     @Nested
-    inner class SpringBootSimpleBundle {
+    inner class SpringBootSimpleApplicationBundle {
 
         @Test
-        fun `spring-boot-simple bundle applies successfully`() {
+        fun `spring-boot-simple-application bundle applies successfully`() {
             fixture()
                 .withSettings("rootProject.name = \"test-project\"")
                 .withBuildScript(
                     """
                     plugins {
-                        id("${PluginIds.Bundle.SPRING_BOOT_SIMPLE}")
+                        id("${PluginIds.Bundle.SPRING_BOOT_SIMPLE_APPLICATION}")
                     }
+                    """.trimIndent()
+                )
+                .withProperties("groupId" to "com.example.test")
 
-                    ultimaNexus {
-                        groupId.set("com.example.test")
+            val result = fixture().help()
+
+            assertThat(result.taskSucceeded(":help")).isTrue()
+        }
+    }
+
+    @Nested
+    inner class SpringBootSimpleLibraryBundle {
+
+        @Test
+        fun `spring-boot-simple-library bundle applies successfully`() {
+            fixture()
+                .withSettings("rootProject.name = \"test-project\"")
+                .withBuildScript(
+                    """
+                    plugins {
+                        id("${PluginIds.Bundle.SPRING_BOOT_SIMPLE_LIBRARY}")
                     }
+                    """.trimIndent()
+                )
+                .withProperties("groupId" to "com.example.test")
+
+            val result = fixture().help()
+
+            assertThat(result.taskSucceeded(":help")).isTrue()
+        }
+    }
+
+    @Nested
+    inner class SpringBootCompleteApplicationBundle {
+
+        @Test
+        fun `spring-boot-complete-application bundle applies successfully`() {
+            fixture()
+                .withSettings("rootProject.name = \"test-project\"")
+                .withBuildScript(
+                    """
+                    plugins {
+                        id("${PluginIds.Bundle.SPRING_BOOT_COMPLETE_APPLICATION}")
+                    }
+                    """.trimIndent()
+                )
+                .withProperties(
+                    "groupId" to "com.example.test",
+                    "checkArtifactName" to "my-check-artifact"
+                )
+                .withVersionCatalog(
+                    """
+                    [libraries]
+                    my-check-artifact = "org.example:check-artifact:1.0.0"
                     """.trimIndent()
                 )
 
@@ -140,24 +172,23 @@ class PluginSmokeTest {
     }
 
     @Nested
-    inner class SpringBootCompleteBundle {
+    inner class SpringBootCompleteLibraryBundle {
 
         @Test
-        fun `spring-boot-complete bundle applies successfully`() {
+        fun `spring-boot-complete-library bundle applies successfully`() {
             fixture()
                 .withSettings("rootProject.name = \"test-project\"")
                 .withBuildScript(
                     """
                     plugins {
-                        id("${PluginIds.Bundle.SPRING_BOOT_COMPLETE}")
-                    }
-
-                    ultimaNexus {
-                        groupId.set("com.example.test")
+                        id("${PluginIds.Bundle.SPRING_BOOT_COMPLETE_LIBRARY}")
                     }
                     """.trimIndent()
                 )
-                .withProperties("checkArtifactName" to "my-check-artifact")
+                .withProperties(
+                    "groupId" to "com.example.test",
+                    "checkArtifactName" to "my-check-artifact"
+                )
                 .withVersionCatalog(
                     """
                     [libraries]

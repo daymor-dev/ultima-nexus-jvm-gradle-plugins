@@ -63,23 +63,24 @@ val libs: VersionCatalog? = getLibsCatalogOrNull(project)
 
 val junitVersion = libs?.let { getVersionOrNull(it, "junit-jupiter") } ?: FallbackVersions.JUNIT_JUPITER
 
-// Create allTest suite that depends on all other test suites (discovered dynamically)
-afterEvaluate {
-    testing.suites.register<JvmTestSuite>("allTest") {
-        useJUnitJupiter(junitVersion)
-        targets.named("allTest") {
-            testTask {
-                group = "verification"
-                // Dynamically depend on all JvmTestSuites except "allTest" itself
-                val allSuites = testing.suites.withType<JvmTestSuite>()
-                    .filter { it.name != "allTest" }
-                    .map { testing.suites.named(it.name) }
-                dependsOn(allSuites)
+testing.suites.register<JvmTestSuite>("allTest") {
+    useJUnitJupiter(junitVersion)
+    targets.named("allTest") {
+        testTask {
+            group = "verification"
+            testing.suites.withType<JvmTestSuite>().configureEach {
+                if (name != "allTest") {
+                    this@testTask.dependsOn(testing.suites.named(name))
+                }
             }
         }
     }
+}
 
-    dependencies {
-        "allTestImplementation"(project)
-    }
+dependencies {
+    "allTestImplementation"(project)
+}
+
+configurations.named("allTestImplementation") {
+    extendsFrom(configurations.getByName("testImplementation"))
 }

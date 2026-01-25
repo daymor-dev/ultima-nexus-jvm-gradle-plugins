@@ -48,7 +48,7 @@ jobs:
           update_version "MOCKK" "$(get_version "mockk")"
           update_version "PMD" "$(get_version "pmd")"
           update_version "SLF4J" "$(get_version "slf4j")"
-          update_version "SPRING_BOOT" "$(get_version "spring-boot-dependencies")"
+          update_version "SPRING_BOOT" "$(get_version "spring-boot")"
 
       - name: Commit changes if any
         run: |

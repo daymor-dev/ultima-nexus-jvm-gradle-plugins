@@ -35,45 +35,43 @@ configurations.aggregateTestReportResults {
     extendsFrom(configurations["internal"])
 }
 
-// Auto-discover and create test reports for all test suites
-afterEvaluate {
-    val suiteReports = mutableListOf<AggregateTestReport>()
+val suiteReports = mutableListOf<AggregateTestReport>()
 
-    reporting {
-        reports {
-            // Always configure the default test suite
-            val testAggregateTestReport by getting(AggregateTestReport::class) {
-                reportTask { group = "reporting" }
-            }
-            suiteReports.add(testAggregateTestReport)
-
-            // Auto-discover other JvmTestSuites
-            testing.suites.withType<JvmTestSuite>().forEach { suite ->
-                val suiteName = suite.name
-                if (suiteName != "test" && suiteName != "allTest") {
-                    val reportName = "${suiteName}AggregateTestReport"
-                    val report = findByName(reportName) as? AggregateTestReport
-                        ?: register(reportName, AggregateTestReport::class) {
-                            testSuiteName = suiteName
-                            reportTask { group = "reporting" }
-                        }.get()
-                    suiteReports.add(report)
-                }
-            }
-
-            // Create aggregated report for all tests
-            val allTestAggregateTestReport = findByName("allTestAggregateTestReport")
-                as? AggregateTestReport
-                ?: register("allTestAggregateTestReport", AggregateTestReport::class) {
-                    testSuiteName = "allTest"
-                }.get()
-
-            allTestAggregateTestReport.reportTask {
-                group = "reporting"
-                testResults.setFrom(
-                    suiteReports.map { it.reportTask.get().testResults }
-                )
-            }
+reporting {
+    reports {
+        val testAggregateTestReport by getting(AggregateTestReport::class) {
+            reportTask { group = "reporting" }
         }
+        suiteReports.add(testAggregateTestReport)
+    }
+}
+
+testing.suites.withType<JvmTestSuite>().configureEach {
+    val suiteName = name
+    if (suiteName != "test" && suiteName != "allTest") {
+        val reportName = "${suiteName}AggregateTestReport"
+        reporting.reports {
+            val report = findByName(reportName) as? AggregateTestReport
+                ?: register(reportName, AggregateTestReport::class) {
+                    testSuiteName = suiteName
+                    reportTask { group = "reporting" }
+                }.get()
+            suiteReports.add(report)
+        }
+    }
+}
+
+reporting.reports {
+    val allTestAggregateTestReport = findByName("allTestAggregateTestReport")
+        as? AggregateTestReport
+        ?: register("allTestAggregateTestReport", AggregateTestReport::class) {
+            testSuiteName = "allTest"
+        }.get()
+
+    allTestAggregateTestReport.reportTask {
+        group = "reporting"
+        testResults.setFrom(
+            provider { suiteReports.map { it.reportTask.get().testResults } }
+        )
     }
 }

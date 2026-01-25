@@ -40,7 +40,6 @@ object PropertyKeys {
     }
 
     const val JDK_VERSION = "jdkVersion"
-    const val JAVA_IS_APPLICATION = "java.isApplication"
     const val CHECK_ARTIFACT_NAME = "checkArtifactName"
 
     object Test {
@@ -79,6 +78,9 @@ object PropertyKeys {
         const val JAVA_FORMATTER_CONFIG = "formatJava.formatterConfigFile"
         const val JAVA_LICENSE_HEADER_FILE = "formatJava.licenseHeaderFile"
         const val JAVA_LICENSE_HEADER_TEXT = "formatJava.licenseHeaderText"
+        const val IMPORT_SAME_PACKAGE_DEPTH = "formatJava.importSamePackageDepth"
+        const val IMPORT_STANDARD_PACKAGE_REGEX = "formatJava.importStandardPackageRegex"
+        const val IMPORT_SPECIAL_IMPORTS_REGEX = "formatJava.importSpecialImportsRegex"
         const val COMPANY = "company"
     }
 
@@ -111,10 +113,6 @@ object PropertyKeys {
 
     object CodeCoverage {
         const val EXCLUDE_PATTERNS = "codeCoverage.excludePatterns"
-    }
-
-    object SpringBoot {
-        const val IS_APPLICATION = "springBoot.isApplication"
     }
 
     object VersionPlatform {

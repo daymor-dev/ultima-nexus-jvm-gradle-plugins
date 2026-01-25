@@ -18,20 +18,20 @@ package dev.daymor.ultimanexus.jvm.gradle.spotless
 
 import com.diffplug.spotless.FormatterFunc
 import com.diffplug.spotless.FormatterStep
-import java.util.*
+import java.util.Locale
 import java.util.logging.Logger
 
-class SortDependenciesStep : java.io.Serializable {
+class GradleDependencySortStep : java.io.Serializable {
 
     companion object {
         private const val serialVersionUID: Long = 2254520889479029838L
-        private val logger: Logger = Logger.getLogger(SortDependenciesStep::class.java.name)
+        private val logger: Logger = Logger.getLogger(GradleDependencySortStep::class.java.name)
 
         fun create(): FormatterStep {
             return FormatterStep.create(
-                "SortDependenciesStep",
-                SortDependenciesStep(),
-                SortDependenciesStep::toFormatter,
+                "GradleDependencySortStep",
+                GradleDependencySortStep(),
+                GradleDependencySortStep::toFormatter,
             )
         }
     }

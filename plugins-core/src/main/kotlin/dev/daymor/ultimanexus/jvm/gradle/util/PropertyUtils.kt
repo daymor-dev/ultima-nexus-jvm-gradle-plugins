@@ -16,43 +16,35 @@
 
 package dev.daymor.ultimanexus.jvm.gradle.util
 
+import org.gradle.api.Project
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.ProviderFactory
 
 object PropertyUtils {
 
-    fun ProviderFactory.gradlePropertyOrNull(key: String): String? =
-        gradleProperty(key).orNull
+    fun Project.findPropertyOrNull(key: String): String? =
+        findProperty(key)?.toString()
 
-    fun ProviderFactory.gradlePropertyAsBoolean(key: String, default: Boolean): Boolean =
-        gradleProperty(key).orNull?.toBoolean() ?: default
+    fun Project.findPropertyAsBoolean(key: String, default: Boolean): Boolean =
+        findProperty(key)?.toString()?.toBoolean() ?: default
 
-    fun ProviderFactory.gradlePropertyAsInt(key: String, default: Int): Int =
-        gradleProperty(key).orNull?.toIntOrNull() ?: default
+    fun Project.findPropertyAsInt(key: String, default: Int): Int =
+        findProperty(key)?.toString()?.toIntOrNull() ?: default
+
+    fun Property<String>.conventionFromProperty(project: Project, key: String) {
+        project.findPropertyOrNull(key)?.let { convention(it) }
+    }
+
+    fun Property<Boolean>.conventionFromProperty(project: Project, key: String, default: Boolean) {
+        convention(project.findPropertyAsBoolean(key, default))
+    }
+
+    fun Property<Int>.conventionFromProperty(project: Project, key: String, default: Int) {
+        convention(project.findPropertyAsInt(key, default))
+    }
 
     fun <T : Any> Property<T>.conventionIfNotNull(value: T?) {
         if (value != null) {
             convention(value)
         }
-    }
-
-    fun Property<String>.conventionFromGradleProperty(providers: ProviderFactory, key: String) {
-        providers.gradlePropertyOrNull(key)?.let { convention(it) }
-    }
-
-    fun Property<Boolean>.conventionFromGradleProperty(
-        providers: ProviderFactory,
-        key: String,
-        default: Boolean
-    ) {
-        convention(providers.gradlePropertyAsBoolean(key, default))
-    }
-
-    fun Property<Int>.conventionFromGradleProperty(
-        providers: ProviderFactory,
-        key: String,
-        default: Int
-    ) {
-        convention(providers.gradlePropertyAsInt(key, default))
     }
 }

@@ -16,6 +16,8 @@
 
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyAsBoolean
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 
 /**
  * Convention plugin for configurable repository management.
@@ -74,14 +76,10 @@ interface RepositoriesExtension {
 val repositoriesConfig = extensions.create<RepositoriesExtension>("repositoriesConfig")
 
 repositoriesConfig.includeMavenCentral.convention(
-    providers.gradleProperty(PropertyKeys.Repositories.INCLUDE_MAVEN_CENTRAL)
-        .map { it.toBoolean() }
-        .orElse(Defaults.Repositories.INCLUDE_MAVEN_CENTRAL)
+    project.findPropertyAsBoolean(PropertyKeys.Repositories.INCLUDE_MAVEN_CENTRAL, Defaults.Repositories.INCLUDE_MAVEN_CENTRAL)
 )
 repositoriesConfig.includeMavenLocal.convention(
-    providers.gradleProperty(PropertyKeys.Repositories.INCLUDE_MAVEN_LOCAL)
-        .map { it.toBoolean() }
-        .orElse(Defaults.Repositories.INCLUDE_MAVEN_LOCAL)
+    project.findPropertyAsBoolean(PropertyKeys.Repositories.INCLUDE_MAVEN_LOCAL, Defaults.Repositories.INCLUDE_MAVEN_LOCAL)
 )
 
 fun getEnvCredential(repoName: String, suffix: String): String? {
@@ -90,10 +88,9 @@ fun getEnvCredential(repoName: String, suffix: String): String? {
 }
 
 fun getRepoProperty(repoName: String, suffix: String): String? =
-    providers.gradleProperty("${PropertyKeys.Repositories.REPO_PREFIX}$repoName$suffix").orNull
+    project.findPropertyOrNull("${PropertyKeys.Repositories.REPO_PREFIX}$repoName$suffix")
 
-val additionalReposFromProps = providers.gradleProperty(PropertyKeys.Repositories.ADDITIONAL_REPOS)
-    .orNull
+val additionalReposFromProps = project.findPropertyOrNull(PropertyKeys.Repositories.ADDITIONAL_REPOS)
     ?.split(",")
     ?.map { it.trim() }
     ?.filter { it.isNotBlank() }
@@ -120,56 +117,54 @@ additionalReposFromProps.forEach { repoName ->
     }
 }
 
-afterEvaluate {
-    repositories {
-        if (repositoriesConfig.includeMavenCentral.get()) {
-            mavenCentral()
+repositories {
+    if (repositoriesConfig.includeMavenCentral.get()) {
+        mavenCentral()
+    }
+
+    if (repositoriesConfig.includeMavenLocal.get()) {
+        mavenLocal()
+    }
+
+    repositoriesConfig.repositories.forEach { repoSpec ->
+        val repoUrl = repoSpec.url.orNull
+        if (repoUrl.isNullOrBlank()) {
+            logger.warn("Repository '${repoSpec.name.orNull}' has no URL configured, skipping")
+            return@forEach
         }
 
-        if (repositoriesConfig.includeMavenLocal.get()) {
-            mavenLocal()
-        }
+        maven {
+            name = repoSpec.name.getOrElse("unnamed")
+            url = uri(repoUrl)
 
-        repositoriesConfig.repositories.forEach { repoSpec ->
-            val repoUrl = repoSpec.url.orNull
-            if (repoUrl.isNullOrBlank()) {
-                logger.warn("Repository '${repoSpec.name.orNull}' has no URL configured, skipping")
-                return@forEach
+            if (repoSpec.allowInsecureProtocol.getOrElse(false)) {
+                isAllowInsecureProtocol = true
             }
 
-            maven {
-                name = repoSpec.name.getOrElse("unnamed")
-                url = uri(repoUrl)
+            val repoUsername = repoSpec.username.orNull
+            val repoPassword = repoSpec.password.orNull
 
-                if (repoSpec.allowInsecureProtocol.getOrElse(false)) {
-                    isAllowInsecureProtocol = true
+            if (repoUsername != null && repoPassword != null) {
+                credentials {
+                    username = repoUsername
+                    password = repoPassword
                 }
-
-                val repoUsername = repoSpec.username.orNull
-                val repoPassword = repoSpec.password.orNull
-
-                if (repoUsername != null && repoPassword != null) {
-                    credentials {
-                        username = repoUsername
-                        password = repoPassword
-                    }
-                } else if (repoUsername != null || repoPassword != null) {
-                    logger.warn(
-                        "Repository '${repoSpec.name.orNull}': Both username and password must be " +
-                            "provided for authentication. Credentials will not be applied."
-                    )
-                }
+            } else if (repoUsername != null || repoPassword != null) {
+                logger.warn(
+                    "Repository '${repoSpec.name.orNull}': Both username and password must be " +
+                        "provided for authentication. Credentials will not be applied."
+                )
             }
         }
+    }
 
-        if (!repositoriesConfig.includeMavenCentral.get() &&
-            !repositoriesConfig.includeMavenLocal.get() &&
-            repositoriesConfig.repositories.isEmpty()
-        ) {
-            logger.warn(
-                "No repositories configured! Maven Central is disabled and no additional " +
-                    "repositories are defined. Dependency resolution will fail."
-            )
-        }
+    if (!repositoriesConfig.includeMavenCentral.get() &&
+        !repositoriesConfig.includeMavenLocal.get() &&
+        repositoriesConfig.repositories.isEmpty()
+    ) {
+        logger.warn(
+            "No repositories configured! Maven Central is disabled and no additional " +
+                "repositories are defined. Dependency resolution will fail."
+        )
     }
 }

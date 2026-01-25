@@ -16,12 +16,13 @@
 
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
+import dev.daymor.ultimanexus.jvm.gradle.util.ByteBuddyAgentArgumentProvider
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.Fallbacks
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibraryOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromGradleProperty
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.gradlePropertyAsInt
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.gradlePropertyOrNull
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromProperty
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyAsInt
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 
 /*
  * Unit Test Plugin
@@ -67,11 +68,11 @@ interface TestConfigExtension {
 val testConfig = extensions.create<TestConfigExtension>("testConfig")
 
 val defaultParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
-testConfig.maxHeapSize.convention(providers.gradlePropertyOrNull(PropertyKeys.Test.MAX_HEAP_SIZE) ?: Defaults.TEST_MAX_HEAP_SIZE)
-testConfig.maxParallelForks.convention(providers.gradlePropertyAsInt(PropertyKeys.Test.MAX_PARALLEL_FORKS, defaultParallelForks))
-testConfig.showStandardStreams.conventionFromGradleProperty(providers, PropertyKeys.Test.SHOW_STANDARD_STREAMS, true)
-testConfig.fileEncoding.convention(providers.gradlePropertyOrNull(PropertyKeys.Test.FILE_ENCODING) ?: Defaults.TEST_FILE_ENCODING)
-testConfig.useByteBuddyAgent.conventionFromGradleProperty(providers, PropertyKeys.Test.USE_BYTE_BUDDY_AGENT, true)
+testConfig.maxHeapSize.convention(project.findPropertyOrNull(PropertyKeys.Test.MAX_HEAP_SIZE) ?: Defaults.TEST_MAX_HEAP_SIZE)
+testConfig.maxParallelForks.convention(project.findPropertyAsInt(PropertyKeys.Test.MAX_PARALLEL_FORKS, defaultParallelForks))
+testConfig.showStandardStreams.conventionFromProperty(project, PropertyKeys.Test.SHOW_STANDARD_STREAMS, true)
+testConfig.fileEncoding.convention(project.findPropertyOrNull(PropertyKeys.Test.FILE_ENCODING) ?: Defaults.FILE_ENCODING)
+testConfig.useByteBuddyAgent.conventionFromProperty(project, PropertyKeys.Test.USE_BYTE_BUDDY_AGENT, true)
 
 val byteBuddyAgent: Configuration =
     configurations.findByName(Defaults.ConfigurationName.BYTE_BUDDY_AGENT)
@@ -96,9 +97,10 @@ testing.suites.named<JvmTestSuite>("test") {
             systemProperty("file.encoding", testConfig.fileEncoding.get())
 
             if (testConfig.useByteBuddyAgent.get()) {
-                jvmArgs = listOf(
-                    "-javaagent:${byteBuddyAgent.singleFile.absolutePath}",
-                    "-Xshare:off",
+                jvmArgumentProviders.add(
+                    objects.newInstance<ByteBuddyAgentArgumentProvider>().apply {
+                        agentClasspath.from(byteBuddyAgent)
+                    }
                 )
             }
         }

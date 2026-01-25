@@ -18,6 +18,7 @@
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibraryOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 
 /*
  * Version platform plugin that creates a BOM-style platform for dependency management.
@@ -71,8 +72,8 @@ pluginManager.withPlugin("org.springframework.boot") {
     versionPlatform.includeSpringBootBom = true
 }
 
-val includeSpringBootBomFromProps = providers.gradleProperty(PropertyKeys.VersionPlatform.INCLUDE_SPRING_BOOT_BOM).orNull?.toBoolean()
-val springBootBomLibraryFromProps = providers.gradleProperty(PropertyKeys.VersionPlatform.SPRING_BOOT_BOM_LIBRARY).orNull
+val includeSpringBootBomFromProps = project.findPropertyOrNull(PropertyKeys.VersionPlatform.INCLUDE_SPRING_BOOT_BOM)?.toBoolean()
+val springBootBomLibraryFromProps = project.findPropertyOrNull(PropertyKeys.VersionPlatform.SPRING_BOOT_BOM_LIBRARY)
 
 if (includeSpringBootBomFromProps != null) {
     versionPlatform.includeSpringBootBom = includeSpringBootBomFromProps
@@ -83,13 +84,11 @@ if (springBootBomLibraryFromProps != null) {
 
 val libs: VersionCatalog? = getLibsCatalogOrNull(project)
 
-afterEvaluate {
-    if (versionPlatform.includeSpringBootBom) {
-        libs?.let { catalog ->
-            getLibraryOrNull(catalog, versionPlatform.springBootBomLibrary)?.let { bomLibrary ->
-                dependencies {
-                    api(platform(bomLibrary))
-                }
+if (versionPlatform.includeSpringBootBom) {
+    libs?.let { catalog ->
+        getLibraryOrNull(catalog, versionPlatform.springBootBomLibrary)?.let { bomLibrary ->
+            dependencies {
+                api(platform(bomLibrary))
             }
         }
     }

@@ -43,6 +43,7 @@ object DependencyUtils {
         const val ASSERTJ = "3.27.6"
         const val BYTE_BUDDY_AGENT = "1.18.3"
         const val CHECKSTYLE = "12.3.0"
+        const val ECLIPSE_JDT = "4.38"
         const val JSPECIFY = "1.0.0"
         const val JSR305 = "3.0.2"
         const val JUNIT_JUPITER = "6.0.2"
@@ -64,6 +65,7 @@ object DependencyUtils {
         const val MOCKK = "io.mockk:mockk:${FallbackVersions.MOCKK}"
         const val SLF4J_SIMPLE = "org.slf4j:slf4j-simple:${FallbackVersions.SLF4J}"
         const val SPRING_BOOT_DEVTOOLS = "org.springframework.boot:spring-boot-devtools:${FallbackVersions.SPRING_BOOT}"
+        const val SPRING_BOOT_BOM = "org.springframework.boot:spring-boot-dependencies:${FallbackVersions.SPRING_BOOT}"
     }
 
     fun getLibrary(versionCatalog: VersionCatalog, name: String): Provider<MinimalExternalModuleDependency> =

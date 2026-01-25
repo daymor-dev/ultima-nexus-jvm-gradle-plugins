@@ -20,9 +20,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-class SortDependenciesStepTest {
+class GradleDependencySortStepTest {
 
-    private val formatter = SortDependenciesStep().toFormatter()
+    private val formatter = GradleDependencySortStep().toFormatter()
 
     private fun format(input: String): String = formatter.apply(input)
 
@@ -335,8 +335,8 @@ class SortDependenciesStepTest {
     inner class Serialization {
 
         @Test
-        fun `SortDependenciesStep is serializable`() {
-            val step = SortDependenciesStep()
+        fun `GradleDependencySortStep is serializable`() {
+            val step = GradleDependencySortStep()
 
             assertThat(step).isInstanceOf(java.io.Serializable::class.java)
         }

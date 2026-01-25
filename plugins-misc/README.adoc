@@ -34,8 +34,11 @@ The `plugins-misc` module provides:
 |`dev.daymor.ultimanexus.jvm.gradle.bundle.jvm-complete`
 |Language-agnostic JVM bundle with quality checks, testing, and reporting
 
-|`dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm`
-|Complete Ultima Nexus JVM Framework experience (Spring Boot + Lombok)
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-application`
+|Complete Ultima Nexus JVM Framework for applications (Spring Boot + Lombok)
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-library`
+|Complete Ultima Nexus JVM Framework for libraries (Spring Boot + Lombok + publishing)
 
 |`dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project-root`
 |Root project bundle for multi-module builds
@@ -55,7 +58,8 @@ ultima-nexus-plugins = "latest.release"
 
 [plugins]
 ultimanexus-bundle-jvm-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.jvm-complete", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-ultima-nexus-jvm = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm", version.ref = "ultima-nexus-plugins" }
+ultimanexus-bundle-ultima-nexus-jvm-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-application", version.ref = "ultima-nexus-plugins" }
+ultimanexus-bundle-ultima-nexus-jvm-library = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-library", version.ref = "ultima-nexus-plugins" }
 ultimanexus-feature-aggregation = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.aggregation", version.ref = "ultima-nexus-plugins" }
 ultimanexus-feature-version-platform = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.version-platform", version.ref = "ultima-nexus-plugins" }
 ultimanexus-feature-use-all-catalog-versions = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.use-all-catalog-versions", version.ref = "ultima-nexus-plugins" }
@@ -107,30 +111,42 @@ Add your language-specific plugins on top of this bundle.
 For pure Java projects, use `java-complete` instead.
 For Spring Boot Java projects, use `ultima-nexus-jvm` instead.
 
-== Ultima Nexus Full Bundle
+== Ultima Nexus Full Bundles
 
 The complete Ultima Nexus JVM Framework experience with all conventions (Spring Boot + Java).
 
-=== Usage
+=== Ultima Nexus JVM Application
+
+For standalone Spring Boot applications:
 
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm)
+    alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm.application)
+}
+----
+
+=== Ultima Nexus JVM Library
+
+For shared libraries and starters:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm.library)
 }
 ----
 
 === Includes
 
-* Everything in `spring-boot-complete` bundle:
+* Everything in `spring-boot-complete-application` or `spring-boot-complete-library`:
 ** Base Gradle project conventions
 ** All quality checks (Checkstyle, PMD, SpotBugs, Spotless)
 ** All test types (unit, integration, functional, performance)
 ** All reports (code coverage, SBOM, test reports)
 ** Java compilation and Javadoc
-** Maven Central publishing
-** Spring Boot with application/library mode
 ** JSpecify nullability annotations
+* Library bundle also includes Maven Central publishing
 * Lombok support (main and test sources)
 * Documentation support (auto-detected if `antora-playbook.yml` exists)
 

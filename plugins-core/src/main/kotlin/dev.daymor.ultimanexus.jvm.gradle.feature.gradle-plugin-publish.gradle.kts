@@ -15,17 +15,18 @@
  */
 
 import dev.daymor.ultimanexus.jvm.gradle.config.UltimaNexusConfig
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 
 /**
  * Convention plugin for publishing Gradle plugins to the Gradle Plugin Portal.
  *
  * This plugin automatically configures:
- * - Group ID and version from gradle.properties
+ * - Group ID and version from gradle.properties or extra properties
  * - Website and VCS URL from gradle.properties (pluginWebsite, pluginVcsUrl)
  * - Plugin metadata (displayName, description, tags) from gradle.properties
  * - Plugin ID prefix is derived from groupId (dashes removed, trailing dot added)
  *
- * Required gradle.properties:
+ * Required gradle.properties or shared.properties:
  * ```properties
  * groupId = your.group.id
  * version = latest.release
@@ -50,6 +51,17 @@ ultimaNexus.version.orNull?.let { version = it }
 gradlePlugin {
     website = ultimaNexus.pluginWebsite.get()
     vcsUrl = ultimaNexus.pluginVcsUrl.get()
+
+    plugins.configureEach {
+        val pluginIdPrefix = ultimaNexus.pluginIdPrefix.get()
+        val propertyKey = "plugin." + id.removePrefix(pluginIdPrefix)
+
+        displayName = project.findPropertyOrNull("$propertyKey.displayName")
+            ?: error("Missing property: $propertyKey.displayName")
+        description = project.findPropertyOrNull("$propertyKey.description")
+            ?: error("Missing property: $propertyKey.description")
+        tags = ultimaNexus.pluginTags.get()
+    }
 }
 
 publishing {
@@ -58,36 +70,6 @@ publishing {
             allVariants {
                 fromResolutionResult()
             }
-        }
-    }
-}
-
-afterEvaluate {
-    val configuredGroupId = ultimaNexus.groupId.orNull
-
-    require(configuredGroupId != null) {
-        """
-        |Project group ID is not configured.
-        |Please configure it in one of these ways:
-        |
-        |1. In build.gradle.kts:
-        |   ultimaNexus {
-        |       groupId = "com.example.yourproject"
-        |   }
-        |
-        |2. In gradle.properties:
-        |   groupId=com.example.yourproject
-        """.trimMargin()
-    }
-
-    gradlePlugin {
-        plugins.configureEach {
-            val pluginIdPrefix = ultimaNexus.pluginIdPrefix.get()
-            val propertyKey = "plugin." + id.removePrefix(pluginIdPrefix)
-
-            displayName = providers.gradleProperty("$propertyKey.displayName").get()
-            description = providers.gradleProperty("$propertyKey.description").get()
-            tags = ultimaNexus.pluginTags.get()
         }
     }
 }

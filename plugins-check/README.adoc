@@ -251,6 +251,10 @@ formatJavaConfig {
     licenseHeaderFile = "config/license/header.txt"
     // Or provide license header text directly (takes precedence over file)
     licenseHeaderText = "/* Copyright 2025 Your Company. */"
+    // Import ordering configuration
+    importSamePackageDepth = 3
+    importStandardPackageRegex = "^java\\."
+    importSpecialImportsRegex = "^(javax|jakarta)\\."
 }
 ----
 
@@ -260,6 +264,9 @@ formatJavaConfig {
 ----
 formatJava.formatterConfigFile=config/formatter/eclipse-formatter.xml
 formatJava.licenseHeaderFile=config/license/header.txt
+formatJava.importSamePackageDepth=3
+formatJava.importStandardPackageRegex=^java\.
+formatJava.importSpecialImportsRegex=^(javax|jakarta)\.
 company=Your Company Name
 ----
 
@@ -272,6 +279,21 @@ Uses the Eclipse formatter and Apache license header from the https://github.com
 * Eclipse formatter for consistent code style
 * License header enforcement with `$YEAR` and `$COMPANY` placeholders
 * Javadoc formatting improvements
+* **Import ordering** matching checkstyle's `CustomImportOrder` rules (including `SAME_PACKAGE(n)` support)
+* Automatic removal of unused imports
+
+=== Import Ordering
+
+The `JavaImportOrderStep` automatically orders imports to match checkstyle rules:
+
+1. **Standard Java packages** (`java.*`)
+2. **Special imports** (`javax.*`, `jakarta.*`)
+3. **Third-party packages** (all other imports)
+4. **Same-package imports** (imports from the same package tree, configurable depth)
+5. **Static imports**
+
+Each group is separated by blank lines and sorted alphabetically within the group.
+This ensures `spotlessApply` formats imports exactly as checkstyle expects.
 
 == Gradle Formatting Plugin
 
@@ -398,11 +420,20 @@ The check module has two plugins with root variants for multi-module builds.
 |Plugin |Purpose
 
 |`format-gradle`
-|Formats `*.gradle.kts` files in standard subprojects using ktfmt
+|Formats `*.gradle.kts` files in standard subprojects using ktfmt. Includes dependency sorting.
 
 |`format-gradle.root`
 |Formats plugin framework source files (default: `gradle/plugins/src/main/**`). Configurable targets for both `.gradle.kts` and `.kt` files.
 |===
+
+=== Gradle Formatting Features
+
+The `GradleDependencySortStep` automatically sorts dependencies in `build.gradle.kts` files:
+
+* Groups by source set (main dependencies first, then test, integrationTest, etc.)
+* Orders by scope within each group: `api` → `implementation` → `compileOnlyApi` → `compileOnly` → `runtimeOnly` → `annotationProcessor`
+* Places project dependencies before library dependencies
+* Inserts blank lines between source set groups
 
 === Multi-Module Example
 
@@ -451,6 +482,9 @@ plugins {
 |`formatJava.formatterConfigFile` |_(auto)_ |`format-java` |Path to Eclipse formatter XML
 |`formatJava.licenseHeaderFile` |_(auto)_ |`format-java` |Path to license header file
 |`formatJava.licenseHeaderText` |_(none)_ |`format-java` |License header text (takes precedence)
+|`formatJava.importSamePackageDepth` |`3` |`format-java` |Number of package domains for SAME_PACKAGE matching
+|`formatJava.importStandardPackageRegex` |`^java\.` |`format-java` |Regex for standard Java packages
+|`formatJava.importSpecialImportsRegex` |`^(javax\|jakarta)\.` |`format-java` |Regex for special imports (javax, jakarta)
 |`company` |`""` |`format-java` |Company name for license headers
 |`formatGradleRoot.kotlinGradleTarget` |`gradle/plugins/src/main/**/*.gradle.kts` |`format-gradle.root` |Target pattern for Kotlin Gradle files
 |`formatGradleRoot.kotlinTarget` |`gradle/plugins/src/main/**/*.kt` |`format-gradle.root` |Target pattern for Kotlin files

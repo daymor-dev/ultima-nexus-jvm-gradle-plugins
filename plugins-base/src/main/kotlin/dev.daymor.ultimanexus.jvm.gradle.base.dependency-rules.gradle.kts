@@ -16,6 +16,8 @@
 
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyAsBoolean
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 
 /*
  * Convention plugin for JVM dependency conflict resolution.
@@ -23,9 +25,9 @@ import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
  *
  * Configuration via dependencyRules extension:
  *   dependencyRules {
- *       platformPath = ":versions"
- *       aggregationPath = ":"
- *       autoConsumePlatform = true
+ *       platformPath.set(":versions")
+ *       aggregationPath.set(":")
+ *       autoConsumePlatform.set(true)
  *   }
  *
  * Or via gradle.properties:
@@ -43,33 +45,40 @@ interface DependencyRulesExtension {
 
 val dependencyRules = extensions.create<DependencyRulesExtension>("dependencyRules")
 
-val defaultPlatformPath = providers.gradleProperty(PropertyKeys.DependencyRules.PLATFORM_PATH)
-    .orElse(Defaults.PLATFORM_PATH)
-val defaultAggregationPath = providers.gradleProperty(PropertyKeys.DependencyRules.AGGREGATION_PATH)
-    .orElse(Defaults.AGGREGATION_PATH)
-val defaultAutoConsumePlatform = providers.gradleProperty(PropertyKeys.DependencyRules.AUTO_CONSUME_PLATFORM)
-    .map { it.toBoolean() }
-    .orElse(true)
+dependencyRules.platformPath.convention(
+    project.findPropertyOrNull(PropertyKeys.DependencyRules.PLATFORM_PATH) ?: Defaults.PLATFORM_PATH
+)
+dependencyRules.aggregationPath.convention(
+    project.findPropertyOrNull(PropertyKeys.DependencyRules.AGGREGATION_PATH) ?: Defaults.AGGREGATION_PATH
+)
+dependencyRules.autoConsumePlatform.convention(
+    project.findPropertyAsBoolean(PropertyKeys.DependencyRules.AUTO_CONSUME_PLATFORM, true)
+)
 
-afterEvaluate {
-    val platformPath = dependencyRules.platformPath.orNull ?: defaultPlatformPath.get()
-    val aggregationPath = dependencyRules.aggregationPath.orNull ?: defaultAggregationPath.get()
-    val autoConsume = dependencyRules.autoConsumePlatform.orNull ?: defaultAutoConsumePlatform.get()
+val platformPath = dependencyRules.platformPath.get()
+val aggregationPath = dependencyRules.aggregationPath.get()
+val autoConsume = dependencyRules.autoConsumePlatform.get()
 
-    if (autoConsume && platformPath != project.path && platformPath != aggregationPath) {
-        val platformProject = rootProject.findProject(platformPath)
-        if (platformProject != null) {
+val platformProject = if (platformPath != project.path && platformPath != aggregationPath) {
+    rootProject.findProject(platformPath)
+} else {
+    null
+}
+
+pluginManager.withPlugin("java") {
+    if (platformProject != null) {
+        if (autoConsume) {
             val targetConfigs = listOf("implementation", "api")
             configurations.matching { it.name in targetConfigs }.configureEach {
                 project.dependencies.add(name, project.dependencies.platform(project.dependencies.project(mapOf("path" to platformPath))))
             }
         }
-    }
 
-    jvmDependencyConflicts {
-        consistentResolution {
-            platform(platformPath)
-            providesVersions(aggregationPath)
+        jvmDependencyConflicts {
+            consistentResolution {
+                platform(platformPath)
+                providesVersions(aggregationPath)
+            }
         }
     }
 }

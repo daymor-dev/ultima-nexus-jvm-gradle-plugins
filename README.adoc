@@ -21,7 +21,7 @@ This project provides a comprehensive set of Gradle convention plugins for JVM-b
 
 * *All JVM Languages* - Language-agnostic bundles (`jvm-complete`) for Kotlin, Scala, Groovy, etc.
 * *Java* - Full support with quality checks, testing, and publishing
-* *Spring Boot* - Preconfigured dependencies and application setup (auto-detected)
+* *Spring Boot* - Preconfigured dependencies and application setup
 * *Ultima Nexus JVM Framework* - Complete integration with the framework conventions
 
 The plugins can be used independently or combined through predefined "bundle" plugins to enforce consistent build configurations, code quality standards, and testing practices across projects.
@@ -45,18 +45,7 @@ TIP: *Best Practice*: Use Gradle version catalog (`libs.versions.toml`) instead 
 
 Complete setup for a new multi-module project with just ONE plugin:
 
-==== Step 1: Version Catalog (`gradle/libs.versions.toml`)
-
-[source,toml]
-----
-[versions]
-ultima-nexus-plugins = "latest.release"
-
-[plugins]
-ultimanexus-bundle-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-complete", version.ref = "ultima-nexus-plugins" }
-----
-
-==== Step 2: Settings Script (`settings.gradle.kts`)
+==== Step 1: Settings Script (`settings.gradle.kts`)
 
 NOTE: Version catalogs (`libs`) cannot be used in `settings.gradle.kts` plugins block because it runs before the catalog is loaded. Use the direct `id("...") version "..."` syntax for settings plugins. The `alias(libs.plugins.xxx)` syntax works only in `build.gradle.kts` files.
 
@@ -73,7 +62,7 @@ plugins {
 }
 ----
 
-==== Step 3: Project Properties (`gradle.properties`)
+==== Step 2: Project Properties (`gradle.properties`)
 
 [source,properties]
 ----
@@ -138,26 +127,47 @@ org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryEr
 
 === Usage by Project Type
 
-==== Spring Boot Projects (Java)
+==== Spring Boot Applications
 
-The quickest way - includes everything:
+For standalone Spring Boot applications:
 
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus)
+    alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm.application)
 }
 ----
 
-==== Pure Java Projects
+==== Spring Boot Libraries
 
-For Java projects without Spring Boot:
+For Spring Boot starters and shared libraries:
 
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.bundle.java.complete)
-    alias(libs.plugins.ultimanexus.jvm.bundle.lombok)  // optional
+    alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm.library)
+}
+----
+
+==== Pure Java Applications
+
+For Java CLI tools or services without Spring Boot:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.java.complete.application)
+}
+----
+
+==== Pure Java Libraries
+
+For shared Java libraries:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.java.complete.library)
 }
 ----
 
@@ -175,19 +185,12 @@ plugins {
 
 ==== BOM/Platform Projects
 
-For version management platforms. Spring Boot BOM is auto-included when `org.springframework.boot` plugin is applied:
+For version management platforms:
 
 [source,kotlin]
 ----
 plugins {
     alias(libs.plugins.ultimanexus.jvm.bundle.platform)
-    // Spring Boot BOM automatically included if this is present:
-    // id("org.springframework.boot") apply false
-}
-
-// Or manually configure:
-versionPlatform {
-    includeSpringBootBom = true  // or false
 }
 ----
 
@@ -211,19 +214,24 @@ Level 1 - Feature Bundles:
 └── lombok         (lombok + lombok-test)
 
 Level 2 - Project Bundles:
-├── gradle-project       (lifecycle + identity + dependency-rules + repositories)
-├── gradle-project-root  (lifecycle.root + dependencies.root + format-gradle.root + aggregation) [root only]
-├── platform             (version-platform + identity) [BOM projects only, Spring Boot BOM auto-detected]
-├── jvm-complete         (gradle-project + check + test + report + lombok) [language-agnostic]
-├── java-simple          (gradle-project + compile-java)
-└── java-complete        (check + test + report + compile-java + java-unified + publish + jspecify) [app/lib mode]
+├── gradle-project         (lifecycle + identity + dependency-rules + repositories)
+├── gradle-project-root    (lifecycle.root + dependencies.root + format-gradle.root + aggregation) [root only]
+├── platform               (version-platform + identity) [BOM projects only]
+├── jvm-complete           (gradle-project + check + test + report + lombok) [language-agnostic]
+├── java-simple-application    (gradle-project + compile-java + application)
+├── java-simple-library        (gradle-project + compile-java + java-library)
+├── java-complete-application  (check + test + report + compile-java + application + jspecify)
+└── java-complete-library      (check + test + report + compile-java + java-library + publish + jspecify)
 
 Level 3 - Framework Bundles:
-├── spring-boot-simple     (java-simple + spring-boot-unified + spring-boot-test)
-└── spring-boot-complete   (check + test + report + compile-java + publish + spring-boot-unified) [app/lib mode]
+├── spring-boot-simple-application     (java-simple-application + spring-boot-application + spring-boot-test)
+├── spring-boot-simple-library         (java-simple-library + spring-boot-library + spring-boot-test)
+├── spring-boot-complete-application   (check + test + report + compile-java + spring-boot-application)
+└── spring-boot-complete-library       (check + test + report + compile-java + spring-boot-library + publish)
 
 Level 4 - Full Bundle:
-└── ultima-nexus-jvm   (spring-boot-complete + lombok + documentation [auto-detected])
+├── ultima-nexus-jvm-application  (spring-boot-complete-application + lombok + documentation)
+└── ultima-nexus-jvm-library      (spring-boot-complete-library + lombok + documentation)
 ----
 
 
@@ -282,7 +290,7 @@ For detailed documentation on each module, see the individual README files:
 |Documentation: Antora site generation
 
 |link:plugins-settings/README.adoc[plugins-settings]
-|Settings: Project structure, git hooks, build cache, Develocity, Maven Central aggregation
+|Settings: Project structure, git hooks, build cache, Develocity, Maven Central aggregation, SBOM support
 
 |link:plugins-misc/README.adoc[plugins-misc]
 |Miscellaneous: Aggregation, version platform, `jvm-complete` bundle, full `ultima-nexus-jvm` bundle

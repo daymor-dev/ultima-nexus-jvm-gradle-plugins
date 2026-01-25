@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
+
+/*
+ * Plugin: dev.daymor.ultimanexus.jvm.gradle.feature.java-library
+ *
+ * Java library plugin for shared libraries and SDKs.
+ * Applies the 'java-library' plugin which provides:
+ * - 'api' and 'implementation' dependency configurations
+ * - Proper dependency exposure for consumers
+ *
+ * Usage:
+ * ```kotlin
+ * plugins {
+ *     alias(libs.plugins.ultimanexus.feature.java.library)
+ * }
+ * ```
+ */
 plugins {
-    `kotlin-dsl`
-    alias(libs.plugins.ultimanexus.jvm.gradle.plugin)
-}
-
-dependencies {
-    implementation(libs.ultima.nexus.jvm.core)
-    implementation(libs.ultima.nexus.jvm.base)
-    implementation(libs.cyclonedx.gradle.plugin)
-    // Required for CycloneDX POM parsing - XmlStreamReader is in plexus-xml
-    api(libs.plexus.xml)
-}
-
-testing.suites.named<JvmTestSuite>("test") {
-    useJUnitJupiter()
-    dependencies {
-        implementation(libs.junit.jupiter.params)
-        implementation(libs.assertj.core)
-    }
+    `java-library`
+    id("dev.daymor.ultimanexus.jvm.gradle.base.dependency-rules")
 }

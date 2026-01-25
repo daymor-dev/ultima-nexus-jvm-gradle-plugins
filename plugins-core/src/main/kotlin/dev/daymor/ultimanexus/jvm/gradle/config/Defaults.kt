@@ -17,16 +17,17 @@
 package dev.daymor.ultimanexus.jvm.gradle.config
 
 object Defaults {
+    const val JDK_VERSION = 25
     const val PLATFORM_PATH = ":versions"
     const val AGGREGATION_PATH = ":"
     const val SPOTBUGS_EFFORT = "MAX"
     const val SPOTBUGS_REPORT_LEVEL = "LOW"
     const val TEST_MAX_HEAP_SIZE = "1g"
-    const val TEST_FILE_ENCODING = "UTF-8"
+    const val FILE_ENCODING = "UTF-8"
     val DEFAULT_TEST_SUITES = listOf("integrationTest", "functionalTest", "performanceTest")
     val SUITES_WITHOUT_BYTEBUDDY = listOf("performanceTest")
     const val PROJECT_STRUCTURE_DEPTH = 1
-    val PROJECT_STRUCTURE_EXCLUSIONS = listOf("gradle/plugins", "*-gradle-plugins")
+    val PROJECT_STRUCTURE_EXCLUSIONS = listOf("gradle/plugins", "*-gradle-plugins", "build")
     const val SHARED_GRADLE_PATH = "../gradle/"
     const val SHARED_PROPERTIES_FILE = "shared.properties"
     const val VERSION_CATALOG_NAME = "libs"

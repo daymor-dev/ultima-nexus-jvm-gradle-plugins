@@ -27,8 +27,11 @@ import org.gradle.api.artifacts.VersionCatalog
 
 object CheckArtifactUtils {
 
-    fun getCheckArtifactName(project: Project): String =
+    fun getCheckArtifactNameOrNull(project: Project): String? =
         UltimaNexusConfig.get(project).checkArtifactName.orNull
+
+    fun getCheckArtifactName(project: Project): String =
+        getCheckArtifactNameOrNull(project)
             ?: throw GradleException(Messages.CHECK_ARTIFACT_NAME_REQUIRED)
 
     fun Project.createCheckConfiguration(name: String, libs: VersionCatalog): Configuration {

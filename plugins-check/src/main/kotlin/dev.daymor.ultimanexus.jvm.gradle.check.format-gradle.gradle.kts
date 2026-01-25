@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import dev.daymor.ultimanexus.jvm.gradle.spotless.SortDependenciesStep
+import dev.daymor.ultimanexus.jvm.gradle.spotless.GradleDependencySortStep
 
 /**
  * Convention plugin for Gradle Kotlin DSL file formatting using Spotless with ktfmt.
@@ -31,5 +31,5 @@ plugins {
 
 spotless.kotlinGradle {
     ktfmt().kotlinlangStyle().configure { it.setMaxWidth(80) }
-    addStep(SortDependenciesStep.create())
+    addStep(GradleDependencySortStep.create())
 }

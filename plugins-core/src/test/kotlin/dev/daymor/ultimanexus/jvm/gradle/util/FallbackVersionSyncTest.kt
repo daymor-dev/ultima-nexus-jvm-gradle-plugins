@@ -44,7 +44,7 @@ class FallbackVersionSyncTest {
         assertVersionMatches("lombok", versions, DependencyUtils.FallbackVersions.LOMBOK)
         assertVersionMatches("pmd", versions, DependencyUtils.FallbackVersions.PMD)
         assertVersionMatches("slf4j", versions, DependencyUtils.FallbackVersions.SLF4J)
-        assertVersionMatches("spring-boot-dependencies", versions, DependencyUtils.FallbackVersions.SPRING_BOOT)
+        assertVersionMatches("spring-boot", versions, DependencyUtils.FallbackVersions.SPRING_BOOT)
     }
 
     private fun parseVersionsFromToml(content: String): Map<String, String> {

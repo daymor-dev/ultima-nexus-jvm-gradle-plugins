@@ -27,6 +27,9 @@ All report plugins auto-discover test suites and create appropriate reports for 
 |`dev.daymor.ultimanexus.jvm.gradle.report.sbom`
 |Software Bill of Materials generation (CycloneDX)
 
+|`dev.daymor.ultimanexus.jvm.gradle.report.sbom-support`
+|Settings plugin providing SBOM runtime dependencies (for complex multi-plugin setups)
+
 |`dev.daymor.ultimanexus.jvm.gradle.report.test`
 |Aggregated test results report
 
@@ -50,8 +53,11 @@ ultima-nexus-plugins = "latest.release"
 ultimanexus-bundle-report = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.report", version.ref = "ultima-nexus-plugins" }
 ultimanexus-report-code-coverage = { id = "dev.daymor.ultimanexus.jvm.gradle.report.code-coverage", version.ref = "ultima-nexus-plugins" }
 ultimanexus-report-sbom = { id = "dev.daymor.ultimanexus.jvm.gradle.report.sbom", version.ref = "ultima-nexus-plugins" }
+ultimanexus-report-sbom-support = { id = "dev.daymor.ultimanexus.jvm.gradle.report.sbom-support", version.ref = "ultima-nexus-plugins" }
 ultimanexus-report-test = { id = "dev.daymor.ultimanexus.jvm.gradle.report.test", version.ref = "ultima-nexus-plugins" }
 ----
+
+NOTE: If you use `bundle.ultima-nexus-jvm-settings`, the `sbom-support` settings plugin is automatically included.
 
 == Report Bundle
 
@@ -186,6 +192,45 @@ SBOM files are generated at:
 ----
 ./gradlew cyclonedxBom
 ----
+
+=== SBOM Support Settings Plugin
+
+Optional settings plugin that ensures CycloneDX SBOM generation works in complex multi-plugin builds.
+
+==== When is this needed?
+
+The CycloneDX Gradle plugin has an **optional** transitive dependency on `plexus-xml` that may not be resolved correctly in certain scenarios:
+
+1. **Complex convention plugin setups**: When multiple plugins bring different versions of plexus libraries, Gradle's dependency resolution may upgrade `plexus-utils` to 4.x but not include `plexus-xml` (where XML classes now live since plexus 4.0)
+2. **Multi-module projects with many plugins**: More plugins = more chances for dependency resolution to miss the optional dependency
+
+**In simple setups** (standalone CycloneDX or few plugins), you may not need this settings plugin - the dependencies often resolve correctly.
+
+**In complex setups** (like Ultima Nexus bundles with many convention plugins), this settings plugin ensures `plexus-xml` is on the settings classpath, making it available to all projects.
+
+==== Usage
+
+If you use `bundle.ultima-nexus-jvm-settings`, this is automatically included.
+
+Otherwise, add to your `settings.gradle.kts`:
+
+[source,kotlin]
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.report.sbom-support") version "..."
+}
+----
+
+Then in your `build.gradle.kts`:
+
+[source,kotlin]
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.report.sbom")
+}
+----
+
+TIP: If SBOM generation works without this plugin in your project, you don't need it. It's primarily useful for complex multi-plugin setups.
 
 == Test Report Plugin
 

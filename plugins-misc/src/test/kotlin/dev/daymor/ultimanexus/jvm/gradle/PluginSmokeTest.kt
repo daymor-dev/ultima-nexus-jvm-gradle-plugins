@@ -97,24 +97,54 @@ class PluginSmokeTest {
     }
 
     @Nested
-    inner class UltimaNexusBundle {
+    inner class UltimaNexusApplicationBundle {
 
         @Test
-        fun `ultima-nexus bundle applies successfully`() {
+        fun `ultima-nexus-jvm-application bundle applies successfully`() {
             fixture()
                 .withSettings("rootProject.name = \"test-project\"")
                 .withBuildScript(
                     """
                     plugins {
-                        id("${PluginIds.Bundle.ULTIMA_NEXUS_JVM}")
-                    }
-
-                    ultimaNexus {
-                        groupId.set("com.example.test")
+                        id("${PluginIds.Bundle.ULTIMA_NEXUS_JVM_APPLICATION}")
                     }
                     """.trimIndent()
                 )
-                .withProperties("checkArtifactName" to "my-check-artifact")
+                .withProperties(
+                    "groupId" to "com.example.test",
+                    "checkArtifactName" to "my-check-artifact"
+                )
+                .withVersionCatalog(
+                    """
+                    [libraries]
+                    my-check-artifact = "org.example:check-artifact:1.0.0"
+                    """.trimIndent()
+                )
+
+            val result = fixture().help()
+
+            assertThat(result.taskSucceeded(":help")).isTrue()
+        }
+    }
+
+    @Nested
+    inner class UltimaNexusLibraryBundle {
+
+        @Test
+        fun `ultima-nexus-jvm-library bundle applies successfully`() {
+            fixture()
+                .withSettings("rootProject.name = \"test-project\"")
+                .withBuildScript(
+                    """
+                    plugins {
+                        id("${PluginIds.Bundle.ULTIMA_NEXUS_JVM_LIBRARY}")
+                    }
+                    """.trimIndent()
+                )
+                .withProperties(
+                    "groupId" to "com.example.test",
+                    "checkArtifactName" to "my-check-artifact"
+                )
                 .withVersionCatalog(
                     """
                     [libraries]

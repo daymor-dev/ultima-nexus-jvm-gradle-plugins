@@ -21,6 +21,7 @@ plugins {
 
 dependencies {
     implementation(libs.ultima.nexus.jvm.core)
+    implementation(libs.ultima.nexus.jvm.report) // For sbom-support settings plugin
     implementation(libs.gradle.pre.commit.git.hooks)
     implementation(libs.gradleup.nmcp.settings)
     implementation(libs.gradle.develocity)

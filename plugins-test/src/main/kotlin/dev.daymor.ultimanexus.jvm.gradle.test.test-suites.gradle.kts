@@ -16,12 +16,13 @@
 
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
+import dev.daymor.ultimanexus.jvm.gradle.util.ByteBuddyAgentArgumentProvider
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.Fallbacks
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibraryOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.gradlePropertyAsBoolean
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.gradlePropertyAsInt
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.gradlePropertyOrNull
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyAsBoolean
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyAsInt
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 
 /*
  * Configurable Test Suites Plugin
@@ -71,7 +72,6 @@ plugins {
     jacoco
 }
 
-// Per-suite configuration interface
 interface TestSuiteConfigSpec {
     val useByteBuddyAgent: Property<Boolean>
     val maxHeapSize: Property<String>
@@ -80,7 +80,6 @@ interface TestSuiteConfigSpec {
     val fileEncoding: Property<String>
 }
 
-// Main extension interface
 interface TestSuitesExtension {
     val suites: ListProperty<String>
     val maxHeapSize: Property<String>
@@ -98,34 +97,31 @@ interface TestSuitesExtension {
 
 val testSuitesExtension = extensions.create<TestSuitesExtension>("testSuites")
 
-// Read global defaults from properties
 val defaultParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
 
 testSuitesExtension.maxHeapSize.convention(
-    providers.gradlePropertyOrNull(PropertyKeys.Test.MAX_HEAP_SIZE) ?: Defaults.TEST_MAX_HEAP_SIZE
+    project.findPropertyOrNull(PropertyKeys.Test.MAX_HEAP_SIZE) ?: Defaults.TEST_MAX_HEAP_SIZE
 )
 testSuitesExtension.maxParallelForks.convention(
-    providers.gradlePropertyAsInt(PropertyKeys.Test.MAX_PARALLEL_FORKS, defaultParallelForks)
+    project.findPropertyAsInt(PropertyKeys.Test.MAX_PARALLEL_FORKS, defaultParallelForks)
 )
 testSuitesExtension.showStandardStreams.convention(
-    providers.gradlePropertyAsBoolean(PropertyKeys.Test.SHOW_STANDARD_STREAMS, true)
+    project.findPropertyAsBoolean(PropertyKeys.Test.SHOW_STANDARD_STREAMS, true)
 )
 testSuitesExtension.fileEncoding.convention(
-    providers.gradlePropertyOrNull(PropertyKeys.Test.FILE_ENCODING) ?: Defaults.TEST_FILE_ENCODING
+    project.findPropertyOrNull(PropertyKeys.Test.FILE_ENCODING) ?: Defaults.FILE_ENCODING
 )
 testSuitesExtension.useByteBuddyAgent.convention(
-    providers.gradlePropertyAsBoolean(PropertyKeys.Test.USE_BYTE_BUDDY_AGENT, true)
+    project.findPropertyAsBoolean(PropertyKeys.Test.USE_BYTE_BUDDY_AGENT, true)
 )
 
-// Read suites from properties or use defaults
-val suitesFromProps = providers.gradlePropertyOrNull(PropertyKeys.Test.SUITES)
+val suitesFromProps = project.findPropertyOrNull(PropertyKeys.Test.SUITES)
     ?.split(",")
     ?.map { it.trim() }
     ?.filter { it.isNotBlank() }
 
 testSuitesExtension.suites.convention(suitesFromProps ?: Defaults.DEFAULT_TEST_SUITES)
 
-// ByteBuddy agent configuration
 val byteBuddyAgent: Configuration =
     configurations.findByName(Defaults.ConfigurationName.BYTE_BUDDY_AGENT)
         ?: configurations.create(Defaults.ConfigurationName.BYTE_BUDDY_AGENT)
@@ -138,9 +134,8 @@ dependencies {
     )
 }
 
-// Helper function to get per-suite property
 fun getSuiteProperty(suiteName: String, property: String): String? =
-    providers.gradlePropertyOrNull("${PropertyKeys.Test.SUITE_PREFIX}$suiteName.$property")
+    project.findPropertyOrNull("${PropertyKeys.Test.SUITE_PREFIX}$suiteName.$property")
 
 fun getSuiteBooleanProperty(suiteName: String, property: String, default: Boolean): Boolean =
     getSuiteProperty(suiteName, property)?.toBoolean() ?: default
@@ -148,59 +143,56 @@ fun getSuiteBooleanProperty(suiteName: String, property: String, default: Boolea
 fun getSuiteIntProperty(suiteName: String, property: String, default: Int): Int =
     getSuiteProperty(suiteName, property)?.toIntOrNull() ?: default
 
-// Register test suites after evaluation to allow extension configuration
-afterEvaluate {
-    val suiteNames = testSuitesExtension.suites.get()
+val suiteNames = testSuitesExtension.suites.get()
 
-    suiteNames.forEach { suiteName ->
-        // Get per-suite config if exists
-        val suiteConfig = testSuitesExtension.suiteConfigs.findByName(suiteName)
+suiteNames.forEach { suiteName ->
+    val suiteConfig = testSuitesExtension.suiteConfigs.findByName(suiteName)
 
-        // Determine ByteBuddy usage: per-suite config > property > global default
-        // Performance suites default to false
-        val defaultByteBuddy = if (suiteName in Defaults.SUITES_WITHOUT_BYTEBUDDY) false
-        else testSuitesExtension.useByteBuddyAgent.get()
-        val useByteBuddy = suiteConfig?.useByteBuddyAgent?.orNull
-            ?: getSuiteBooleanProperty(suiteName, "useByteBuddyAgent", defaultByteBuddy)
+    val defaultByteBuddy = if (suiteName in Defaults.SUITES_WITHOUT_BYTEBUDDY) false
+    else testSuitesExtension.useByteBuddyAgent.get()
+    val useByteBuddy = suiteConfig?.useByteBuddyAgent?.orNull
+        ?: getSuiteBooleanProperty(suiteName, "useByteBuddyAgent", defaultByteBuddy)
 
-        val maxHeap = suiteConfig?.maxHeapSize?.orNull
-            ?: getSuiteProperty(suiteName, "maxHeapSize")
-            ?: testSuitesExtension.maxHeapSize.get()
+    val maxHeap = suiteConfig?.maxHeapSize?.orNull
+        ?: getSuiteProperty(suiteName, "maxHeapSize")
+        ?: testSuitesExtension.maxHeapSize.get()
 
-        val parallelForks = suiteConfig?.maxParallelForks?.orNull
-            ?: getSuiteIntProperty(suiteName, "maxParallelForks", testSuitesExtension.maxParallelForks.get())
+    val parallelForks = suiteConfig?.maxParallelForks?.orNull
+        ?: getSuiteIntProperty(suiteName, "maxParallelForks", testSuitesExtension.maxParallelForks.get())
 
-        val showStreams = suiteConfig?.showStandardStreams?.orNull
-            ?: getSuiteBooleanProperty(suiteName, "showStandardStreams", testSuitesExtension.showStandardStreams.get())
+    val showStreams = suiteConfig?.showStandardStreams?.orNull
+        ?: getSuiteBooleanProperty(suiteName, "showStandardStreams", testSuitesExtension.showStandardStreams.get())
 
-        val encoding = suiteConfig?.fileEncoding?.orNull
-            ?: getSuiteProperty(suiteName, "fileEncoding")
-            ?: testSuitesExtension.fileEncoding.get()
+    val encoding = suiteConfig?.fileEncoding?.orNull
+        ?: getSuiteProperty(suiteName, "fileEncoding")
+        ?: testSuitesExtension.fileEncoding.get()
 
-        // Register the test suite
-        testing.suites.register<JvmTestSuite>(suiteName) {
-            useJUnitJupiter()
-            targets.named(suiteName) {
-                testTask {
-                    group = Defaults.TaskGroup.VERIFICATION
-                    maxHeapSize = maxHeap
-                    maxParallelForks = parallelForks
-                    testLogging.showStandardStreams = showStreams
-                    systemProperty("file.encoding", encoding)
+    testing.suites.register<JvmTestSuite>(suiteName) {
+        useJUnitJupiter()
+        targets.named(suiteName) {
+            testTask {
+                group = Defaults.TaskGroup.VERIFICATION
+                maxHeapSize = maxHeap
+                maxParallelForks = parallelForks
+                testLogging.showStandardStreams = showStreams
+                systemProperty("file.encoding", encoding)
 
-                    if (useByteBuddy) {
-                        jvmArgs = listOf(
-                            "-javaagent:${byteBuddyAgent.singleFile.absolutePath}",
-                            "-Xshare:off",
-                        )
-                    }
+                if (useByteBuddy) {
+                    jvmArgumentProviders.add(
+                        objects.newInstance<ByteBuddyAgentArgumentProvider>().apply {
+                            agentClasspath.from(byteBuddyAgent)
+                        }
+                    )
                 }
             }
         }
+    }
 
-        // Add implementation dependency on the project
-        dependencies {
-            "${suiteName}Implementation"(project)
-        }
+    dependencies {
+        "${suiteName}Implementation"(project)
+    }
+
+    configurations.named("${suiteName}Implementation") {
+        extendsFrom(configurations.getByName("testImplementation"))
     }
 }

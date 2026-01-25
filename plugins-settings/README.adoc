@@ -13,6 +13,7 @@ The `plugins-settings` module provides settings-level plugins:
 * **Build Cache**: Local and remote build cache configuration
 * **Develocity**: FREE Build Scans with CI auto-publishing
 * **Maven Central Publishing**: Automatic aggregation for multi-module Maven Central publishing
+* **SBOM Support**: Runtime dependencies for CycloneDX SBOM generation (from plugins-report)
 * **Settings Bundle**: Combined settings plugins (project-structure + git-hooks + build-cache + develocity)
 * **Complete Bundle**: All-in-one for multi-module projects (settings + root + subprojects)
 
@@ -85,6 +86,7 @@ plugins {
 * Build cache configuration
 * Develocity build scans
 * Maven Central publishing (auto-detected)
+* SBOM runtime dependencies (for report.sbom plugin)
 
 === Automatic Maven Central Publishing Detection
 
@@ -120,6 +122,7 @@ That's it! No need to configure individual `build.gradle.kts` files.
 * Build cache configuration (local + remote)
 * Develocity build scans (FREE, auto-publish on CI)
 * Maven Central publishing aggregation (auto-detected)
+* SBOM runtime dependencies (required for SBOM generation)
 
 *Root project (automatically applied):*
 
@@ -204,7 +207,7 @@ plugins {
 # Maximum directory depth to search for subprojects (default: 1)
 projectStructureDepth=6
 
-# Comma-separated exclusion patterns (default: gradle/plugins,*-gradle-plugins)
+# Comma-separated exclusion patterns (default: gradle/plugins,*-gradle-plugins,build)
 projectStructureExclusions=gradle/plugins,*-gradle-plugins,build
 
 # Root project name (default: directory name)
@@ -394,7 +397,7 @@ NOTE: For explicit module control, use the `publish-maven-central-aggregation` b
 |Maximum directory depth to search for subprojects
 
 |`projectStructureExclusions`
-|`gradle/plugins,*-gradle-plugins`
+|`gradle/plugins,*-gradle-plugins,build`
 |`project-structure`
 |Comma-separated directory patterns to exclude
 

@@ -9,10 +9,10 @@ Java-specific convention plugins for JVM projects.
 The `plugins-java` module provides Java development conventions:
 
 * **Java Compilation**: Toolchain support with configurable JDK version
-* **Java Unified**: Switchable application/library mode
+* **Java Application/Library**: Explicit plugins for application or library mode
 * **Javadoc**: Documentation generation configuration
 * **JSpecify**: Nullability annotations
-* **Bundles**: Pre-configured `java-simple` and `java-complete` bundles
+* **Bundles**: Pre-configured bundles for applications and libraries
 
 All plugins support configuration via extension DSL or gradle.properties.
 
@@ -25,8 +25,11 @@ All plugins support configuration via extension DSL or gradle.properties.
 |`dev.daymor.ultimanexus.jvm.gradle.feature.compile-java`
 |Java compilation with toolchain support (default: Java 25)
 
-|`dev.daymor.ultimanexus.jvm.gradle.feature.java-unified`
-|Java with configurable application/library mode
+|`dev.daymor.ultimanexus.jvm.gradle.feature.java-application`
+|Java application mode (applies `application` plugin)
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.java-library`
+|Java library mode (applies `java-library` plugin)
 
 |`dev.daymor.ultimanexus.jvm.gradle.feature.javadoc`
 |Javadoc generation configuration
@@ -34,11 +37,17 @@ All plugins support configuration via extension DSL or gradle.properties.
 |`dev.daymor.ultimanexus.jvm.gradle.dependency.jspecify`
 |JSpecify nullability annotations
 
-|`dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple`
-|Simple Java project without quality checks
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple-application`
+|Simple Java application without quality checks
 
-|`dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete`
-|Complete Java development with app/library mode
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple-library`
+|Simple Java library without quality checks
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete-application`
+|Complete Java application with quality checks
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete-library`
+|Complete Java library with quality checks and publishing
 |===
 
 == Installation
@@ -51,92 +60,91 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 ultima-nexus-plugins = "latest.release"
 
 [plugins]
-ultimanexus-bundle-java-simple = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-java-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete", version.ref = "ultima-nexus-plugins" }
+ultimanexus-bundle-java-simple-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple-application", version.ref = "ultima-nexus-plugins" }
+ultimanexus-bundle-java-simple-library = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple-library", version.ref = "ultima-nexus-plugins" }
+ultimanexus-bundle-java-complete-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete-application", version.ref = "ultima-nexus-plugins" }
+ultimanexus-bundle-java-complete-library = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete-library", version.ref = "ultima-nexus-plugins" }
 ultimanexus-feature-compile-java = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.compile-java", version.ref = "ultima-nexus-plugins" }
-ultimanexus-feature-java-unified = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.java-unified", version.ref = "ultima-nexus-plugins" }
 ----
 
-== Java Complete Bundle
+== Java Complete Bundles
 
-The recommended bundle for full-featured Java development.
+Full-featured Java development bundles with quality checks, testing, and reporting.
 
-=== Usage
+=== Java Complete Application
+
+For executable Java applications (CLI tools, services):
 
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.bundle.java.complete)
+    alias(libs.plugins.ultimanexus.jvm.bundle.java.complete.application)
 }
 ----
 
-=== Includes
+Includes:
 
-* Base Gradle project conventions (`gradle-project` bundle)
-* All quality checks (`check` bundle)
-* All test types (`test` bundle)
-* All reports (`report` bundle)
-* Java compilation configuration
-* Java with configurable application/library mode
-* Javadoc generation
-* Maven Central publishing
+* Base Gradle project conventions
+* All quality checks, tests, and reports
+* Java compilation and Javadoc
+* `application` plugin with `run` task
 * JSpecify nullability annotations
 
-=== Application vs Library Mode
+=== Java Complete Library
 
-By default, `java-complete` runs in **application mode**. This enables:
-
-* The `application` plugin
-* `run` task for executing the application
-* Distribution tasks (`distZip`, `distTar`)
-
-For libraries, switch to **library mode**:
+For shared libraries and SDKs:
 
 [source,kotlin]
 ----
-ultimaNexus {
-    applicationMode.set(false)
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.java.complete.library)
 }
 ----
 
-Or via gradle.properties:
+Includes:
 
-[source,properties]
-----
-java.isApplication=false
-----
+* Everything in application bundle
+* `java-library` plugin (API/implementation separation)
+* Maven Central publishing with sources and Javadoc JARs
 
 === Mode Comparison
 
 [cols="1,2,1,1,2"]
 |===
-|Mode |Plugin |run task |Publishing |Use Case
+|Bundle |Plugin |run task |Publishing |Use Case
 
-|Application (default)
+|`java-complete-application`
 |`application`
 |Enabled
 |Not included
 |CLI tools, services
 
-|Library
+|`java-complete-library`
 |`java-library`
 |None
-|`publish-java` enabled
+|Included
 |Shared libraries, SDKs
 |===
 
-NOTE: In library mode, the `publish-java` plugin is automatically included, enabling Maven Central publishing with sources and Javadoc JARs.
-
-== Java Simple Bundle
+== Java Simple Bundles
 
 Minimal Java setup without quality checks.
 
-=== Usage
+=== Java Simple Application
 
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.bundle.java.simple)
+    alias(libs.plugins.ultimanexus.jvm.bundle.java.simple.application)
+}
+----
+
+=== Java Simple Library
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.java.simple.library)
 }
 ----
 
@@ -144,6 +152,7 @@ plugins {
 
 * Base Gradle project conventions
 * Java compilation configuration
+* `application` or `java-library` plugin respectively
 
 == Java Compilation Plugin
 
@@ -193,41 +202,31 @@ Archives are configured for reproducibility:
 * No timestamps preserved
 * Standard file permissions (0664 for files, 0775 for directories)
 
-== Java Unified Plugin
+== Java Application Plugin
 
-Configurable application/library mode for Java projects.
+Applies the Gradle `application` plugin for executable Java projects.
 
 === Usage
 
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.feature.java.unified)
+    alias(libs.plugins.ultimanexus.jvm.feature.java.application)
 }
 ----
 
-=== Configuration via Extension
+== Java Library Plugin
+
+Applies the Gradle `java-library` plugin for shared libraries.
+
+=== Usage
 
 [source,kotlin]
 ----
-ultimaNexus {
-    applicationMode.set(false)  // Library mode
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.java.library)
 }
 ----
-
-=== Configuration via gradle.properties
-
-[source,properties]
-----
-java.isApplication=false
-----
-
-=== Behavior
-
-* **Application mode (default)**: Applies `application` plugin
-* **Library mode**: Applies `java-library` plugin
-
-NOTE: This plugin uses the shared `ultimaNexus` extension from `UltimaNexusConfig`.
 
 == Javadoc Plugin
 
@@ -289,11 +288,6 @@ public class MyClass {
 |`25`
 |`compile-java`
 |JDK version for Java compilation toolchain
-
-|`java.isApplication`
-|`true`
-|`java-unified`
-|Application mode (true) or library mode (false)
 |===
 
 == Running Common Tasks

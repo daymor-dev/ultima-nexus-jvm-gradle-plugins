@@ -15,14 +15,24 @@
  */
 
 /*
- * Plugin: dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple
+ * Plugin: dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple-library
  *
- * Bundle plugin for simple Java library development.
- * Includes base project conventions and Java compilation settings.
- * Does not include quality checks, tests, or publishing.
+ * Bundle plugin for simple Spring Boot library development.
+ * Applies base Java conventions with Spring Boot library support.
+ * Does not include quality checks, reporting, or publishing.
+ *
+ * For Spring Boot starters and shared libraries without full tooling.
+ *
+ * Usage:
+ * ```kotlin
+ * plugins {
+ *     alias(libs.plugins.ultimanexus.bundle.spring.boot.simple.library)
+ * }
+ * ```
  */
 plugins {
-    `java-library`
     id("dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project")
     id("dev.daymor.ultimanexus.jvm.gradle.feature.compile-java")
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-library")
+    id("dev.daymor.ultimanexus.jvm.gradle.dependency.spring-boot-test")
 }
