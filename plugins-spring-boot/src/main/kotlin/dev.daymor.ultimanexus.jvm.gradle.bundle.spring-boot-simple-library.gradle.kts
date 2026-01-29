@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/*
+/**
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple-library
  *
  * Bundle plugin for simple Spring Boot library development.

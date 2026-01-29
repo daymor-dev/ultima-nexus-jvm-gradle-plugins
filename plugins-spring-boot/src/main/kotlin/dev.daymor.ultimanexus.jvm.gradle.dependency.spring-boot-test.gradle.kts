@@ -19,7 +19,7 @@ import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.Fallbacks
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibraryOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
 
-/*
+/**
  * Dependency plugin for Spring Boot test dependencies.
  * Adds common test-time dependencies for Spring Boot projects.
  *

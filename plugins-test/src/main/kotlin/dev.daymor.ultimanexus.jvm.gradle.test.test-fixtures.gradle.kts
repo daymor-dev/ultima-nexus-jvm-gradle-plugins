@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/*
+/**
  * Test Fixtures Plugin
  * ====================
  * Enables the java-test-fixtures plugin for sharing test utilities across modules.

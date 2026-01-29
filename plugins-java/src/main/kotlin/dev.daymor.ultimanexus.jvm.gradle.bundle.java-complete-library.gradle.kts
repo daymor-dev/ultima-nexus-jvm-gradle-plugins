@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/*
+/**
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete-library
  *
  * Bundle plugin for complete Java library development.

@@ -16,6 +16,7 @@ The `plugins-settings` module provides settings-level plugins:
 * **SBOM Support**: Runtime dependencies for CycloneDX SBOM generation (from plugins-report)
 * **Settings Bundle**: Combined settings plugins (project-structure + git-hooks + build-cache + develocity)
 * **Complete Bundle**: All-in-one for multi-module projects (settings + root + subprojects)
+* **Automatic Plugin Version Resolution**: No `resolutionStrategy` configuration needed
 
 All plugins are applied in `settings.gradle.kts`.
 
@@ -49,19 +50,23 @@ All plugins are applied in `settings.gradle.kts`.
 
 == Installation
 
-Add to your version catalog (`gradle/libs.versions.toml`):
+NOTE: Settings plugins cannot use version catalogs because the catalog is not available during settings evaluation. You must specify the version directly in the `plugins {}` block.
 
-[source,toml]
+Apply in `settings.gradle.kts`:
+
+[source,kotlin]
 ----
-[versions]
-ultima-nexus-plugins = "latest.release"
+plugins {
+    // Settings bundle (recommended)
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-settings") version "latest.release"
 
-[plugins]
-ultimanexus-bundle-settings = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-settings", version.ref = "ultima-nexus-plugins" }
-ultimanexus-feature-project-structure = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.project-structure", version.ref = "ultima-nexus-plugins" }
-ultimanexus-feature-git-hooks = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.git-hooks", version.ref = "ultima-nexus-plugins" }
-ultimanexus-feature-publish-maven-central = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-complete", version.ref = "ultima-nexus-plugins" }
+    // Or individual plugins:
+    // id("dev.daymor.ultimanexus.jvm.gradle.feature.project-structure") version "latest.release"
+    // id("dev.daymor.ultimanexus.jvm.gradle.feature.git-hooks") version "latest.release"
+    // id("dev.daymor.ultimanexus.jvm.gradle.feature.build-cache") version "latest.release"
+    // id("dev.daymor.ultimanexus.jvm.gradle.report.develocity") version "latest.release"
+    // id("dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central") version "latest.release"
+}
 ----
 
 == Settings Bundle (ultima-nexus-jvm-settings)
@@ -87,6 +92,7 @@ plugins {
 * Develocity build scans
 * Maven Central publishing (auto-detected)
 * SBOM runtime dependencies (for report.sbom plugin)
+* Automatic plugin version resolution
 
 === Automatic Maven Central Publishing Detection
 
@@ -111,7 +117,7 @@ plugins {
 }
 ----
 
-That's it! No need to configure individual `build.gradle.kts` files.
+That's it!
 
 === What It Includes
 
@@ -123,6 +129,7 @@ That's it! No need to configure individual `build.gradle.kts` files.
 * Develocity build scans (FREE, auto-publish on CI)
 * Maven Central publishing aggregation (auto-detected)
 * SBOM runtime dependencies (required for SBOM generation)
+* Automatic plugin version resolution
 
 *Root project (automatically applied):*
 
@@ -441,6 +448,27 @@ NOTE: For explicit module control, use the `publish-maven-central-aggregation` b
 |`develocity`
 |Develocity server URL
 |===
+
+== Automatic Plugin Version Resolution
+
+The settings bundle plugins (`ultima-nexus-jvm-settings` and `ultima-nexus-jvm-complete`) automatically configure plugin version resolution. This means:
+
+* **No `pluginManagement` block required** in your `settings.gradle.kts`
+* **No `resolutionStrategy` configuration needed**
+* All Ultima Nexus JVM plugins automatically use the same version as the settings plugin
+
+=== How It Works
+
+When you apply the settings plugin with a version:
+
+[source,kotlin]
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-settings") version "1.0.0"
+}
+----
+
+The plugin automatically configures `pluginManagement.resolutionStrategy` to resolve all `dev.daymor.ultimanexus.jvm.gradle.*` plugins to version `1.0.0`.
 
 == Related Modules
 

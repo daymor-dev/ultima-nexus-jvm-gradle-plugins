@@ -19,7 +19,7 @@ import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.Fallbacks
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibraryOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
 
-/*
+/**
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-application
  *
  * Feature plugin for Spring Boot application development.

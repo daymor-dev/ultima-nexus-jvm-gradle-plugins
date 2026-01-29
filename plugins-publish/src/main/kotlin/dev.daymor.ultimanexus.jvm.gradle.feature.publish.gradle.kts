@@ -20,7 +20,7 @@ import dev.daymor.ultimanexus.jvm.gradle.config.UltimaNexusConfig
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromProperty
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 
-/*
+/**
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.feature.publish
  *
  * Configures Maven publishing with POM metadata and GPG signing.

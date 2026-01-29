@@ -15,7 +15,7 @@
  */
 
 
-/*
+/**
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.feature.java-application
  *
  * Java application plugin for runnable projects (CLI tools, services).

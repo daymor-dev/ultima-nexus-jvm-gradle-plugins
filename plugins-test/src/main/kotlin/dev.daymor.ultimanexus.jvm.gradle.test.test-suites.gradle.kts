@@ -24,7 +24,7 @@ import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyAsBoolea
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyAsInt
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 
-/*
+/**
  * Configurable Test Suites Plugin
  * ===============================
  * Creates multiple test suites from configuration. Supports both extension DSL

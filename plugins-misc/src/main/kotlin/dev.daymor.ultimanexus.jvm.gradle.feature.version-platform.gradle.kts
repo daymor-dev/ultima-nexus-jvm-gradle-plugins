@@ -20,7 +20,7 @@ import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibraryOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 
-/*
+/**
  * Version platform plugin that creates a BOM-style platform for dependency management.
  * Includes all catalog versions and optionally the Spring Boot BOM.
  *

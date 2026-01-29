@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/*
+/**
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete-application
  *
  * Bundle plugin for complete Spring Boot application development.

@@ -17,7 +17,7 @@
 
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
 
-/*
+/**
  * Plugin that creates dependency constraints from all version catalog entries.
  * Applies strict version constraints for all libraries defined in the catalog.
  *

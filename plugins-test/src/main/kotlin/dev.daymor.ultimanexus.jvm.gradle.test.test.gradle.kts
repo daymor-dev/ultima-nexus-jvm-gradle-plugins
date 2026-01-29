@@ -24,7 +24,7 @@ import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromProper
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyAsInt
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 
-/*
+/**
  * Unit Test Plugin
  * ================
  * Configures the default "test" suite with JUnit Jupiter, JaCoCo coverage,
@@ -110,11 +110,11 @@ testing.suites.named<JvmTestSuite>("test") {
 configurations.testRuntimeClasspath {
     resolutionStrategy.capabilitiesResolution {
         withCapability("org.gradlex:slf4j-impl:1.0") {
-            candidates.removeIf {
-                it.id.displayName.contains("org.slf4j:slf4j-simple")
+            val filtered = candidates.filter {
+                !it.id.displayName.contains("org.slf4j:slf4j-simple")
             }
-            if (candidates.isNotEmpty()) {
-                select(candidates.first().id.displayName)
+            if (filtered.isNotEmpty()) {
+                select(filtered.first().id.displayName)
             }
         }
     }

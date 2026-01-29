@@ -18,7 +18,7 @@
 import dev.daymor.ultimanexus.jvm.gradle.config.PluginIds
 import dev.daymor.ultimanexus.jvm.gradle.util.ProjectUtils.aggregateDir
 
-/*
+/**
  * Aggregation plugin for multi-module projects.
  * Aggregates reports and metrics from subprojects into a single location.
  *

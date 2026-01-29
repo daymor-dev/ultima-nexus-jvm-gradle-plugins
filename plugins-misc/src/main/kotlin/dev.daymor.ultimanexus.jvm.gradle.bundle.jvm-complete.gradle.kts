@@ -16,7 +16,7 @@
 
 import dev.daymor.ultimanexus.jvm.gradle.config.PluginIds
 
-/*
+/**
  * Bundle plugin for complete JVM experience (language-agnostic).
  * Includes quality checks, testing, reporting, and lombok support.
  * Does NOT include Java-specific features - add those separately if needed.

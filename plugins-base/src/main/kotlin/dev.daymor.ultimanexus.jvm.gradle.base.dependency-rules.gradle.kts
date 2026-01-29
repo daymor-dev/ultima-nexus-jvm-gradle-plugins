@@ -19,7 +19,7 @@ import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyAsBoolean
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 
-/*
+/**
  * Convention plugin for JVM dependency conflict resolution.
  * Automatically consumes platform project if it exists.
  *

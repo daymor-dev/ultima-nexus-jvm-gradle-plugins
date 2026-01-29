@@ -51,12 +51,6 @@ NOTE: Version catalogs (`libs`) cannot be used in `settings.gradle.kts` plugins 
 
 [source,kotlin]
 ----
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-    }
-}
-
 plugins {
     id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-complete") version "latest.release"
 }

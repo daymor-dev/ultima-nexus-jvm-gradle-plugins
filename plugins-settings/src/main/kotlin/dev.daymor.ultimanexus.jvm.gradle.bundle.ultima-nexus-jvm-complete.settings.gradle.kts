@@ -20,7 +20,7 @@ import dev.daymor.ultimanexus.jvm.gradle.config.PluginIds
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
 import java.io.File
 
-/*
+/**
  * Complete settings bundle for Ultima Nexus JVM multi-module projects.
  *
  * This is the all-in-one plugin for multi-module projects. Apply it once
@@ -29,6 +29,7 @@ import java.io.File
  * - Project structure discovery (auto-includes subprojects)
  * - Git pre-commit hooks
  * - Maven Central publishing aggregation
+ * - Automatic plugin version resolution
  * - Root project: lifecycle.root, dependencies.root, format-gradle.root, aggregation
  * - Platform projects (auto-detected): version-platform, identity
  * - All other subprojects: Full ultima-nexus bundle (Spring Boot + Lombok + all quality checks)

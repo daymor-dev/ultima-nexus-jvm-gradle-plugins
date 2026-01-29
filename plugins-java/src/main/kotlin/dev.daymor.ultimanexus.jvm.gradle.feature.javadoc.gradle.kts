@@ -16,7 +16,7 @@
 
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 
-/*
+/**
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.feature.javadoc
  *
  * Configures Javadoc generation with strict error checking and UTF-8 encoding.

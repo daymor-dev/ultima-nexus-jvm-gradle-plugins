@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/*
+/**
  * Bundle plugin for project reports.
  * Applies code coverage, SBOM, test reporting, and plugin analysis plugins.
  *

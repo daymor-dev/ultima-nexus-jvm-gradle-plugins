@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/*
+/**
  * Plugin for generating Software Bill of Materials (SBOM) using CycloneDX.
  * Configures SBOM generation in JSON format for runtime dependencies.
  *

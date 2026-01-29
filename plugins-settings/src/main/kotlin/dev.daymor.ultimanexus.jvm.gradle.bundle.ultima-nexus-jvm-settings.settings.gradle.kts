@@ -18,6 +18,7 @@
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.PluginIds
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
+import java.util.Properties
 
 /**
  * Settings bundle plugin for Ultima Nexus JVM projects.
@@ -60,7 +61,33 @@ import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
  *   - Installs Git pre-commit hooks running qualityCheck (git-hooks)
  *   - Auto-configures Maven Central publishing when publish plugins are detected
  *   - Provides runtime dependencies for SBOM generation (sbom-support)
+ *   - Automatic plugin version resolution
  */
+
+private val pluginVersion: String = run {
+    val props = Properties()
+    val propsStream = object {}.javaClass.getResourceAsStream(
+        "/ultima-nexus-jvm-gradle.properties"
+    )
+    requireNotNull(propsStream) {
+        "Could not find ultima-nexus-jvm-gradle.properties in plugin resources"
+    }
+    propsStream.use { props.load(it) }
+    requireNotNull(props.getProperty("version")) {
+        "Could not find 'version' property in ultima-nexus-jvm-gradle.properties"
+    }
+}
+
+pluginManagement {
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id.startsWith(PluginIds.PREFIX)) {
+                useVersion(pluginVersion)
+            }
+        }
+    }
+}
+
 plugins {
     id("dev.daymor.ultimanexus.jvm.gradle.report.sbom-support")
     id("dev.daymor.ultimanexus.jvm.gradle.feature.project-structure")

@@ -19,7 +19,7 @@ import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyAsInt
 
-/*
+/**
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.feature.compile-java
  *
  * Configures Java compilation settings including JDK version, compiler options,

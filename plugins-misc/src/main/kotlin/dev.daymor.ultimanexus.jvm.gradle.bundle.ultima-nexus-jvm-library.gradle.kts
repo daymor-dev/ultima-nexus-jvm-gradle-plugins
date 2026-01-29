@@ -16,7 +16,7 @@
 
 import dev.daymor.ultimanexus.jvm.gradle.config.PluginIds
 
-/*
+/**
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-library
  *
  * Bundle plugin for full Ultima Nexus framework library experience.

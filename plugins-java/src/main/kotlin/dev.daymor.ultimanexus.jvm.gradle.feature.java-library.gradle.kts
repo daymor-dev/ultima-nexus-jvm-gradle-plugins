@@ -15,7 +15,7 @@
  */
 
 
-/*
+/**
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.feature.java-library
  *
  * Java library plugin for shared libraries and SDKs.

@@ -15,7 +15,7 @@
  */
 
 
-/*
+/**
  * Plugin for validating dependency version consistency.
  * Ensures all dependencies match platform constraints and reports inconsistencies.
  *

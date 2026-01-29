@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/*
+/**
  * Plugin for aggregating test reports across multiple test suites.
  * Auto-discovers all registered JvmTestSuites and creates aggregate reports for each.
  *

@@ -18,7 +18,7 @@ import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.FallbackVersions
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getVersionOrNull
 
-/*
+/**
  * Test Bundle Plugin
  * ==================
  * Bundle plugin that applies unit tests and configurable test suites,

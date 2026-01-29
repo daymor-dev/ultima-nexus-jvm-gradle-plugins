@@ -15,7 +15,7 @@
  */
 
 
-/*
+/**
  * Bundle plugin for BOM/platform projects.
  * Applies Java Platform with version catalog constraints, project identity,
  * and version consistency checking.

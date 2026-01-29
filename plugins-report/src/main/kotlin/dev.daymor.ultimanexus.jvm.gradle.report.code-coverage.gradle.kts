@@ -17,7 +17,7 @@
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 
-/*
+/**
  * Plugin for aggregating JaCoCo code coverage reports across test suites.
  * Auto-discovers all registered JvmTestSuites and creates coverage reports for each.
  *

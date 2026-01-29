@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/*
+/**
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.feature.publish-java
  *
  * Configures Java projects for publishing with sources and javadoc jars.

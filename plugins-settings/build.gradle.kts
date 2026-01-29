@@ -26,3 +26,13 @@ dependencies {
     implementation(libs.gradleup.nmcp.settings)
     implementation(libs.gradle.develocity)
 }
+
+val writeVersionProperties by tasks.registering(WriteProperties::class) {
+    destinationFile = layout.buildDirectory.file("resources/main/ultima-nexus-jvm-gradle.properties")
+    property("version", project.version.toString())
+    comment = "Auto-generated during build - do not edit manually"
+}
+
+tasks.processResources {
+    dependsOn(writeVersionProperties)
+}

@@ -16,7 +16,7 @@
 
 import dev.daymor.ultimanexus.jvm.gradle.task.PluginApplicationOrderAnalysis
 
-/*
+/**
  * Plugin for analyzing plugin application order and generating diagrams.
  * Registers a task to generate PlantUML diagrams showing plugin dependencies.
  *
