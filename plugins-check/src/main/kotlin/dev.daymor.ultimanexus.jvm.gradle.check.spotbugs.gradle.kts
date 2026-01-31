@@ -20,8 +20,7 @@ import com.github.spotbugs.snom.SpotBugsTask
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.createCheckConfiguration
-import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.getCheckArtifactNameOrNull
-import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.resolveCheckJar
+import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.resolveCheckJarOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibraryOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromProperty
@@ -80,25 +79,13 @@ spotbugsConfig.excludeFilterFile.conventionFromProperty(project, PropertyKeys.Sp
 
 val libs: VersionCatalog? = getLibsCatalogOrNull(project)
 
-val checkArtifactConfig: Configuration? by lazy {
-    libs?.let {
-        try {
-            createCheckConfiguration(Defaults.ConfigurationName.SPOTBUGS_CHECK_ARTIFACT, it)
-        } catch (_: Exception) {
-            null
-        }
-    }
+val checkArtifactConfig: Configuration by lazy {
+    createCheckConfiguration(Defaults.ConfigurationName.SPOTBUGS_CHECK_ARTIFACT, libs)
 }
 
 val checkJarFile: File? by lazy {
-    try {
-        checkArtifactConfig?.resolveCheckJar(project)
-    } catch (_: Exception) {
-        null
-    }
+    checkArtifactConfig.resolveCheckJarOrNull()
 }
-
-val checkArtifactName: String? by lazy { getCheckArtifactNameOrNull(project) }
 
 spotbugs {
     ignoreFailures = spotbugsConfig.ignoreFailures.get()
@@ -116,12 +103,6 @@ spotbugs {
                 .singleOrNull()
             if (filterFile != null) {
                 excludeFilter = filterFile
-            }
-        }
-        checkArtifactName != null -> {
-            val fallbackFile = rootProject.file("$checkArtifactName/src/main/resources/spotbugs-filter.xml")
-            if (fallbackFile.exists()) {
-                excludeFilter = fallbackFile
             }
         }
         else -> {}

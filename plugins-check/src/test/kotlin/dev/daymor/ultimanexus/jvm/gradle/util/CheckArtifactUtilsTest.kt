@@ -16,25 +16,20 @@
 
 package dev.daymor.ultimanexus.jvm.gradle.util
 
-import dev.daymor.ultimanexus.jvm.gradle.config.Messages
-import dev.daymor.ultimanexus.jvm.gradle.config.UltimaNexusConfig
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.createCheckConfiguration
-import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.resolveCheckJar
+import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.resolveCheckJarOrNull
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.gradle.api.Action
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ConfigurationContainer
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.dsl.DependencyHandler
-import org.gradle.api.plugins.ExtensionContainer
-import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -62,62 +57,18 @@ class CheckArtifactUtilsTest {
     }
 
     @Nested
-    inner class GetCheckArtifactName {
-
-        @Test
-        fun `returns artifact name when configured`() {
-            val project = mockk<Project>()
-            val extensions = mockk<ExtensionContainer>()
-            val config = mockk<UltimaNexusConfig>()
-            val checkArtifactNameProperty = mockk<Property<String>>()
-            every { project.extensions } returns extensions
-            every { extensions.findByType(UltimaNexusConfig::class.java) } returns config
-            every { config.checkArtifactName } returns checkArtifactNameProperty
-            every { checkArtifactNameProperty.orNull } returns "my-check-artifact"
-
-            val result = CheckArtifactUtils.getCheckArtifactName(project)
-
-            assertThat(result).isEqualTo("my-check-artifact")
-        }
-
-        @Test
-        fun `throws when artifact name not configured`() {
-            val project = mockk<Project>()
-            val extensions = mockk<ExtensionContainer>()
-            val config = mockk<UltimaNexusConfig>()
-            val checkArtifactNameProperty = mockk<Property<String>>()
-            every { project.extensions } returns extensions
-            every { extensions.findByType(UltimaNexusConfig::class.java) } returns config
-            every { config.checkArtifactName } returns checkArtifactNameProperty
-            every { checkArtifactNameProperty.orNull } returns null
-
-            assertThatThrownBy {
-                CheckArtifactUtils.getCheckArtifactName(project)
-            }.isInstanceOf(GradleException::class.java)
-                .hasMessage(Messages.CHECK_ARTIFACT_NAME_REQUIRED)
-        }
-    }
-
-    @Nested
     inner class CreateCheckConfiguration {
 
         @Test
         @Suppress("UNCHECKED_CAST")
-        fun `creates configuration with correct properties`() {
+        fun `creates configuration with library from version catalog when available`() {
             val project = mockk<Project>()
-            val extensions = mockk<ExtensionContainer>()
-            val config = mockk<UltimaNexusConfig>()
-            val checkArtifactNameProperty = mockk<Property<String>>()
             val configurations = mockk<ConfigurationContainer>()
             val configuration = mockk<Configuration>(relaxed = true)
             val dependencies = mockk<DependencyHandler>()
             val versionCatalog = mockk<VersionCatalog>()
             val libraryProvider = mockk<Provider<MinimalExternalModuleDependency>>()
 
-            every { project.extensions } returns extensions
-            every { extensions.findByType(UltimaNexusConfig::class.java) } returns config
-            every { config.checkArtifactName } returns checkArtifactNameProperty
-            every { checkArtifactNameProperty.orNull } returns "check-artifact"
             every { project.configurations } returns configurations
             every { configurations.create(eq("testConfig"), any<Action<Configuration>>()) } answers {
                 val action = secondArg<Action<Configuration>>()
@@ -125,7 +76,7 @@ class CheckArtifactUtilsTest {
                 configuration
             }
             every { project.dependencies } returns dependencies
-            every { versionCatalog.findLibrary("check-artifact") } returns Optional.of(libraryProvider)
+            every { versionCatalog.findLibrary("ultima-nexus-jvm-check") } returns Optional.of(libraryProvider)
             every { dependencies.add("testConfig", libraryProvider) } returns null
 
             val result = project.createCheckConfiguration("testConfig", versionCatalog)
@@ -135,72 +86,107 @@ class CheckArtifactUtilsTest {
             verify { configuration.isCanBeResolved = true }
             verify { dependencies.add("testConfig", libraryProvider) }
         }
+
+        @Test
+        @Suppress("UNCHECKED_CAST")
+        fun `creates configuration with fallback when version catalog is null`() {
+            val project = mockk<Project>()
+            val configurations = mockk<ConfigurationContainer>()
+            val configuration = mockk<Configuration>(relaxed = true)
+            val dependencies = mockk<DependencyHandler>()
+
+            every { project.configurations } returns configurations
+            every { configurations.create(eq("testConfig"), any<Action<Configuration>>()) } answers {
+                val action = secondArg<Action<Configuration>>()
+                action.execute(configuration)
+                configuration
+            }
+            every { project.dependencies } returns dependencies
+            every { dependencies.add("testConfig", DependencyUtils.Fallbacks.ULTIMA_NEXUS_JVM_CHECK) } returns null
+
+            val result = project.createCheckConfiguration("testConfig", null)
+
+            assertThat(result).isEqualTo(configuration)
+            verify { configuration.isCanBeConsumed = false }
+            verify { configuration.isCanBeResolved = true }
+            verify { dependencies.add("testConfig", DependencyUtils.Fallbacks.ULTIMA_NEXUS_JVM_CHECK) }
+        }
+
+        @Test
+        @Suppress("UNCHECKED_CAST")
+        fun `creates configuration with fallback when library not in catalog`() {
+            val project = mockk<Project>()
+            val configurations = mockk<ConfigurationContainer>()
+            val configuration = mockk<Configuration>(relaxed = true)
+            val dependencies = mockk<DependencyHandler>()
+            val versionCatalog = mockk<VersionCatalog>()
+
+            every { project.configurations } returns configurations
+            every { configurations.create(eq("testConfig"), any<Action<Configuration>>()) } answers {
+                val action = secondArg<Action<Configuration>>()
+                action.execute(configuration)
+                configuration
+            }
+            every { project.dependencies } returns dependencies
+            every { versionCatalog.findLibrary("ultima-nexus-jvm-check") } returns Optional.empty()
+            every { dependencies.add("testConfig", DependencyUtils.Fallbacks.ULTIMA_NEXUS_JVM_CHECK) } returns null
+
+            val result = project.createCheckConfiguration("testConfig", versionCatalog)
+
+            assertThat(result).isEqualTo(configuration)
+            verify { dependencies.add("testConfig", DependencyUtils.Fallbacks.ULTIMA_NEXUS_JVM_CHECK) }
+        }
     }
 
     @Nested
-    inner class ResolveCheckJar {
+    inner class ResolveCheckJarOrNull {
 
         @Test
         fun `returns jar file when found`() {
-            val project = mockk<Project>()
-            val extensions = mockk<ExtensionContainer>()
-            val config = mockk<UltimaNexusConfig>()
-            val checkArtifactNameProperty = mockk<Property<String>>()
             val configuration = mockk<Configuration>()
-            val jarFile = File(tempDir, "my-artifact-1.0.0.jar")
+            val jarFile = File(tempDir, "ultima-nexus-jvm-check-1.0.0.jar")
             jarFile.createNewFile()
 
-            every { project.extensions } returns extensions
-            every { extensions.findByType(UltimaNexusConfig::class.java) } returns config
-            every { config.checkArtifactName } returns checkArtifactNameProperty
-            every { checkArtifactNameProperty.orNull } returns "my-artifact"
             every { configuration.resolve() } returns setOf(jarFile)
 
-            val result = configuration.resolveCheckJar(project)
+            val result = configuration.resolveCheckJarOrNull()
 
             assertThat(result).isEqualTo(jarFile)
         }
 
         @Test
-        fun `throws when jar not found in resolved files`() {
-            val project = mockk<Project>()
-            val extensions = mockk<ExtensionContainer>()
-            val config = mockk<UltimaNexusConfig>()
-            val checkArtifactNameProperty = mockk<Property<String>>()
+        fun `returns null when jar not found in resolved files`() {
             val configuration = mockk<Configuration>()
             val otherFile = File(tempDir, "other-artifact-1.0.0.jar")
             otherFile.createNewFile()
 
-            every { project.extensions } returns extensions
-            every { extensions.findByType(UltimaNexusConfig::class.java) } returns config
-            every { config.checkArtifactName } returns checkArtifactNameProperty
-            every { checkArtifactNameProperty.orNull } returns "my-artifact"
             every { configuration.resolve() } returns setOf(otherFile)
 
-            assertThatThrownBy {
-                configuration.resolveCheckJar(project)
-            }.isInstanceOf(GradleException::class.java)
-                .hasMessage(Messages.checkArtifactNotResolved("my-artifact"))
+            val result = configuration.resolveCheckJarOrNull()
+
+            assertThat(result).isNull()
         }
 
         @Test
-        fun `throws when no files resolved`() {
-            val project = mockk<Project>()
-            val extensions = mockk<ExtensionContainer>()
-            val config = mockk<UltimaNexusConfig>()
-            val checkArtifactNameProperty = mockk<Property<String>>()
+        fun `returns null when no files resolved`() {
             val configuration = mockk<Configuration>()
 
-            every { project.extensions } returns extensions
-            every { extensions.findByType(UltimaNexusConfig::class.java) } returns config
-            every { config.checkArtifactName } returns checkArtifactNameProperty
-            every { checkArtifactNameProperty.orNull } returns "my-artifact"
             every { configuration.resolve() } returns emptySet()
 
-            assertThatThrownBy {
-                configuration.resolveCheckJar(project)
-            }.isInstanceOf(GradleException::class.java)
-                .hasMessage(Messages.checkArtifactNotResolved("my-artifact"))
+            val result = configuration.resolveCheckJarOrNull()
+
+            assertThat(result).isNull()
+        }
+
+        @Test
+        fun `returns null when resolution fails`() {
+            val configuration = mockk<Configuration>()
+
+            every { configuration.resolve() } throws RuntimeException("Resolution failed")
+
+            val result = configuration.resolveCheckJarOrNull()
+
+            assertThat(result).isNull()
         }
     }
 

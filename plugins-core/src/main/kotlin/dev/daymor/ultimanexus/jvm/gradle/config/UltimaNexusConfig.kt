@@ -30,7 +30,6 @@ abstract class UltimaNexusConfig(private val project: Project) {
     abstract val pluginVcsUrl: Property<String>
     abstract val pluginTags: ListProperty<String>
     abstract val pluginIdPrefix: Property<String>
-    abstract val checkArtifactName: Property<String>
 
     init {
         groupId.convention(getPropertyProvider(PropertyKeys.Identity.GROUP_ID))
@@ -42,7 +41,6 @@ abstract class UltimaNexusConfig(private val project: Project) {
             getPropertyProvider(PropertyKeys.Plugin.TAGS).map { it.split(",").map { tag -> tag.trim() } }
         )
         pluginIdPrefix.convention(getPropertyProvider(PropertyKeys.Plugin.ID_PREFIX))
-        checkArtifactName.convention(getPropertyProvider(PropertyKeys.CHECK_ARTIFACT_NAME))
     }
 
     private fun getPropertyProvider(key: String): Provider<String> =

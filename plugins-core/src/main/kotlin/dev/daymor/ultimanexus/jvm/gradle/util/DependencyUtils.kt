@@ -52,6 +52,7 @@ object DependencyUtils {
         const val PMD = "7.19.0"
         const val SLF4J = "2.0.17"
         const val SPRING_BOOT = "4.0.2"
+        const val ULTIMA_NEXUS_JVM_CHECK = "1.0.0"
     }
 
     object Fallbacks {
@@ -66,6 +67,7 @@ object DependencyUtils {
         const val SLF4J_SIMPLE = "org.slf4j:slf4j-simple:${FallbackVersions.SLF4J}"
         const val SPRING_BOOT_DEVTOOLS = "org.springframework.boot:spring-boot-devtools:${FallbackVersions.SPRING_BOOT}"
         const val SPRING_BOOT_BOM = "org.springframework.boot:spring-boot-dependencies:${FallbackVersions.SPRING_BOOT}"
+        const val ULTIMA_NEXUS_JVM_CHECK = "dev.daymor.ultima-nexus.jvm:ultima-nexus-jvm-check:${FallbackVersions.ULTIMA_NEXUS_JVM_CHECK}"
     }
 
     fun getLibrary(versionCatalog: VersionCatalog, name: String): Provider<MinimalExternalModuleDependency> =

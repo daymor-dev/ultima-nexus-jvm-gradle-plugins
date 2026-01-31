@@ -17,8 +17,7 @@
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.createCheckConfiguration
-import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.getCheckArtifactNameOrNull
-import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.resolveCheckJar
+import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.resolveCheckJarOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.FallbackVersions
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getVersionOrNull
@@ -58,25 +57,13 @@ if (ruleSetFileFromProps != null) pmdConfig.ruleSetFile.convention(ruleSetFileFr
 
 val libs: VersionCatalog? = getLibsCatalogOrNull(project)
 
-val checkArtifactConfig: Configuration? by lazy {
-    libs?.let {
-        try {
-            createCheckConfiguration(Defaults.ConfigurationName.PMD_CHECK_ARTIFACT, it)
-        } catch (_: Exception) {
-            null
-        }
-    }
+val checkArtifactConfig: Configuration by lazy {
+    createCheckConfiguration(Defaults.ConfigurationName.PMD_CHECK_ARTIFACT, libs)
 }
 
 val checkJarFile: File? by lazy {
-    try {
-        checkArtifactConfig?.resolveCheckJar(project)
-    } catch (_: Exception) {
-        null
-    }
+    checkArtifactConfig.resolveCheckJarOrNull()
 }
-
-val checkArtifactName: String? by lazy { getCheckArtifactNameOrNull(project) }
 
 val defaultPmdVersion = FallbackVersions.PMD
 
@@ -89,11 +76,7 @@ pmd {
         customRuleSetFile != null -> ruleSetFiles = files(customRuleSetFile)
         checkJarFile != null -> ruleSetConfig =
             resources.text.fromArchiveEntry(checkJarFile!!, "pmdRuleset.xml")
-        checkArtifactName != null -> ruleSetFiles =
-            files(rootProject.file("$checkArtifactName/src/main/resources/pmdRuleset.xml"))
-        else -> {
-            ruleSets = listOf("category/java/bestpractices.xml")
-        }
+        else -> ruleSets = listOf("category/java/bestpractices.xml")
     }
 
     threads = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)

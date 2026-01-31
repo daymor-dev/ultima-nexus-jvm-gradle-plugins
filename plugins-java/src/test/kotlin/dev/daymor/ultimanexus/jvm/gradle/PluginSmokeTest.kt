@@ -236,16 +236,7 @@ class PluginSmokeTest {
                     }
                     """.trimIndent()
                 )
-                .withProperties(
-                    "groupId" to "com.example.test",
-                    "checkArtifactName" to "my-check-artifact"
-                )
-                .withVersionCatalog(
-                    """
-                    [libraries]
-                    my-check-artifact = "org.example:check-artifact:1.0.0"
-                    """.trimIndent()
-                )
+                .withProperties("groupId" to "com.example.test")
 
             val result = fixture().help()
 
@@ -267,16 +258,7 @@ class PluginSmokeTest {
                     }
                     """.trimIndent()
                 )
-                .withProperties(
-                    "groupId" to "com.example.test",
-                    "checkArtifactName" to "my-check-artifact"
-                )
-                .withVersionCatalog(
-                    """
-                    [libraries]
-                    my-check-artifact = "org.example:check-artifact:1.0.0"
-                    """.trimIndent()
-                )
+                .withProperties("groupId" to "com.example.test")
 
             val result = fixture().help()
 

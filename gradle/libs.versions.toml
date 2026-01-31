@@ -18,6 +18,7 @@ spring-boot = "4.0.2"
 checkstyle = "12.3.0"
 eclipse-jdt = "4.38"
 pmd = "7.19.0"
+ultima-nexus-jvm-check = "1.0.0"
 
 # FALLBACK VERSIONS (used when consumer's version catalog doesn't define them)
 byte-buddy-agent = "1.18.4"
@@ -69,6 +70,9 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 # FIX FOR CYCLONEDX MISSING TRANSITIVE DEPENDENCY
 plexus-xml = { module = "org.codehaus.plexus:plexus-xml", version.ref = "plexus-xml" }
+
+# Check artifact (configuration files for checkstyle, PMD, spotbugs, formatter)
+ultima-nexus-jvm-check-project = { module = "dev.daymor.ultima-nexus.jvm:ultima-nexus-jvm-check", version.ref = "ultima-nexus-jvm-check" }
 
 # Plugin module dependencies (versions resolved from composite builds - no version needed)
 ultima-nexus-jvm-core = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-core" }

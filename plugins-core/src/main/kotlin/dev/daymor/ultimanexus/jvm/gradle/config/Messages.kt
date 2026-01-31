@@ -27,15 +27,8 @@ object Messages {
     fun versionNotFound(name: String) =
         "Version '$name' not found in version catalog 'libs'. Add it to your gradle/libs.versions.toml."
 
-    const val CHECK_ARTIFACT_NAME_REQUIRED =
-        "Property 'checkArtifactName' is required but not set. " +
-            "Add 'checkArtifactName=your-check-artifact' to gradle.properties or gradle/shared.properties."
-
     const val WARN_DISCOURAGED_DEPENDENCY = "WARN: Discouraged dependency notation:"
 
     fun projectNotFound(name: String, rootDir: String) =
         "Project directory '$name' not found in $rootDir"
-
-    fun checkArtifactNotResolved(name: String) =
-        "Check artifact '$name' not found in resolved dependencies"
 }

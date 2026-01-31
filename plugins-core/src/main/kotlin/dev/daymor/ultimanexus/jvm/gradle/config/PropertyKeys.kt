@@ -40,7 +40,6 @@ object PropertyKeys {
     }
 
     const val JDK_VERSION = "jdkVersion"
-    const val CHECK_ARTIFACT_NAME = "checkArtifactName"
 
     object Test {
         const val MAX_HEAP_SIZE = "test.maxHeapSize"

@@ -18,9 +18,8 @@ import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
 import dev.daymor.ultimanexus.jvm.gradle.spotless.JavaImportOrderStep
 import dev.daymor.ultimanexus.jvm.gradle.spotless.RegexFormatterStep
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.createCheckConfiguration
-import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.getCheckArtifactNameOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.readFromJar
-import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.resolveCheckJar
+import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.resolveCheckJarOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.FallbackVersions
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getVersionOrNull
@@ -76,34 +75,18 @@ formatJavaConfig.importSpecialImportsRegex.conventionFromProperty(project, Prope
 
 val libs: VersionCatalog? = getLibsCatalogOrNull(project)
 
-val formatConfig: Configuration? by lazy {
-    libs?.let {
-        try {
-            createCheckConfiguration("formatCheckArtifact", it)
-        } catch (_: Exception) {
-            null
-        }
-    }
+val formatConfig: Configuration by lazy {
+    createCheckConfiguration("formatCheckArtifact", libs)
 }
 
 val checkJarFile: File? by lazy {
-    try {
-        formatConfig?.resolveCheckJar(project)
-    } catch (_: Exception) {
-        null
-    }
+    formatConfig.resolveCheckJarOrNull()
 }
-
-val checkArtifactName: String? by lazy { getCheckArtifactNameOrNull(project) }
 
 val companyName: String = project.findPropertyOrNull(PropertyKeys.Format.COMPANY) ?: ""
 
 val rawLicenseHeaderTemplate: String by lazy {
     checkJarFile?.let { readFromJar(it, "apache-license-header.txt") }
-        ?: checkArtifactName?.let {
-            rootProject.file("$it/src/main/resources/apache-license-header.txt")
-                .takeIf { f -> f.exists() }?.readText()
-        }
         ?: "/*\n * Copyright (C) \$YEAR \$COMPANY.\n */"
 }
 val defaultLicenseHeader: String by lazy {
@@ -130,10 +113,6 @@ spotless.java {
                 zipTree(checkJarFile!!)
                     .matching { include("java-formatter.xml") }
                     .singleFile
-            )
-        checkArtifactName != null -> eclipse(eclipseVersion)
-            .configFile(
-                rootProject.file("$checkArtifactName/src/main/resources/java-formatter.xml")
             )
         else -> eclipse(eclipseVersion)
     }

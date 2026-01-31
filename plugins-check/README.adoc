@@ -16,6 +16,19 @@ The `plugins-check` module provides comprehensive code quality tools:
 
 All plugins integrate with the `qualityCheck` and `qualityGate` lifecycle tasks from plugins-base.
 
+== Configuration Resolution
+
+The check plugins (Checkstyle, PMD, SpotBugs, format-java) automatically resolve their configuration files using the following priority order:
+
+1. **User-specified file** - Custom configuration via extension or gradle.properties (highest priority)
+2. **Version catalog check artifact** - If `ultima-nexus-jvm-check` library is defined in your version catalog
+3. **Maven Central check artifact** - Falls back to `dev.daymor.ultima-nexus.jvm:ultima-nexus-jvm-check` from Maven Central
+4. **Generic defaults** - Built-in defaults (e.g., PMD uses `category/java/bestpractices.xml`)
+
+This means **zero configuration is required** for most projects. The plugins will automatically download and use curated quality rules from the https://github.com/daymor-dev/ultima-nexus-jvm-check[ultima-nexus-jvm-check] artifact.
+
+To override with custom configuration, simply set the appropriate property in your extension or gradle.properties.
+
 == Plugins
 
 [cols="1,3"]

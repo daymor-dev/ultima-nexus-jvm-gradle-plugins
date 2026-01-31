@@ -20,8 +20,7 @@ import com.diffplug.gradle.spotless.SpotlessTask
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.createCheckConfiguration
-import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.getCheckArtifactNameOrNull
-import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.resolveCheckJar
+import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.resolveCheckJarOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.FallbackVersions
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getVersionOrNull
@@ -71,25 +70,13 @@ checkstyleConfig.fileSuppressionsFile.conventionFromProperty(project, PropertyKe
 
 val libs: VersionCatalog? = getLibsCatalogOrNull(project)
 
-val checkArtifactConfig: Configuration? by lazy {
-    libs?.let {
-        try {
-            createCheckConfiguration(Defaults.ConfigurationName.CHECKSTYLE_CHECK_ARTIFACT, it)
-        } catch (_: Exception) {
-            null
-        }
-    }
+val checkArtifactConfig: Configuration by lazy {
+    createCheckConfiguration(Defaults.ConfigurationName.CHECKSTYLE_CHECK_ARTIFACT, libs)
 }
 
 val checkJarFile: File? by lazy {
-    try {
-        checkArtifactConfig?.resolveCheckJar(project)
-    } catch (_: Exception) {
-        null
-    }
+    checkArtifactConfig.resolveCheckJarOrNull()
 }
-
-val checkArtifactName: String? by lazy { getCheckArtifactNameOrNull(project) }
 
 val defaultCheckstyleVersion = FallbackVersions.CHECKSTYLE
 
@@ -101,8 +88,6 @@ checkstyle {
         customConfigFile != null -> configFile = file(customConfigFile)
         checkJarFile != null -> config =
             resources.text.fromArchiveEntry(checkJarFile!!, "checkstyle.xml")
-        checkArtifactName != null -> configFile =
-            rootProject.file("$checkArtifactName/src/main/resources/checkstyle.xml")
         else -> {}
     }
 
