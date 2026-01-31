@@ -6,12 +6,12 @@ gradle-plugin-publish = "2.0.0"
 classpath-collision-detector = "1.0.0"
 cyclonedx-gradle-plugin = "3.1.0"
 dependency-analysis-gradle-plugin = "3.5.1"
-gradle-pre-commit-git-hooks = "2.1.7"
+gradle-pre-commit-git-hooks = "2.1.8"
 gradleup-nmcp = "1.4.4"
 jvm-dependency-conflict-resolution = "2.5"
 node = "7.1.0"
 spotbugs-gradle-plugin = "6.4.8"
-spotless-plugin-gradle = "8.2.0"
+spotless-plugin-gradle = "8.2.1"
 spring-boot = "4.0.2"
 
 # TOOL VERSIONS (used by check plugins)
@@ -30,10 +30,10 @@ slf4j = "2.0.17"
 
 # TEST LIBRARY VERSIONS (used by test convention plugins)
 assertj = "3.27.7"
-mockk = "1.14.7"
+mockk = "1.14.9"
 
 # FIX FOR CYCLONEDX MISSING TRANSITIVE DEPENDENCY
-plexus-xml = "4.1.0"
+plexus-xml = "4.1.1"
 
 [libraries]
 # GRADLE PLUGINS (implementation dependencies for convention plugins)
