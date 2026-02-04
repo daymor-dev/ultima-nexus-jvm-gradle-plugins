@@ -60,11 +60,11 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 ultima-nexus-plugins = "latest.release"
 
 [plugins]
-ultimanexus-bundle-java-simple-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple-application", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-java-simple-library = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple-library", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-java-complete-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete-application", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-java-complete-library = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete-library", version.ref = "ultima-nexus-plugins" }
-ultimanexus-feature-compile-java = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.compile-java", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-java-simple-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple-application", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-java-simple-library = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple-library", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-java-complete-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete-application", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-java-complete-library = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete-library", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-feature-compile-java = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.compile-java", version.ref = "ultima-nexus-plugins" }
 ----
 
 == Java Complete Bundles

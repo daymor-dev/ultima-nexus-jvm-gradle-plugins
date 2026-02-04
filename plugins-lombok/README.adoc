@@ -41,8 +41,8 @@ ultima-nexus-plugins = "latest.release"
 lombok = "1.18.42"
 
 [plugins]
-ultimanexus-bundle-lombok = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.lombok", version.ref = "ultima-nexus-plugins" }
-ultimanexus-dependency-lombok = { id = "dev.daymor.ultimanexus.jvm.gradle.dependency.lombok", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-lombok = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.lombok", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-dependency-lombok = { id = "dev.daymor.ultimanexus.jvm.gradle.dependency.lombok", version.ref = "ultima-nexus-plugins" }
 
 [libraries]
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }

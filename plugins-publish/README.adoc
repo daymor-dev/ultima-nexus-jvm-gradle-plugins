@@ -42,9 +42,9 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 ultima-nexus-plugins = "latest.release"
 
 [plugins]
-ultimanexus-feature-publish = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.publish", version.ref = "ultima-nexus-plugins" }
-ultimanexus-feature-publish-java = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.publish-java", version.ref = "ultima-nexus-plugins" }
-ultimanexus-feature-publish-maven-central-aggregation = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central-aggregation", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-feature-publish = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.publish", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-feature-publish-java = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.publish-java", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-feature-publish-maven-central-aggregation = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central-aggregation", version.ref = "ultima-nexus-plugins" }
 ----
 
 == Publish Plugin

@@ -38,9 +38,9 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 ultima-nexus-plugins = "latest.release"
 
 [plugins]
-ultimanexus-bundle-documentation = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.documentation", version.ref = "ultima-nexus-plugins" }
-ultimanexus-feature-antora = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.antora", version.ref = "ultima-nexus-plugins" }
-ultimanexus-feature-antora-ui = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.antora-ui", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-documentation = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.documentation", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-feature-antora = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.antora", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-feature-antora-ui = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.antora-ui", version.ref = "ultima-nexus-plugins" }
 ----
 
 == Documentation Bundle

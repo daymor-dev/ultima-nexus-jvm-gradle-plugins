@@ -44,10 +44,10 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 ultima-nexus-plugins = "latest.release"
 
 [plugins]
-ultimanexus-feature-composite-build = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.composite-build", version.ref = "ultima-nexus-plugins" }
-ultimanexus-feature-gradle-plugin-publish = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.gradle-plugin-publish", version.ref = "ultima-nexus-plugins" }
-ultimanexus-test-gradle-plugin = { id = "dev.daymor.ultimanexus.jvm.gradle.test.gradle-plugin", version.ref = "ultima-nexus-plugins" }
-ultimanexus-test-unit = { id = "dev.daymor.ultimanexus.jvm.gradle.test.unit", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-feature-composite-build = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.composite-build", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-feature-gradle-plugin-publish = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.gradle-plugin-publish", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-test-gradle-plugin = { id = "dev.daymor.ultimanexus.jvm.gradle.test.gradle-plugin", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-test-unit = { id = "dev.daymor.ultimanexus.jvm.gradle.test.unit", version.ref = "ultima-nexus-plugins" }
 ----
 
 == Composite Build Settings Plugin

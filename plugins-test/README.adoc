@@ -44,10 +44,10 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 ultima-nexus-plugins = "latest.release"
 
 [plugins]
-ultimanexus-bundle-test = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.test", version.ref = "ultima-nexus-plugins" }
-ultimanexus-test-test = { id = "dev.daymor.ultimanexus.jvm.gradle.test.test", version.ref = "ultima-nexus-plugins" }
-ultimanexus-test-test-suites = { id = "dev.daymor.ultimanexus.jvm.gradle.test.test-suites", version.ref = "ultima-nexus-plugins" }
-ultimanexus-test-test-fixtures = { id = "dev.daymor.ultimanexus.jvm.gradle.test.test-fixtures", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-test = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.test", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-test-test = { id = "dev.daymor.ultimanexus.jvm.gradle.test.test", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-test-test-suites = { id = "dev.daymor.ultimanexus.jvm.gradle.test.test-suites", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-test-test-fixtures = { id = "dev.daymor.ultimanexus.jvm.gradle.test.test-fixtures", version.ref = "ultima-nexus-plugins" }
 ----
 
 == Test Bundle

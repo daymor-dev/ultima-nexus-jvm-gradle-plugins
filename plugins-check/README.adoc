@@ -79,12 +79,12 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 ultima-nexus-plugins = "latest.release"
 
 [plugins]
-ultimanexus-bundle-check = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.check", version.ref = "ultima-nexus-plugins" }
-ultimanexus-check-checkstyle = { id = "dev.daymor.ultimanexus.jvm.gradle.check.checkstyle", version.ref = "ultima-nexus-plugins" }
-ultimanexus-check-pmd = { id = "dev.daymor.ultimanexus.jvm.gradle.check.pmd", version.ref = "ultima-nexus-plugins" }
-ultimanexus-check-spotbugs = { id = "dev.daymor.ultimanexus.jvm.gradle.check.spotbugs", version.ref = "ultima-nexus-plugins" }
-ultimanexus-check-format-java = { id = "dev.daymor.ultimanexus.jvm.gradle.check.format-java", version.ref = "ultima-nexus-plugins" }
-ultimanexus-check-format-gradle = { id = "dev.daymor.ultimanexus.jvm.gradle.check.format-gradle", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-check = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.check", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-check-checkstyle = { id = "dev.daymor.ultimanexus.jvm.gradle.check.checkstyle", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-check-pmd = { id = "dev.daymor.ultimanexus.jvm.gradle.check.pmd", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-check-spotbugs = { id = "dev.daymor.ultimanexus.jvm.gradle.check.spotbugs", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-check-format-java = { id = "dev.daymor.ultimanexus.jvm.gradle.check.format-java", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-check-format-gradle = { id = "dev.daymor.ultimanexus.jvm.gradle.check.format-gradle", version.ref = "ultima-nexus-plugins" }
 ----
 
 == Check Bundle

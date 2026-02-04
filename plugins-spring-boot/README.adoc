@@ -52,10 +52,10 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 ultima-nexus-plugins = "latest.release"
 
 [plugins]
-ultimanexus-bundle-spring-boot-simple-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple-application", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-spring-boot-simple-library = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple-library", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-spring-boot-complete-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete-application", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-spring-boot-complete-library = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete-library", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-spring-boot-simple-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple-application", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-spring-boot-simple-library = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple-library", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-spring-boot-complete-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete-application", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-spring-boot-complete-library = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete-library", version.ref = "ultima-nexus-plugins" }
 ----
 
 == Spring Boot Complete Bundles

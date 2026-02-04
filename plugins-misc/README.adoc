@@ -57,14 +57,14 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 ultima-nexus-plugins = "latest.release"
 
 [plugins]
-ultimanexus-bundle-jvm-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.jvm-complete", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-ultima-nexus-jvm-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-application", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-ultima-nexus-jvm-library = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-library", version.ref = "ultima-nexus-plugins" }
-ultimanexus-feature-aggregation = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.aggregation", version.ref = "ultima-nexus-plugins" }
-ultimanexus-feature-version-platform = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.version-platform", version.ref = "ultima-nexus-plugins" }
-ultimanexus-feature-use-all-catalog-versions = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.use-all-catalog-versions", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-gradle-project-root = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project-root", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-platform = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.platform", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-jvm-complete = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.jvm-complete", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-ultima-nexus-jvm-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-application", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-ultima-nexus-jvm-library = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-library", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-feature-aggregation = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.aggregation", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-feature-version-platform = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.version-platform", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-feature-use-all-catalog-versions = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.use-all-catalog-versions", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-gradle-project-root = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project-root", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-platform = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.platform", version.ref = "ultima-nexus-plugins" }
 ----
 
 == JVM Complete Bundle

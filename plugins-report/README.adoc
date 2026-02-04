@@ -50,11 +50,11 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 ultima-nexus-plugins = "latest.release"
 
 [plugins]
-ultimanexus-bundle-report = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.report", version.ref = "ultima-nexus-plugins" }
-ultimanexus-report-code-coverage = { id = "dev.daymor.ultimanexus.jvm.gradle.report.code-coverage", version.ref = "ultima-nexus-plugins" }
-ultimanexus-report-sbom = { id = "dev.daymor.ultimanexus.jvm.gradle.report.sbom", version.ref = "ultima-nexus-plugins" }
-ultimanexus-report-sbom-support = { id = "dev.daymor.ultimanexus.jvm.gradle.report.sbom-support", version.ref = "ultima-nexus-plugins" }
-ultimanexus-report-test = { id = "dev.daymor.ultimanexus.jvm.gradle.report.test", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-report = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.report", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-report-code-coverage = { id = "dev.daymor.ultimanexus.jvm.gradle.report.code-coverage", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-report-sbom = { id = "dev.daymor.ultimanexus.jvm.gradle.report.sbom", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-report-sbom-support = { id = "dev.daymor.ultimanexus.jvm.gradle.report.sbom-support", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-report-test = { id = "dev.daymor.ultimanexus.jvm.gradle.report.test", version.ref = "ultima-nexus-plugins" }
 ----
 
 NOTE: If you use `bundle.ultima-nexus-jvm-settings`, the `sbom-support` settings plugin is automatically included.

@@ -51,10 +51,10 @@ Add to your version catalog (`gradle/libs.versions.toml`):
 ultima-nexus-plugins = "latest.release"
 
 [plugins]
-ultimanexus-base-identity = { id = "dev.daymor.ultimanexus.jvm.gradle.base.identity", version.ref = "ultima-nexus-plugins" }
-ultimanexus-base-lifecycle = { id = "dev.daymor.ultimanexus.jvm.gradle.base.lifecycle", version.ref = "ultima-nexus-plugins" }
-ultimanexus-base-repositories = { id = "dev.daymor.ultimanexus.jvm.gradle.base.repositories", version.ref = "ultima-nexus-plugins" }
-ultimanexus-bundle-gradle-project = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-base-identity = { id = "dev.daymor.ultimanexus.jvm.gradle.base.identity", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-base-lifecycle = { id = "dev.daymor.ultimanexus.jvm.gradle.base.lifecycle", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-base-repositories = { id = "dev.daymor.ultimanexus.jvm.gradle.base.repositories", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-gradle-project = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project", version.ref = "ultima-nexus-plugins" }
 ----
 
 == Gradle Project Bundle
