@@ -15,6 +15,7 @@ The `plugins-misc` module provides:
 * **Full Bundle**: Complete `ultima-nexus-jvm` bundle (Spring Boot + Lombok + documentation)
 * **Root Bundle**: Root project conventions for multi-module builds
 * **Platform Bundle**: Bundle for BOM/platform projects with version management
+* **Starter Bundle**: Bundle for starter subprojects that aggregate dependencies
 
 == Plugins
 
@@ -45,6 +46,9 @@ The `plugins-misc` module provides:
 
 |`dev.daymor.ultimanexus.jvm.gradle.bundle.platform`
 |Bundle for BOM/platform projects with version management
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.starter`
+|Bundle for starter subprojects that aggregate dependencies
 |===
 
 == Installation
@@ -65,6 +69,7 @@ ultimanexus-jvm-feature-version-platform = { id = "dev.daymor.ultimanexus.jvm.gr
 ultimanexus-jvm-feature-use-all-catalog-versions = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.use-all-catalog-versions", version.ref = "ultima-nexus-plugins" }
 ultimanexus-jvm-bundle-gradle-project-root = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project-root", version.ref = "ultima-nexus-plugins" }
 ultimanexus-jvm-bundle-platform = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.platform", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-starter = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.starter", version.ref = "ultima-nexus-plugins" }
 ----
 
 == JVM Complete Bundle
@@ -226,6 +231,55 @@ my-project/
 ----
 
 IMPORTANT: This bundle applies `java-platform` and cannot be combined with `java` or `java-library` plugins.
+
+== Starter Bundle
+
+Bundle for starter subprojects that aggregate dependencies.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.starter)
+}
+
+dependencies {
+    api(libs.spring.boot.starter.web)
+    api(libs.spring.boot.starter.validation)
+    api(project(":my-common-utils"))
+}
+----
+
+=== Includes
+
+* `java-library` - Provides api/implementation configurations
+* `lifecycle` - Custom lifecycle tasks
+* `identity` - Project identity configuration
+* `dependency-rules` - Dependency conflict resolution
+* `publish` - Maven publishing setup
+
+=== When to Use
+
+Use this bundle for starter subprojects that:
+
+* Have no source code (no `src/` directory)
+* Only aggregate dependencies for other projects to consume
+* Are published as library artifacts
+
+[source]
+----
+my-project/
+├── starters/
+│   ├── my-starter-web/        # Uses bundle.starter
+│   │   └── build.gradle.kts
+│   └── my-starter-data/       # Uses bundle.starter
+│       └── build.gradle.kts
+├── core/                      # Uses java-complete
+│   └── build.gradle.kts
+└── api/                       # Uses java-complete
+    └── build.gradle.kts
+----
 
 == Aggregation Plugin
 

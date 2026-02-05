@@ -211,6 +211,7 @@ Level 2 - Project Bundles:
 ├── gradle-project         (lifecycle + identity + dependency-rules + repositories)
 ├── gradle-project-root    (lifecycle.root + dependencies.root + format-gradle.root + aggregation) [root only]
 ├── platform               (version-platform + identity) [BOM projects only]
+├── starter                (java-library + lifecycle + identity + dependency-rules + publish) [dependency aggregation]
 ├── jvm-complete           (gradle-project + check + test + report + lombok) [language-agnostic]
 ├── java-simple-application    (gradle-project + compile-java + application)
 ├── java-simple-library        (gradle-project + compile-java + java-library)
