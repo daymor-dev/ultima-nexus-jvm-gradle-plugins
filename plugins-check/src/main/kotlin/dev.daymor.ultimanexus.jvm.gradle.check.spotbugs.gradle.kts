@@ -27,6 +27,7 @@ import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromProper
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.TaskConfigUtils.configureCheckTaskWithJavaPlugin
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.plugins.JavaPluginExtension
 
 /**
  * Convention plugin for SpotBugs static analysis.
@@ -40,6 +41,7 @@ import org.gradle.api.artifacts.Configuration
  *     effort = "MAX"
  *     reportLevel = "LOW"
  *     excludeFilterFile = "config/spotbugs/exclude-filter.xml"
+ *     useAuxClasspath = true
  * }
  * ```
  *
@@ -51,6 +53,7 @@ import org.gradle.api.artifacts.Configuration
  * spotbugs.effort = MAX
  * spotbugs.reportLevel = LOW
  * spotbugs.excludeFilterFile = config/spotbugs/exclude-filter.xml
+ * spotbugs.useAuxClasspath = true
  * ```
  */
 plugins {
@@ -66,6 +69,7 @@ interface SpotbugsConfigExtension {
     val effort: Property<String>
     val reportLevel: Property<String>
     val excludeFilterFile: Property<String>
+    val useAuxClasspath: Property<Boolean>
 }
 
 val spotbugsConfig = extensions.create<SpotbugsConfigExtension>("spotbugsConfig")
@@ -76,6 +80,7 @@ spotbugsConfig.showProgress.conventionFromProperty(project, PropertyKeys.SpotBug
 spotbugsConfig.effort.convention(project.findPropertyOrNull(PropertyKeys.SpotBugs.EFFORT) ?: Defaults.SPOTBUGS_EFFORT)
 spotbugsConfig.reportLevel.convention(project.findPropertyOrNull(PropertyKeys.SpotBugs.REPORT_LEVEL) ?: Defaults.SPOTBUGS_REPORT_LEVEL)
 spotbugsConfig.excludeFilterFile.conventionFromProperty(project, PropertyKeys.SpotBugs.EXCLUDE_FILTER_FILE)
+spotbugsConfig.useAuxClasspath.conventionFromProperty(project, PropertyKeys.SpotBugs.USE_AUX_CLASSPATH, false)
 
 val libs: VersionCatalog? = getLibsCatalogOrNull(project)
 
@@ -113,6 +118,15 @@ tasks.withType<SpotBugsTask> {
     group = Defaults.TaskGroup.VERIFICATION_OTHER
     reports.create("html") { required = true }
     mustRunAfter(tasks.withType<Pmd>())
+}
+
+if (spotbugsConfig.useAuxClasspath.get()) {
+    tasks.withType<SpotBugsTask>().configureEach {
+        val mainSourceSet = project.the<JavaPluginExtension>()
+            .sourceSets.getByName("main")
+        auxClassPaths.from(mainSourceSet.runtimeClasspath)
+        auxClassPaths.from(mainSourceSet.compileClasspath)
+    }
 }
 
 project.configureCheckTaskWithJavaPlugin("spotbugsMain")

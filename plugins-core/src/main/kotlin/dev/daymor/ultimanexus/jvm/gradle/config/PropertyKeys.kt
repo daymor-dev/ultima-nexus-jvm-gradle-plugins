@@ -69,6 +69,7 @@ object PropertyKeys {
         const val EFFORT = "spotbugs.effort"
         const val REPORT_LEVEL = "spotbugs.reportLevel"
         const val EXCLUDE_FILTER_FILE = "spotbugs.excludeFilterFile"
+        const val USE_AUX_CLASSPATH = "spotbugs.useAuxClasspath"
     }
 
     object Format {

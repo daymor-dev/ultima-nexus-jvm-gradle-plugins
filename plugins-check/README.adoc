@@ -217,6 +217,7 @@ spotbugsConfig {
     effort = "MAX"            // Analysis effort: MIN, DEFAULT, MAX
     reportLevel = "LOW"       // Minimum confidence: LOW, MEDIUM, HIGH
     excludeFilterFile = "config/spotbugs/exclude-filter.xml"
+    useAuxClasspath = true    // Include full classpath (runtime and compileOnly) for deeper analysis
 }
 ----
 
@@ -230,6 +231,7 @@ spotbugs.showProgress=true
 spotbugs.effort=MAX
 spotbugs.reportLevel=LOW
 spotbugs.excludeFilterFile=config/spotbugs/exclude-filter.xml
+spotbugs.useAuxClasspath=true
 ----
 
 === Default Configuration
@@ -241,6 +243,7 @@ If `excludeFilterFile` is not set, uses `spotbugs-filter.xml` from the https://g
 * HTML report generation
 * SpotBugs annotations added as compile-only dependency
 * Runs after PMD tasks
+* Optional auxiliary classpath (runtime and compileOnly) for resolving transitive classes during analysis
 
 == Java Formatting Plugin
 
@@ -492,6 +495,7 @@ plugins {
 |`spotbugs.effort` |`MAX` |`spotbugs` |Analysis effort (MIN, DEFAULT, MAX)
 |`spotbugs.reportLevel` |`LOW` |`spotbugs` |Minimum confidence (LOW, MEDIUM, HIGH)
 |`spotbugs.excludeFilterFile` |_(auto)_ |`spotbugs` |Path to exclude filter XML
+|`spotbugs.useAuxClasspath` |`false` |`spotbugs` |Include full classpath (runtime and compileOnly) as auxiliary classpath for deeper analysis
 |`formatJava.formatterConfigFile` |_(auto)_ |`format-java` |Path to Eclipse formatter XML
 |`formatJava.licenseHeaderFile` |_(auto)_ |`format-java` |Path to license header file
 |`formatJava.licenseHeaderText` |_(none)_ |`format-java` |License header text (takes precedence)
