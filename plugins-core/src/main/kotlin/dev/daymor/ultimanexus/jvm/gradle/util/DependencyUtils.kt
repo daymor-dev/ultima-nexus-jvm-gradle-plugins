@@ -48,7 +48,7 @@ object DependencyUtils {
         const val JSR305 = "3.0.2"
         const val JUNIT_JUPITER = "6.0.2"
         const val LOMBOK = "1.18.42"
-        const val MOCKK = "1.14.7"
+        const val MOCKK = "1.14.9"
         const val PMD = "7.19.0"
         const val SLF4J = "2.0.17"
         const val SPRING_BOOT = "4.0.2"
