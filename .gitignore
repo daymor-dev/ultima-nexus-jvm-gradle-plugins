@@ -24,6 +24,7 @@ workspace.xml
 .project
 .classpath
 .settings/
+bin/
 
 # OS - macOS
 .DS_Store
