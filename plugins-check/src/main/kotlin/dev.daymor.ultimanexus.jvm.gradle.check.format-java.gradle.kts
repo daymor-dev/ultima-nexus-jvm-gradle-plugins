@@ -17,6 +17,7 @@
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
 import dev.daymor.ultimanexus.jvm.gradle.spotless.JavaImportOrderStep
 import dev.daymor.ultimanexus.jvm.gradle.spotless.RegexFormatterStep
+import dev.daymor.ultimanexus.jvm.gradle.spotless.SnippetFixFormatterStep
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.createCheckConfiguration
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.readFromJar
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.resolveCheckJarOrNull
@@ -117,10 +118,13 @@ spotless.java {
         else -> eclipse(eclipseVersion)
     }
 
+    addStep(SnippetFixFormatterStep.create())
+
     addStep(
         RegexFormatterStep.create(
             "javadoc-lines",
-            """(\s*\*\s.*)(\r?\n)(\s*\*\s<p>)""" to "$1$2*$2$3",
+            """(\s*\*\s.*)(\r?\n)((\s*)\*\s<p>)""" to "$1$2$4*$2$3",
+            """(\s*\*\s.*)(\r?\n)((\s*)\*\s\{@snippet)""" to "$1$2$4*$2$3",
             """(\s*\*[^\r\n]*)[ \t]+(\r?\n)""" to "$1$2",
         )
     )
