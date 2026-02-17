@@ -35,7 +35,13 @@ All plugins support configuration via extension DSL or gradle.properties.
 |Javadoc generation configuration
 
 |`dev.daymor.ultimanexus.jvm.gradle.dependency.jspecify`
-|JSpecify nullability annotations
+|JSpecify nullability annotations (main sources only)
+
+|`dev.daymor.ultimanexus.jvm.gradle.dependency.jspecify-test`
+|JSpecify nullability annotations (test sources only)
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.jspecify`
+|JSpecify nullability annotations for main and test sources
 
 |`dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple-application`
 |Simple Java application without quality checks
@@ -88,7 +94,7 @@ Includes:
 * All quality checks, tests, and reports
 * Java compilation and Javadoc
 * `application` plugin with `run` task
-* JSpecify nullability annotations
+* JSpecify nullability annotations (main and test sources)
 
 === Java Complete Library
 
@@ -248,16 +254,40 @@ plugins {
 ./gradlew javadoc
 ----
 
-== JSpecify Plugin
+== JSpecify Plugins
 
 Adds https://jspecify.dev/[JSpecify] nullability annotations.
 
-=== Usage
+=== JSpecify Bundle (Recommended)
+
+Adds JSpecify to both main and test sources.
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.jspecify)
+}
+----
+
+=== JSpecify (Main Only)
+
+Adds JSpecify as `compileOnly` for main sources only:
 
 [source,kotlin]
 ----
 plugins {
     alias(libs.plugins.ultimanexus.jvm.dependency.jspecify)
+}
+----
+
+=== JSpecify Test (Test Only)
+
+Adds JSpecify as `testCompileOnly` for test sources only:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.dependency.jspecify.test)
 }
 ----
 

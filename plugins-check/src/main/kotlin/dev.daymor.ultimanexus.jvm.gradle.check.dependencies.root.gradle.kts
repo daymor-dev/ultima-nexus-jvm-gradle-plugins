@@ -20,6 +20,8 @@
  * This plugin applies dependency-analysis-gradle-plugin to the root project
  * and configures it to fail the build on any dependency issues.
  *
+ * Global exclusions (from useJUnitJupiter() in Gradle's test suite DSL).
+ *
  * For subproject dependency analysis with lifecycle task integration,
  * use the dependencies plugin instead.
  */
@@ -28,4 +30,19 @@ plugins {
     id("com.autonomousapps.dependency-analysis")
 }
 
-dependencyAnalysis { issues { all { onAny { severity("fail") } } } }
+dependencyAnalysis {
+    issues {
+        all {
+            onAny { severity("fail") }
+            onUnusedDependencies {
+                exclude("org.junit.jupiter:junit-jupiter")
+            }
+            onUsedTransitiveDependencies {
+                exclude("org.junit.jupiter:junit-jupiter-api")
+                exclude("org.junit.jupiter:junit-jupiter-params")
+                exclude("org.junit.platform:junit-platform-commons")
+                exclude("org.opentest4j:opentest4j")
+            }
+        }
+    }
+}

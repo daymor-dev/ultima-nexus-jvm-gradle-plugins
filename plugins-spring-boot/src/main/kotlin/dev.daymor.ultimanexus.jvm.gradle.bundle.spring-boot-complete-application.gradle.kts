@@ -38,6 +38,6 @@ plugins {
     id("dev.daymor.ultimanexus.jvm.gradle.bundle.test")
     id("dev.daymor.ultimanexus.jvm.gradle.bundle.report")
     id("dev.daymor.ultimanexus.jvm.gradle.feature.javadoc")
-    id("dev.daymor.ultimanexus.jvm.gradle.dependency.jspecify")
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.jspecify")
     id("dev.daymor.ultimanexus.jvm.gradle.dependency.spring-boot-test")
 }

@@ -28,16 +28,22 @@ import org.gradle.api.artifacts.Configuration
 /**
  * Convention plugin for PMD static code analysis.
  *
+ * Supports separate rulesets for main and test source sets.
+ * Test source sets (test, integrationTest, functionalTest, performanceTest)
+ * use a relaxed ruleset by default.
+ *
  * Configuration via pmdConfig extension:
  * ```kotlin
  * pmdConfig {
  *     ruleSetFile = "config/pmd/ruleset.xml"
+ *     testRuleSetFile = "config/pmd/ruleset-test.xml"
  * }
  * ```
  *
  * Or via gradle.properties:
  * ```properties
  * pmd.ruleSetFile = config/pmd/ruleset.xml
+ * pmd.testRuleSetFile = config/pmd/ruleset-test.xml
  * ```
  */
 plugins {
@@ -47,13 +53,16 @@ plugins {
 
 interface PmdConfigExtension {
     val ruleSetFile: Property<String>
+    val testRuleSetFile: Property<String>
 }
 
 val pmdConfig = extensions.create<PmdConfigExtension>("pmdConfig")
 
 val ruleSetFileFromProps = project.findPropertyOrNull(PropertyKeys.Pmd.RULE_SET_FILE)
+val testRuleSetFileFromProps = project.findPropertyOrNull(PropertyKeys.Pmd.TEST_RULE_SET_FILE)
 
 if (ruleSetFileFromProps != null) pmdConfig.ruleSetFile.convention(ruleSetFileFromProps)
+if (testRuleSetFileFromProps != null) pmdConfig.testRuleSetFile.convention(testRuleSetFileFromProps)
 
 val libs: VersionCatalog? = getLibsCatalogOrNull(project)
 
@@ -89,6 +98,15 @@ tasks.withType<Pmd> {
         html.required = true
     }
     mustRunAfter(tasks.withType<Checkstyle>())
+
+    if (name != "pmdMain") {
+        val customTestRuleSetFile = pmdConfig.testRuleSetFile.orNull
+        when {
+            customTestRuleSetFile != null -> ruleSetFiles = files(customTestRuleSetFile)
+            checkJarFile != null -> ruleSetConfig =
+                resources.text.fromArchiveEntry(checkJarFile!!, "pmdRuleset-test.xml")
+        }
+    }
 }
 
 project.configureCheckTaskWithJavaPlugin("pmdMain")

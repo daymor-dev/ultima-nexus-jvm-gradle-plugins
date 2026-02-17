@@ -18,8 +18,9 @@ import dev.daymor.ultimanexus.jvm.gradle.config.PluginIds
 
 /**
  * Bundle plugin for complete JVM experience (language-agnostic).
- * Includes quality checks, testing, reporting, and lombok support.
- * Does NOT include Java-specific features - add those separately if needed.
+ * Includes quality checks, testing, and reporting.
+ * Does NOT include Java-specific features (Lombok, JSpecify) - add those
+ * separately if needed.
  *
  * For Java projects, use bundle.java-complete instead.
  * For Spring Boot projects, use bundle.ultima-nexus instead.
@@ -29,7 +30,6 @@ import dev.daymor.ultimanexus.jvm.gradle.config.PluginIds
  *   - dev.daymor.ultimanexus.jvm.gradle.bundle.check
  *   - dev.daymor.ultimanexus.jvm.gradle.bundle.test
  *   - dev.daymor.ultimanexus.jvm.gradle.bundle.report
- *   - dev.daymor.ultimanexus.jvm.gradle.bundle.lombok
  *   - dev.daymor.ultimanexus.jvm.gradle.bundle.documentation (if antora-playbook.yml exists)
  *
  * Usage:
@@ -46,7 +46,6 @@ plugins {
     id("dev.daymor.ultimanexus.jvm.gradle.bundle.check")
     id("dev.daymor.ultimanexus.jvm.gradle.bundle.test")
     id("dev.daymor.ultimanexus.jvm.gradle.bundle.report")
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.lombok")
 }
 
 if (file("antora-playbook.yml").exists()) {

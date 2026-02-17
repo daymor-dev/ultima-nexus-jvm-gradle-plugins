@@ -42,6 +42,7 @@ object PluginIds {
         const val SPRING_BOOT_SIMPLE_LIBRARY = "$PREFIX.bundle.spring-boot-simple-library"
         const val SPRING_BOOT_COMPLETE_APPLICATION = "$PREFIX.bundle.spring-boot-complete-application"
         const val SPRING_BOOT_COMPLETE_LIBRARY = "$PREFIX.bundle.spring-boot-complete-library"
+        const val JSPECIFY = "$PREFIX.bundle.jspecify"
         const val LOMBOK = "$PREFIX.bundle.lombok"
         const val DOCUMENTATION = "$PREFIX.bundle.documentation"
         const val PLATFORM = "$PREFIX.bundle.platform"
@@ -89,6 +90,7 @@ object PluginIds {
 
     object Dependency {
         const val JSPECIFY = "$PREFIX.dependency.jspecify"
+        const val JSPECIFY_TEST = "$PREFIX.dependency.jspecify-test"
         const val LOMBOK = "$PREFIX.dependency.lombok"
         const val LOMBOK_TEST = "$PREFIX.dependency.lombok-test"
         const val SPRING_BOOT_TEST = "$PREFIX.dependency.spring-boot-test"

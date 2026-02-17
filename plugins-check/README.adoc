@@ -173,6 +173,7 @@ plugins {
 ----
 pmdConfig {
     ruleSetFile = "config/pmd/pmd-ruleset.xml"
+    testRuleSetFile = "config/pmd/pmd-ruleset-test.xml"
 }
 ----
 
@@ -181,16 +182,23 @@ pmdConfig {
 [source,properties]
 ----
 pmd.ruleSetFile=config/pmd/pmd-ruleset.xml
+pmd.testRuleSetFile=config/pmd/pmd-ruleset-test.xml
 ----
 
 === Default Configuration
 
-By default, uses rules from the https://github.com/daymor-dev/ultima-nexus-jvm-check[ultima-nexus-jvm-check] artifact. Custom configuration is only needed to override defaults.
+By default, uses rules from the https://github.com/daymor-dev/ultima-nexus-jvm-check[ultima-nexus-jvm-check] artifact:
+
+* **Main sources** (`pmdMain`): Uses `pmdRuleset.xml` — strict rules for production code
+* **Test sources** (`pmdTest`, `pmdIntegrationTest`, `pmdFunctionalTest`, `pmdPerformanceTest`): Uses `pmdRuleset-test.xml` — relaxed rules that exclude false positives common in test code
+
+Custom configuration is only needed to override defaults.
 
 === Features
 
 * HTML report generation
 * Parallel analysis using half of available CPUs
+* Separate rulesets for main and test sources
 * Runs after Checkstyle tasks
 
 == SpotBugs Plugin
@@ -488,7 +496,8 @@ plugins {
 |`checkstyle.headerFile` |_(auto)_ |`checkstyle` |Path to license header file
 |`checkstyle.suppressionsFile` |_(auto)_ |`checkstyle` |Path to suppressions file
 |`checkstyle.fileSuppressionsFile` |_(auto)_ |`checkstyle` |Path to file-level suppressions
-|`pmd.ruleSetFile` |_(auto)_ |`pmd` |Path to custom PMD ruleset XML
+|`pmd.ruleSetFile` |_(auto)_ |`pmd` |Path to custom PMD ruleset XML (main sources)
+|`pmd.testRuleSetFile` |_(auto)_ |`pmd` |Path to custom PMD ruleset XML (test sources)
 |`spotbugs.ignoreFailures` |`false` |`spotbugs` |Whether to ignore failures
 |`spotbugs.showStackTraces` |`true` |`spotbugs` |Show stack traces in output
 |`spotbugs.showProgress` |`true` |`spotbugs` |Show analysis progress

@@ -205,6 +205,7 @@ Level 1 - Feature Bundles:
 ├── test           (test + test-suites [configurable: integration, functional, performance])
 ├── report         (code-coverage + sbom + test + plugin-analysis)
 ├── documentation  (antora + antora-ui)
+├── jspecify       (jspecify + jspecify-test)
 └── lombok         (lombok + lombok-test)
 
 Level 2 - Project Bundles:
@@ -212,17 +213,17 @@ Level 2 - Project Bundles:
 ├── gradle-project-root    (lifecycle.root + dependencies.root + format-gradle.root + aggregation) [root only]
 ├── platform               (version-platform + identity) [BOM projects only]
 ├── starter                (java-library + lifecycle + identity + dependency-rules + publish) [dependency aggregation]
-├── jvm-complete           (gradle-project + check + test + report + lombok) [language-agnostic]
+├── jvm-complete           (gradle-project + check + test + report) [language-agnostic]
 ├── java-simple-application    (gradle-project + compile-java + application)
 ├── java-simple-library        (gradle-project + compile-java + java-library)
-├── java-complete-application  (check + test + report + compile-java + application + jspecify)
-└── java-complete-library      (check + test + report + compile-java + java-library + publish + jspecify)
+├── java-complete-application  (check + test + report + compile-java + application + jspecify bundle)
+└── java-complete-library      (check + test + report + compile-java + java-library + publish + jspecify bundle)
 
 Level 3 - Framework Bundles:
 ├── spring-boot-simple-application     (java-simple-application + spring-boot-application + spring-boot-test)
 ├── spring-boot-simple-library         (java-simple-library + spring-boot-library + spring-boot-test)
-├── spring-boot-complete-application   (check + test + report + compile-java + spring-boot-application)
-└── spring-boot-complete-library       (check + test + report + compile-java + spring-boot-library + publish)
+├── spring-boot-complete-application   (check + test + report + compile-java + spring-boot-application + jspecify bundle)
+└── spring-boot-complete-library       (check + test + report + compile-java + spring-boot-library + publish + jspecify bundle)
 
 Level 4 - Full Bundle:
 ├── ultima-nexus-jvm-application  (spring-boot-complete-application + lombok + documentation)

@@ -83,7 +83,7 @@ Includes:
 * Java compilation and Javadoc
 * Full Spring Boot plugin (`bootJar`, `bootRun`)
 * Spring Boot DevTools for development
-* JSpecify nullability annotations
+* JSpecify nullability annotations (main and test sources)
 
 === Spring Boot Complete Library
 
