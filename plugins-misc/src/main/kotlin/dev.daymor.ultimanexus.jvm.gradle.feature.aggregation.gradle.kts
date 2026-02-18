@@ -16,14 +16,19 @@
 
 
 import dev.daymor.ultimanexus.jvm.gradle.config.PluginIds
-import dev.daymor.ultimanexus.jvm.gradle.util.ProjectUtils.aggregateDir
 
 /**
  * Aggregation plugin for multi-module projects.
  * Aggregates reports and metrics from subprojects into a single location.
  *
+ * Uses Gradle's project model (subprojects) to automatically discover
+ * which subprojects exist and which report plugins they use.
+ * No manual configuration is needed — works with any settings plugin
+ * or custom settings.gradle.kts.
+ *
  * Report plugins are only applied if subprojects use the corresponding plugin.
- * This is determined by scanning build files for report or bundle plugin references.
+ * This is determined by scanning subproject build files for report or
+ * bundle plugin references.
  *
  * Included plugins (always):
  *   - java
@@ -39,26 +44,11 @@ import dev.daymor.ultimanexus.jvm.gradle.util.ProjectUtils.aggregateDir
  *   plugins {
  *       id("dev.daymor.ultimanexus.jvm.gradle.feature.aggregation")
  *   }
- *
- *   aggregation {
- *       directory("my-modules", 5)
- *       directory("example-project", 2)
- *   }
  */
 plugins {
     java
     id("dev.daymor.ultimanexus.jvm.gradle.base.lifecycle")
 }
-
-open class AggregationConfig {
-    internal val directories = mutableListOf<Pair<String, Int>>()
-
-    fun directory(name: String, depth: Int = 1) {
-        directories.add(name to depth)
-    }
-}
-
-val aggregation = extensions.create<AggregationConfig>("aggregation")
 
 private val COMPLETE_BUNDLES = listOf(
     "bundle.report",
@@ -91,35 +81,19 @@ private val reportPlugins = listOf(
     )
 )
 
-fun collectBuildFileContents(): List<String> {
-    return aggregation.directories.flatMap { (name, depth) ->
-        val projectDir = rootDir.resolve(name)
-        if (!projectDir.exists() || !projectDir.isDirectory) emptyList()
-        else projectDir.walk()
-            .maxDepth(depth)
-            .filter { it.name == "build.gradle.kts" }
-            .map { it.readText() }
-            .toList()
-    }
-}
+val buildContents = subprojects
+    .map { it.buildFile }
+    .filter { it.exists() }
+    .map { it.readText() }
 
-fun findUsedReportPlugins(buildContents: List<String>): Set<String> {
-    return reportPlugins
-        .filter { config ->
-            config.patterns.any { pattern ->
-                buildContents.any { it.contains(pattern) }
-            }
+reportPlugins
+    .filter { config ->
+        config.patterns.any { pattern ->
+            buildContents.any { it.contains(pattern) }
         }
-        .map { it.pluginId }
-        .toSet()
-}
+    }
+    .forEach { apply(plugin = it.pluginId) }
 
-val buildContents = collectBuildFileContents()
-
-findUsedReportPlugins(buildContents).forEach { pluginId ->
-    apply(plugin = pluginId)
-}
-
-aggregation.directories.forEach { (name, depth) ->
-    aggregateDir(name, depth)
+subprojects.forEach { sub ->
+    dependencies.add("internal", sub)
 }

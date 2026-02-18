@@ -29,6 +29,4 @@ object Messages {
 
     const val WARN_DISCOURAGED_DEPENDENCY = "WARN: Discouraged dependency notation:"
 
-    fun projectNotFound(name: String, rootDir: String) =
-        "Project directory '$name' not found in $rootDir"
 }

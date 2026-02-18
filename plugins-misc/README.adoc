@@ -283,7 +283,9 @@ my-project/
 
 == Aggregation Plugin
 
-Aggregates reports and metrics from subprojects into a single location.
+Automatically aggregates reports and metrics from all subprojects into a single location.
+Zero configuration needed — uses Gradle's project model to discover subprojects.
+Works with any settings plugin or custom `settings.gradle.kts`.
 
 === Usage
 
@@ -292,20 +294,15 @@ Aggregates reports and metrics from subprojects into a single location.
 plugins {
     alias(libs.plugins.ultimanexus.jvm.feature.aggregation)
 }
-
-aggregation {
-    directory("my-modules", 5)      // Search 5 levels deep
-    directory("example-project", 2) // Search 2 levels deep
-}
 ----
 
 === What It Does
 
-* Scans configured directories for subprojects
-* Auto-detects which report plugins are used
+* Uses Gradle's `subprojects` to discover all modules automatically
+* Auto-detects which report plugins subprojects use
 * Conditionally applies aggregation for:
-** Code coverage (JaCoCo)
-** Test reports
+** Code coverage (JaCoCo) — via `jacoco-report-aggregation`
+** Test reports — via `test-report-aggregation`
 ** SBOM generation
 ** Plugin analysis
 
@@ -314,13 +311,14 @@ aggregation {
 [source]
 ----
 my-project/
-├── build.gradle.kts           # Apply aggregation plugin
+├── build.gradle.kts           # Apply root bundle (aggregation is automatic)
+├── settings.gradle.kts        # Any settings plugin or manual includes
 ├── my-modules/
-│   ├── core/                  # Uses java-complete
-│   ├── api/                   # Uses java-complete
-│   └── web/                   # Uses spring-boot-complete
+│   ├── core/                  # Uses java-complete (has report plugin)
+│   ├── api/                   # Uses java-complete (has report plugin)
+│   └── web/                   # Uses spring-boot-complete (has report plugin)
 └── example-project/
-    └── demo/                  # Uses java-simple
+    └── demo/                  # Uses java-simple (no report plugin — skipped)
 ----
 
 == Version Platform Plugin

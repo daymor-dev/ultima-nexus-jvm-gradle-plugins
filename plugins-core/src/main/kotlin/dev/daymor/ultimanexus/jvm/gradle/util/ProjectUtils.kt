@@ -17,11 +17,8 @@
 package dev.daymor.ultimanexus.jvm.gradle.util
 
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
-import dev.daymor.ultimanexus.jvm.gradle.config.Messages
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
 import java.io.File
-import org.gradle.api.GradleException
-import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
 
 object ProjectUtils {
@@ -66,26 +63,4 @@ object ProjectUtils {
             }
         }
 
-    fun Project.aggregateDir(projectName: String, depth: Int = 1) {
-        val projectDir = rootDir.listFiles()?.firstOrNull { it.name == projectName }
-            ?: throw GradleException(Messages.projectNotFound(projectName, rootDir.absolutePath))
-        projectDir.walk()
-            .maxDepth(depth)
-            .onEnter { it.isDirectory && rootDir != it }
-            .filter {
-                it.parentFile.name != "gradle" &&
-                    File(it, Defaults.BUILD_GRADLE_KTS).exists() &&
-                    rootDir != it
-            }
-            .map { it.toRelativeString(rootDir) }
-            .forEach {
-                val dependencyHandler = project.dependencies
-                if (it.contains(File.separatorChar)) {
-                    val module = it.substringAfterLast(File.separatorChar)
-                    dependencyHandler.add(Defaults.DependencyScope.IMPLEMENTATION, project(":$module"))
-                } else {
-                    dependencyHandler.add(Defaults.DependencyScope.IMPLEMENTATION, project(":$it"))
-                }
-            }
-    }
 }
