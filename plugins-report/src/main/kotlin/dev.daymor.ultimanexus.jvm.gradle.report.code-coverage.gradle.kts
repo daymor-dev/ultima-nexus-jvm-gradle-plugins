@@ -15,6 +15,7 @@
  */
 
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
+import dev.daymor.ultimanexus.jvm.gradle.util.ReportUtils.ensureTestSuitesRegistered
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 
 /**
@@ -80,7 +81,9 @@ fun excludeFiles(classDirectories: ConfigurableFileCollection) {
 fun configureReport(report: JacocoCoverageReport) {
     report.reportTask {
         group = "reporting"
-        excludeFiles(classDirectories)
+        if (subprojects.isEmpty() || project != rootProject) {
+            excludeFiles(classDirectories)
+        }
     }
 }
 
@@ -94,6 +97,8 @@ reporting {
         suiteReports.add(testCodeCoverageReport)
     }
 }
+
+project.ensureTestSuitesRegistered()
 
 testing.suites.withType<JvmTestSuite>().configureEach {
     val suiteName = name
@@ -119,7 +124,9 @@ reporting.reports {
 
     allTestCodeCoverageReport.reportTask {
         group = "reporting"
-        excludeFiles(classDirectories)
+        if (subprojects.isEmpty() || project != rootProject) {
+            excludeFiles(classDirectories)
+        }
 
         classDirectories.setFrom(
             provider { suiteReports.map { it.reportTask.get().classDirectories } }

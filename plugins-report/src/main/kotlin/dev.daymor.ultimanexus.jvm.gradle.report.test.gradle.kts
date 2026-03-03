@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import dev.daymor.ultimanexus.jvm.gradle.util.ReportUtils.ensureTestSuitesRegistered
+
 /**
  * Plugin for aggregating test reports across multiple test suites.
  * Auto-discovers all registered JvmTestSuites and creates aggregate reports for each.
@@ -45,6 +47,8 @@ reporting {
         suiteReports.add(testAggregateTestReport)
     }
 }
+
+project.ensureTestSuitesRegistered()
 
 testing.suites.withType<JvmTestSuite>().configureEach {
     val suiteName = name
