@@ -195,4 +195,10 @@ suiteNames.forEach { suiteName ->
     configurations.named("${suiteName}Implementation") {
         extendsFrom(configurations.getByName("testImplementation"))
     }
+    configurations.named("${suiteName}CompileOnly") {
+        extendsFrom(configurations.getByName("testCompileOnly"))
+    }
+    configurations.named("${suiteName}AnnotationProcessor") {
+        extendsFrom(configurations.getByName("testAnnotationProcessor"))
+    }
 }
