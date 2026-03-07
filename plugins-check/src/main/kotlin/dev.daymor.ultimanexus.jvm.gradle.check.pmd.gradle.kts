@@ -22,7 +22,7 @@ import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.FallbackVersions
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getVersionOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
-import dev.daymor.ultimanexus.jvm.gradle.util.TaskConfigUtils.configureCheckTaskWithJavaPlugin
+import dev.daymor.ultimanexus.jvm.gradle.util.TaskConfigUtils.configureAllCheckTasksWithJavaPlugin
 import org.gradle.api.artifacts.Configuration
 
 /**
@@ -109,4 +109,4 @@ tasks.withType<Pmd> {
     }
 }
 
-project.configureCheckTaskWithJavaPlugin("pmdMain")
+project.configureAllCheckTasksWithJavaPlugin<Pmd>()

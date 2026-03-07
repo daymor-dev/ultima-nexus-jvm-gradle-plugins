@@ -17,6 +17,7 @@
 package dev.daymor.ultimanexus.jvm.gradle.util
 
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
+import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlugin
 
@@ -27,13 +28,17 @@ object TaskConfigUtils {
         tasks.named("qualityGate") { dependsOn(tasks.named(taskName)) }
     }
 
-    fun Project.configureCheckTaskWithJavaPlugin(
-        taskName: String,
-        taskGroup: String = Defaults.TaskGroup.VERIFICATION
+    inline fun <reified T : DefaultTask> Project.configureAllCheckTasksWithJavaPlugin(
+        mainTaskGroup: String = Defaults.TaskGroup.VERIFICATION
     ) {
         plugins.withType(JavaPlugin::class.java) {
-            tasks.named(taskName) { group = taskGroup }
-            addToQualityGates(taskName)
+            tasks.withType(T::class.java).configureEach {
+                if (name.endsWith("Main")) {
+                    group = mainTaskGroup
+                }
+            }
+            tasks.named("qualityCheck") { dependsOn(tasks.withType(T::class.java)) }
+            tasks.named("qualityGate") { dependsOn(tasks.withType(T::class.java)) }
         }
     }
 }

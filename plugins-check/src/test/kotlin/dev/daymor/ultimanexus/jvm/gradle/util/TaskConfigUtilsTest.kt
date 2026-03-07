@@ -17,7 +17,8 @@
 package dev.daymor.ultimanexus.jvm.gradle.util
 
 import dev.daymor.ultimanexus.jvm.gradle.util.TaskConfigUtils.addToQualityGates
-import dev.daymor.ultimanexus.jvm.gradle.util.TaskConfigUtils.configureCheckTaskWithJavaPlugin
+import dev.daymor.ultimanexus.jvm.gradle.util.TaskConfigUtils.configureAllCheckTasksWithJavaPlugin
+import org.gradle.api.DefaultTask
 import org.assertj.core.api.Assertions.assertThat
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.testfixtures.ProjectBuilder
@@ -61,62 +62,70 @@ class TaskConfigUtilsTest {
         }
     }
 
+    abstract class TestCheckTask : DefaultTask()
+
     @Nested
-    inner class ConfigureCheckTaskWithJavaPlugin {
+    inner class ConfigureAllCheckTasksWithJavaPlugin {
 
         @Test
-        fun `configures task group when java plugin is applied`() {
+        fun `adds all tasks of type to qualityCheck when java plugin is applied`() {
             val project = ProjectBuilder.builder().withProjectDir(tempDir).build()
             project.tasks.register("qualityCheck")
             project.tasks.register("qualityGate")
-            project.tasks.register("checkstyleMain")
+            project.tasks.register("checkMain", TestCheckTask::class.java)
+            project.tasks.register("checkTest", TestCheckTask::class.java)
+            project.tasks.register("checkIntegrationTest", TestCheckTask::class.java)
 
-            project.configureCheckTaskWithJavaPlugin("checkstyleMain")
+            project.configureAllCheckTasksWithJavaPlugin<TestCheckTask>()
             project.plugins.apply(JavaPlugin::class.java)
 
-            val task = project.tasks.named("checkstyleMain").get()
-            assertThat(task.group).isEqualTo("verification")
+            val qualityCheckDeps = project.tasks.named("qualityCheck").get()
+                .taskDependencies.getDependencies(null).map { it.name }
+            assertThat(qualityCheckDeps).contains("checkMain", "checkTest", "checkIntegrationTest")
         }
 
         @Test
-        fun `uses custom task group when specified`() {
+        fun `adds all tasks of type to qualityGate when java plugin is applied`() {
             val project = ProjectBuilder.builder().withProjectDir(tempDir).build()
             project.tasks.register("qualityCheck")
             project.tasks.register("qualityGate")
-            project.tasks.register("myTask")
+            project.tasks.register("checkMain", TestCheckTask::class.java)
+            project.tasks.register("checkTest", TestCheckTask::class.java)
 
-            project.configureCheckTaskWithJavaPlugin("myTask", "custom-group")
+            project.configureAllCheckTasksWithJavaPlugin<TestCheckTask>()
             project.plugins.apply(JavaPlugin::class.java)
 
-            val task = project.tasks.named("myTask").get()
-            assertThat(task.group).isEqualTo("custom-group")
+            val qualityGateDeps = project.tasks.named("qualityGate").get()
+                .taskDependencies.getDependencies(null).map { it.name }
+            assertThat(qualityGateDeps).contains("checkMain", "checkTest")
         }
 
         @Test
-        fun `does not configure task when java plugin is not applied`() {
+        fun `sets main task group to verification`() {
             val project = ProjectBuilder.builder().withProjectDir(tempDir).build()
             project.tasks.register("qualityCheck")
             project.tasks.register("qualityGate")
-            val task = project.tasks.register("myTask").get()
-            val originalGroup = task.group
+            project.tasks.register("checkMain", TestCheckTask::class.java)
+            project.tasks.register("checkTest", TestCheckTask::class.java)
 
-            project.configureCheckTaskWithJavaPlugin("myTask")
+            project.configureAllCheckTasksWithJavaPlugin<TestCheckTask>()
+            project.plugins.apply(JavaPlugin::class.java)
 
-            assertThat(project.tasks.named("myTask").get().group).isEqualTo(originalGroup)
+            assertThat(project.tasks.named("checkMain").get().group).isEqualTo("verification")
+            assertThat(project.tasks.named("checkTest").get().group).isNotEqualTo("verification")
         }
 
         @Test
-        fun `adds task to quality gates when java plugin is applied`() {
+        fun `does not configure when java plugin is not applied`() {
             val project = ProjectBuilder.builder().withProjectDir(tempDir).build()
             project.tasks.register("qualityCheck")
             project.tasks.register("qualityGate")
-            project.tasks.register("pmdMain")
+            project.tasks.register("checkMain", TestCheckTask::class.java)
 
-            project.configureCheckTaskWithJavaPlugin("pmdMain")
-            project.plugins.apply(JavaPlugin::class.java)
+            project.configureAllCheckTasksWithJavaPlugin<TestCheckTask>()
 
             val qualityCheckDeps = project.tasks.named("qualityCheck").get().dependsOn
-            assertThat(qualityCheckDeps.map { it.toString() }).anyMatch { it.contains("pmdMain") }
+            assertThat(qualityCheckDeps).isEmpty()
         }
     }
 }

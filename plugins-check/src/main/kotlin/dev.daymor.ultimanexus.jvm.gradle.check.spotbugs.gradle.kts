@@ -25,7 +25,7 @@ import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNu
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibraryOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromProperty
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
-import dev.daymor.ultimanexus.jvm.gradle.util.TaskConfigUtils.configureCheckTaskWithJavaPlugin
+import dev.daymor.ultimanexus.jvm.gradle.util.TaskConfigUtils.configureAllCheckTasksWithJavaPlugin
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.JavaPluginExtension
 
@@ -129,7 +129,7 @@ if (spotbugsConfig.useAuxClasspath.get()) {
     }
 }
 
-project.configureCheckTaskWithJavaPlugin("spotbugsMain")
+project.configureAllCheckTasksWithJavaPlugin<SpotBugsTask>()
 
 val spotbugsAnnotations: String = "spotbugs-annotations"
 
