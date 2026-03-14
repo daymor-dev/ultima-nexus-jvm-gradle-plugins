@@ -40,10 +40,12 @@ import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
  *     // Global defaults (inherited by all suites)
  *     maxHeapSize.set("2g")
  *     useByteBuddyAgent.set(true)
+ *     useJacoco.set(true)
  *
  *     // Per-suite configuration
  *     suiteConfig("performanceTest") {
  *         useByteBuddyAgent.set(false)
+ *         useJacoco.set(false)
  *     }
  *     suiteConfig("smokeTest") {
  *         maxParallelForks.set(1)
@@ -55,6 +57,7 @@ import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
  * ```properties
  * test.suites=integrationTest,functionalTest,smokeTest,e2eTest
  * test.suite.performanceTest.useByteBuddyAgent=false
+ * test.suite.performanceTest.useJacoco=false
  * test.suite.smokeTest.maxParallelForks=1
  * ```
  *
@@ -74,6 +77,7 @@ plugins {
 
 interface TestSuiteConfigSpec {
     val useByteBuddyAgent: Property<Boolean>
+    val useJacoco: Property<Boolean>
     val maxHeapSize: Property<String>
     val maxParallelForks: Property<Int>
     val showStandardStreams: Property<Boolean>
@@ -87,6 +91,7 @@ interface TestSuitesExtension {
     val showStandardStreams: Property<Boolean>
     val fileEncoding: Property<String>
     val useByteBuddyAgent: Property<Boolean>
+    val useJacoco: Property<Boolean>
     val suiteConfigs: NamedDomainObjectContainer<TestSuiteConfigSpec>
 
     fun suiteConfig(name: String, action: Action<TestSuiteConfigSpec>) {
@@ -113,6 +118,9 @@ testSuitesExtension.fileEncoding.convention(
 )
 testSuitesExtension.useByteBuddyAgent.convention(
     project.findPropertyAsBoolean(PropertyKeys.Test.USE_BYTE_BUDDY_AGENT, true)
+)
+testSuitesExtension.useJacoco.convention(
+    project.findPropertyAsBoolean(PropertyKeys.Test.USE_JACOCO, true)
 )
 
 val suitesFromProps = project.findPropertyOrNull(PropertyKeys.Test.SUITES)
@@ -167,8 +175,14 @@ suiteNames.forEach { suiteName ->
         ?: getSuiteProperty(suiteName, "fileEncoding")
         ?: testSuitesExtension.fileEncoding.get()
 
+    val defaultJacoco = if (suiteName in Defaults.SUITES_WITHOUT_JACOCO) false
+    else testSuitesExtension.useJacoco.get()
+    val useJacoco = suiteConfig?.useJacoco?.orNull
+        ?: getSuiteBooleanProperty(suiteName, "useJacoco", defaultJacoco)
+
     testing.suites.register<JvmTestSuite>(suiteName) {
         useJUnitJupiter()
+        extensions.extraProperties["useJacoco"] = useJacoco
         targets.named(suiteName) {
             testTask {
                 group = Defaults.TaskGroup.VERIFICATION
@@ -183,6 +197,12 @@ suiteNames.forEach { suiteName ->
                             agentClasspath.from(byteBuddyAgent)
                         }
                     )
+                }
+
+                if (!useJacoco) {
+                    extensions.configure<JacocoTaskExtension> {
+                        isEnabled = false
+                    }
                 }
             }
         }

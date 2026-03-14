@@ -38,4 +38,14 @@ object ReportUtils {
             }
         }
     }
+
+    fun Project.isJacocoEnabledForSuite(suiteName: String): Boolean {
+        val globalDefault = findPropertyOrNull(PropertyKeys.Test.USE_JACOCO)
+            ?.toBoolean() ?: true
+        val suiteDefault = if (suiteName in Defaults.SUITES_WITHOUT_JACOCO) false
+            else globalDefault
+        return findPropertyOrNull(
+            "${PropertyKeys.Test.SUITE_PREFIX}$suiteName.useJacoco"
+        )?.toBoolean() ?: suiteDefault
+    }
 }

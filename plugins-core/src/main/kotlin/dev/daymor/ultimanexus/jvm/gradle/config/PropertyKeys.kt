@@ -47,6 +47,7 @@ object PropertyKeys {
         const val SHOW_STANDARD_STREAMS = "test.showStandardStreams"
         const val FILE_ENCODING = "test.fileEncoding"
         const val USE_BYTE_BUDDY_AGENT = "test.useByteBuddyAgent"
+        const val USE_JACOCO = "test.useJacoco"
         const val SUITES = "test.suites"
         const val SUITE_PREFIX = "test.suite."
     }

@@ -26,6 +26,7 @@ object Defaults {
     const val FILE_ENCODING = "UTF-8"
     val DEFAULT_TEST_SUITES = listOf("integrationTest", "functionalTest", "performanceTest")
     val SUITES_WITHOUT_BYTEBUDDY = listOf("performanceTest")
+    val SUITES_WITHOUT_JACOCO = listOf("performanceTest")
     const val PROJECT_STRUCTURE_DEPTH = 1
     val PROJECT_STRUCTURE_EXCLUSIONS = listOf("gradle/plugins", "*-gradle-plugins", "build")
     const val SHARED_GRADLE_PATH = "../gradle/"

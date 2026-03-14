@@ -15,8 +15,9 @@
  */
 
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
-import dev.daymor.ultimanexus.jvm.gradle.util.ReportUtils.ensureTestSuitesRegistered
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
+import dev.daymor.ultimanexus.jvm.gradle.util.ReportUtils.ensureTestSuitesRegistered
+import dev.daymor.ultimanexus.jvm.gradle.util.ReportUtils.isJacocoEnabledForSuite
 
 /**
  * Plugin for aggregating JaCoCo code coverage reports across test suites.
@@ -109,8 +110,12 @@ testing.suites.withType<JvmTestSuite>().configureEach {
                 ?: register(reportName, JacocoCoverageReport::class) {
                     testSuiteName = suiteName
                 }.get()
-            configureReport(report)
-            suiteReports.add(report)
+            if (project.isJacocoEnabledForSuite(suiteName)) {
+                configureReport(report)
+                suiteReports.add(report)
+            } else {
+                report.reportTask { group = "reporting.other" }
+            }
         }
     }
 }

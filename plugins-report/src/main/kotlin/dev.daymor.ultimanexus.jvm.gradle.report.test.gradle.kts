@@ -58,8 +58,8 @@ testing.suites.withType<JvmTestSuite>().configureEach {
             val report = findByName(reportName) as? AggregateTestReport
                 ?: register(reportName, AggregateTestReport::class) {
                     testSuiteName = suiteName
-                    reportTask { group = "reporting" }
                 }.get()
+            report.reportTask { group = "reporting" }
             suiteReports.add(report)
         }
     }

@@ -165,10 +165,12 @@ testSuites {
     showStandardStreams.set(true)
     fileEncoding.set("UTF-8")
     useByteBuddyAgent.set(true)
+    useJacoco.set(true)
 
     // Per-suite configuration
     suiteConfig("performanceTest") {
         useByteBuddyAgent.set(false)  // Disable mocking overhead for perf tests
+        useJacoco.set(false)           // Disable coverage for benchmarks
     }
     suiteConfig("smokeTest") {
         maxParallelForks.set(1)        // Run smoke tests sequentially
@@ -190,9 +192,11 @@ test.maxParallelForks=4
 test.showStandardStreams=true
 test.fileEncoding=UTF-8
 test.useByteBuddyAgent=true
+test.useJacoco=true
 
 # Per-suite overrides
 test.suite.performanceTest.useByteBuddyAgent=false
+test.suite.performanceTest.useJacoco=false
 test.suite.smokeTest.maxParallelForks=1
 test.suite.smokeTest.maxHeapSize=512m
 ----
@@ -216,6 +220,12 @@ src/
 The ByteBuddy agent is enabled by default for all suites EXCEPT performance tests. This allows mocking of final classes and static methods in tests.
 
 Performance tests disable ByteBuddy by default to avoid mocking overhead during benchmarks.
+
+=== JaCoCo Coverage
+
+JaCoCo code coverage is enabled by default for all suites EXCEPT performance tests. This tracks test coverage for reporting and verification.
+
+Performance tests disable JaCoCo by default because JMH forks its own JVM processes, making JaCoCo instrumentation ineffective for benchmark code.
 
 == Test Fixtures Plugin
 
@@ -259,12 +269,14 @@ dependencies {
 |`test.showStandardStreams` |`true` |`test`, `test-suites` |Show stdout/stderr in test output
 |`test.fileEncoding` |`UTF-8` |`test`, `test-suites` |File encoding for tests
 |`test.useByteBuddyAgent` |`true` |`test`, `test-suites` |Enable ByteBuddy agent for mocking
+|`test.useJacoco` |`true` |`test-suites` |Enable JaCoCo code coverage
 |`test.suites` |`integrationTest,functionalTest,performanceTest` |`test-suites` |Comma-separated list of test suites to create
 |`test.suite.<name>.maxHeapSize` |_(inherits global)_ |`test-suites` |Per-suite maximum heap size
 |`test.suite.<name>.maxParallelForks` |_(inherits global)_ |`test-suites` |Per-suite parallel test processes
 |`test.suite.<name>.showStandardStreams` |_(inherits global)_ |`test-suites` |Per-suite stdout/stderr setting
 |`test.suite.<name>.fileEncoding` |_(inherits global)_ |`test-suites` |Per-suite file encoding
 |`test.suite.<name>.useByteBuddyAgent` |`true` (except performanceTest: `false`) |`test-suites` |Per-suite ByteBuddy agent setting
+|`test.suite.<name>.useJacoco` |`true` (except performanceTest: `false`) |`test-suites` |Per-suite JaCoCo coverage setting
 |===
 
 == Directory Structure
