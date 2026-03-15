@@ -105,6 +105,10 @@ tasks.withType<Pmd> {
     }
     mustRunAfter(tasks.withType<Checkstyle>())
 
+    if (pmdConfig.ruleSetFile.isPresent && checkJarFile != null) {
+        pmdClasspath = pmdClasspath.plus(files(checkJarFile!!))
+    }
+
     val useTestRuleset = name != "pmdMain" || pmdConfig.useTestRulesetForMain.get()
     if (useTestRuleset) {
         val customTestRuleSetFile = pmdConfig.testRuleSetFile.orNull

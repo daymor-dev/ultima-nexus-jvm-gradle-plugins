@@ -93,12 +93,18 @@ checkstyle {
 
     configProperties =
         mapOf(
-            "checkstyle.header.file" to checkstyleConfig.headerFile
-                .getOrElse("$rootDir/checkstyle/headerFile.txt"),
-            "checkstyle.suppressions" to checkstyleConfig.suppressionsFile
-                .getOrElse("$rootDir/checkstyle/checkstyle-suppressions.xml"),
-            "checkstyle.file.suppressions" to checkstyleConfig.fileSuppressionsFile
-                .getOrElse("$rootDir/checkstyle/checkstyle-file-suppressions.xml"),
+            "checkstyle.header.file" to rootProject.file(
+                checkstyleConfig.headerFile
+                    .getOrElse("checkstyle/headerFile.txt"),
+            ).absolutePath,
+            "checkstyle.suppressions" to rootProject.file(
+                checkstyleConfig.suppressionsFile
+                    .getOrElse("checkstyle/checkstyle-suppressions.xml"),
+            ).absolutePath,
+            "checkstyle.file.suppressions" to rootProject.file(
+                checkstyleConfig.fileSuppressionsFile
+                    .getOrElse("checkstyle/checkstyle-file-suppressions.xml"),
+            ).absolutePath,
         )
     isIgnoreFailures = false
     maxErrors = 0
