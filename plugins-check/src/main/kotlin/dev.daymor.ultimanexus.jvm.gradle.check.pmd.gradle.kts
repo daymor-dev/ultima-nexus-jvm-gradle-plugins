@@ -54,15 +54,21 @@ plugins {
 interface PmdConfigExtension {
     val ruleSetFile: Property<String>
     val testRuleSetFile: Property<String>
+    val useTestRulesetForMain: Property<Boolean>
 }
 
 val pmdConfig = extensions.create<PmdConfigExtension>("pmdConfig")
 
 val ruleSetFileFromProps = project.findPropertyOrNull(PropertyKeys.Pmd.RULE_SET_FILE)
 val testRuleSetFileFromProps = project.findPropertyOrNull(PropertyKeys.Pmd.TEST_RULE_SET_FILE)
+val useTestRulesetForMainFromProps =
+    project.findPropertyOrNull(PropertyKeys.Pmd.USE_TEST_RULESET_FOR_MAIN)
 
 if (ruleSetFileFromProps != null) pmdConfig.ruleSetFile.convention(ruleSetFileFromProps)
 if (testRuleSetFileFromProps != null) pmdConfig.testRuleSetFile.convention(testRuleSetFileFromProps)
+pmdConfig.useTestRulesetForMain.convention(
+    useTestRulesetForMainFromProps?.toBooleanStrictOrNull() ?: false
+)
 
 val libs: VersionCatalog? = getLibsCatalogOrNull(project)
 
@@ -99,7 +105,8 @@ tasks.withType<Pmd> {
     }
     mustRunAfter(tasks.withType<Checkstyle>())
 
-    if (name != "pmdMain") {
+    val useTestRuleset = name != "pmdMain" || pmdConfig.useTestRulesetForMain.get()
+    if (useTestRuleset) {
         val customTestRuleSetFile = pmdConfig.testRuleSetFile.orNull
         when {
             customTestRuleSetFile != null -> ruleSetFiles = files(customTestRuleSetFile)

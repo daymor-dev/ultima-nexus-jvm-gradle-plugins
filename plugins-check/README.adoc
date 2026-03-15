@@ -174,6 +174,7 @@ plugins {
 pmdConfig {
     ruleSetFile = "config/pmd/pmd-ruleset.xml"
     testRuleSetFile = "config/pmd/pmd-ruleset-test.xml"
+    useTestRulesetForMain = true
 }
 ----
 
@@ -183,6 +184,7 @@ pmdConfig {
 ----
 pmd.ruleSetFile=config/pmd/pmd-ruleset.xml
 pmd.testRuleSetFile=config/pmd/pmd-ruleset-test.xml
+pmd.useTestRulesetForMain=true
 ----
 
 === Default Configuration
@@ -191,6 +193,11 @@ By default, uses rules from the https://github.com/daymor-dev/ultima-nexus-jvm-c
 
 * **Main sources** (`pmdMain`): Uses `pmdRuleset.xml` — strict rules for production code
 * **Test sources** (`pmdTest`, `pmdIntegrationTest`, `pmdFunctionalTest`, `pmdPerformanceTest`): Uses `pmdRuleset-test.xml` — relaxed rules that exclude false positives common in test code
+
+=== Test Ruleset for Main Sources
+
+Modules whose `src/main/java` contains test infrastructure code (e.g., test support modules) can opt in to the relaxed test ruleset for `pmdMain` by setting `pmd.useTestRulesetForMain=true` in `gradle.properties` or via the extension.
+This avoids false positives from strict production rules on code that is inherently test-oriented.
 
 Custom configuration is only needed to override defaults.
 
@@ -498,6 +505,7 @@ plugins {
 |`checkstyle.fileSuppressionsFile` |_(auto)_ |`checkstyle` |Path to file-level suppressions
 |`pmd.ruleSetFile` |_(auto)_ |`pmd` |Path to custom PMD ruleset XML (main sources)
 |`pmd.testRuleSetFile` |_(auto)_ |`pmd` |Path to custom PMD ruleset XML (test sources)
+|`pmd.useTestRulesetForMain` |`false` |`pmd` |Use the test ruleset for `pmdMain`
 |`spotbugs.ignoreFailures` |`false` |`spotbugs` |Whether to ignore failures
 |`spotbugs.showStackTraces` |`true` |`spotbugs` |Show stack traces in output
 |`spotbugs.showProgress` |`true` |`spotbugs` |Show analysis progress

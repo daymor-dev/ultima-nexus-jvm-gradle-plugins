@@ -62,6 +62,7 @@ object PropertyKeys {
     object Pmd {
         const val RULE_SET_FILE = "pmd.ruleSetFile"
         const val TEST_RULE_SET_FILE = "pmd.testRuleSetFile"
+        const val USE_TEST_RULESET_FOR_MAIN = "pmd.useTestRulesetForMain"
     }
 
     object SpotBugs {
