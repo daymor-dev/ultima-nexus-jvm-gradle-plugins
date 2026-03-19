@@ -52,7 +52,7 @@ if (kotlinTargetFromProps != null) formatGradleRoot.kotlinTarget.convention(kotl
 
 spotless {
     kotlinGradle {
-        ktfmt().kotlinlangStyle().configure { it.setMaxWidth(80) }
+        ktfmt().kotlinlangStyle().configure { it.setMaxWidth(120) }
         target(
             formatGradleRoot.kotlinGradleTarget.getOrElse(
                 "gradle/plugins/src/main/**/*.gradle.kts"
@@ -60,7 +60,7 @@ spotless {
         )
     }
     kotlin {
-        ktfmt().kotlinlangStyle().configure { it.setMaxWidth(80) }
+        ktfmt().kotlinlangStyle().configure { it.setMaxWidth(120) }
         target(
             formatGradleRoot.kotlinTarget.getOrElse(
                 "gradle/plugins/src/main/**/*.kt"

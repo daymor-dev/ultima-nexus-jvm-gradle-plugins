@@ -20,7 +20,7 @@ import dev.daymor.ultimanexus.jvm.gradle.spotless.GradleDependencySortStep
  * Convention plugin for Gradle Kotlin DSL file formatting using Spotless with ktfmt.
  *
  * This plugin applies to *.gradle.kts files in subprojects. It uses kotlinlang style
- * with 80 character max width and includes dependency sorting.
+ * with 120 character max width and includes dependency sorting.
  *
  * For root project Gradle file formatting, use the format-gradle.root plugin instead.
  */
@@ -30,6 +30,6 @@ plugins {
 }
 
 spotless.kotlinGradle {
-    ktfmt().kotlinlangStyle().configure { it.setMaxWidth(80) }
+    ktfmt().kotlinlangStyle().configure { it.setMaxWidth(120) }
     addStep(GradleDependencySortStep.create())
 }
