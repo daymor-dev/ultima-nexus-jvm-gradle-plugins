@@ -21,6 +21,7 @@ import dev.daymor.ultimanexus.jvm.gradle.config.PluginIds
  *
  * Bundle plugin for full Ultima Nexus framework application experience.
  * Includes all quality checks, testing, Spring Boot application setup,
+ * GraalVM Native Image compilation, Spring Boot AOT support,
  * jspecify nullability, lombok support, and documentation (auto-detected).
  *
  * For standalone Spring Boot applications with the complete Ultima Nexus toolchain.
@@ -33,7 +34,7 @@ import dev.daymor.ultimanexus.jvm.gradle.config.PluginIds
  * ```
  */
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete-application")
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-native-complete-application")
     id("dev.daymor.ultimanexus.jvm.gradle.bundle.lombok")
 }
 

@@ -36,7 +36,7 @@ The `plugins-misc` module provides:
 |Language-agnostic JVM bundle with quality checks, testing, and reporting
 
 |`dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-application`
-|Complete Ultima Nexus JVM Framework for applications (Spring Boot + Lombok)
+|Complete Ultima Nexus JVM Framework for applications (Spring Boot + GraalVM Native + Lombok)
 
 |`dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-library`
 |Complete Ultima Nexus JVM Framework for libraries (Spring Boot + publishing)
@@ -144,13 +144,16 @@ plugins {
 
 === Includes
 
-* Everything in `spring-boot-complete-application` or `spring-boot-complete-library`:
+* Everything in `spring-boot-native-complete-application` or `spring-boot-complete-library`:
 ** Base Gradle project conventions
 ** All quality checks (Checkstyle, PMD, SpotBugs, Spotless)
 ** All test types (unit, integration, functional, performance)
 ** All reports (code coverage, SBOM, test reports)
 ** Java compilation and Javadoc
 ** JSpecify nullability annotations
+* Application bundle also includes:
+** GraalVM Native Image compilation (`nativeCompile`, `nativeTest`)
+** Spring Boot AOT processing
 * Library bundle also includes Maven Central publishing
 * Lombok support (main and test sources)
 * Documentation support (auto-detected if `antora-playbook.yml` exists)

@@ -146,4 +146,15 @@ object PropertyKeys {
         const val PASSWORD_SUFFIX = ".password"
         const val ALLOW_INSECURE_SUFFIX = ".allowInsecureProtocol"
     }
+
+    object GraalvmNative {
+        const val VERBOSE = "graalvmNative.verbose"
+        const val QUICK_BUILD = "graalvmNative.quickBuild"
+        const val FALLBACK = "graalvmNative.fallback"
+        const val RICH_OUTPUT = "graalvmNative.richOutput"
+    }
+
+    object SpringBootAot {
+        const val SUPPRESS_AOT_WARNINGS = "springBootAot.suppressWarnings"
+    }
 }

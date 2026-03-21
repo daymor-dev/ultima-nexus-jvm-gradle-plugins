@@ -42,6 +42,9 @@ object PluginIds {
         const val SPRING_BOOT_SIMPLE_LIBRARY = "$PREFIX.bundle.spring-boot-simple-library"
         const val SPRING_BOOT_COMPLETE_APPLICATION = "$PREFIX.bundle.spring-boot-complete-application"
         const val SPRING_BOOT_COMPLETE_LIBRARY = "$PREFIX.bundle.spring-boot-complete-library"
+        const val SPRING_BOOT_NATIVE_APPLICATION = "$PREFIX.bundle.spring-boot-native-application"
+        const val SPRING_BOOT_NATIVE_COMPLETE_APPLICATION =
+            "$PREFIX.bundle.spring-boot-native-complete-application"
         const val JSPECIFY = "$PREFIX.bundle.jspecify"
         const val LOMBOK = "$PREFIX.bundle.lombok"
         const val DOCUMENTATION = "$PREFIX.bundle.documentation"
@@ -72,6 +75,8 @@ object PluginIds {
         const val USE_ALL_CATALOG_VERSIONS = "$PREFIX.feature.use-all-catalog-versions"
         const val AGGREGATION = "$PREFIX.feature.aggregation"
         const val COMPOSITE_BUILD = "$PREFIX.feature.composite-build"
+        const val GRAALVM_NATIVE = "$PREFIX.feature.graalvm-native"
+        const val SPRING_BOOT_AOT = "$PREFIX.feature.spring-boot-aot"
         const val GRADLE_PLUGIN_PUBLISH = "$PREFIX.feature.gradle-plugin-publish"
     }
 

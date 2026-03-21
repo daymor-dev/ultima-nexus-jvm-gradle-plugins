@@ -21,15 +21,7 @@ plugins {
 
 dependencies {
     implementation(libs.ultima.nexus.jvm.core)
-    implementation(libs.ultima.nexus.jvm.base)
-    implementation(libs.ultima.nexus.jvm.check)
-    implementation(libs.ultima.nexus.jvm.test)
-    implementation(libs.ultima.nexus.jvm.report)
-    implementation(libs.ultima.nexus.jvm.publish)
-    implementation(libs.ultima.nexus.jvm.java)
-    implementation(libs.ultima.nexus.jvm.native)
-    implementation(libs.spring.boot.gradle.plugin)
-    implementation(libs.spring.dependency.management)
+    implementation(libs.graalvm.native.gradle.plugin)
 }
 
 testing.suites.named<JvmTestSuite>("test") {

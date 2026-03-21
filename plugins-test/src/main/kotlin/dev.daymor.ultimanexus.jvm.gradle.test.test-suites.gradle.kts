@@ -204,6 +204,12 @@ suiteNames.forEach { suiteName ->
                         isEnabled = false
                     }
                 }
+
+                if (suiteName == "performanceTest") {
+                    exclude("**/jmh_generated/**")
+                    forkEvery = 1
+                    systemProperty("jmh.ignoreLock", "true")
+                }
             }
         }
     }

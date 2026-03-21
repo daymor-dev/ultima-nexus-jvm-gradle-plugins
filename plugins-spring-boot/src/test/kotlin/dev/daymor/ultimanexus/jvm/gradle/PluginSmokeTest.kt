@@ -183,4 +183,90 @@ class PluginSmokeTest {
             assertThat(result.taskSucceeded(":help")).isTrue()
         }
     }
+
+    @Nested
+    inner class GraalvmNativePlugin {
+
+        @Test
+        fun `graalvm-native plugin applies successfully`() {
+            fixture()
+                .withSettings("rootProject.name = \"test-project\"")
+                .withBuildScript(
+                    """
+                    plugins {
+                        id("${PluginIds.Feature.GRAALVM_NATIVE}")
+                    }
+                    """.trimIndent()
+                )
+
+            val result = fixture().help()
+
+            assertThat(result.taskSucceeded(":help")).isTrue()
+        }
+    }
+
+    @Nested
+    inner class SpringBootAotPlugin {
+
+        @Test
+        fun `spring-boot-aot plugin applies successfully`() {
+            fixture()
+                .withSettings("rootProject.name = \"test-project\"")
+                .withBuildScript(
+                    """
+                    plugins {
+                        id("${PluginIds.Feature.SPRING_BOOT_AOT}")
+                    }
+                    """.trimIndent()
+                )
+
+            val result = fixture().help()
+
+            assertThat(result.taskSucceeded(":help")).isTrue()
+        }
+    }
+
+    @Nested
+    inner class SpringBootNativeApplicationBundle {
+
+        @Test
+        fun `spring-boot-native-application bundle applies successfully`() {
+            fixture()
+                .withSettings("rootProject.name = \"test-project\"")
+                .withBuildScript(
+                    """
+                    plugins {
+                        id("${PluginIds.Bundle.SPRING_BOOT_NATIVE_APPLICATION}")
+                    }
+                    """.trimIndent()
+                )
+                .withProperties("groupId" to "com.example.test")
+
+            val result = fixture().help()
+
+            assertThat(result.taskSucceeded(":help")).isTrue()
+        }
+    }
+
+    @Nested
+    inner class SpringBootNativeCompleteApplicationBundle {
+
+        @Test
+        fun `spring-boot-native-complete-application bundle applies successfully`() {
+            fixture()
+                .withSettings("rootProject.name = \"test-project\"")
+                .withBuildScript(
+                    """
+                    plugins {
+                        id("${PluginIds.Bundle.SPRING_BOOT_NATIVE_COMPLETE_APPLICATION}")
+                    }
+                    """.trimIndent()
+                )
+                .withProperties("groupId" to "com.example.test")
+
+            val result = fixture().help()
+
+            assertThat(result.taskSucceeded(":help")).isTrue()
+        }
+    }
 }

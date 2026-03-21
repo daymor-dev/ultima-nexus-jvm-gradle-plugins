@@ -40,6 +40,15 @@ All plugins support configuration via extension DSL or gradle.properties.
 
 |`dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete-library`
 |Complete Spring Boot library with quality checks and publishing
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-aot`
+|Spring Boot AOT compilation support with quality check exclusions
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-native-application`
+|Simple Spring Boot application with GraalVM Native Image
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-native-complete-application`
+|Complete Spring Boot application with GraalVM Native Image and quality checks
 |===
 
 == Installation
@@ -59,6 +68,9 @@ ultimanexus-jvm-bundle-spring-boot-complete-library = { id = "dev.daymor.ultiman
 ultimanexus-jvm-feature-spring-boot-application = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-application", version.ref = "ultima-nexus-plugins" }
 ultimanexus-jvm-feature-spring-boot-library = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-library", version.ref = "ultima-nexus-plugins" }
 ultimanexus-jvm-dependency-spring-boot-test = { id = "dev.daymor.ultimanexus.jvm.gradle.dependency.spring-boot-test", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-spring-boot-native-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-native-application", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-spring-boot-native-complete-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-native-complete-application", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-feature-spring-boot-aot = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-aot", version.ref = "ultima-nexus-plugins" }
 ----
 
 == Spring Boot Complete Bundles
@@ -120,6 +132,77 @@ Includes:
 |Included
 |Shared libraries, starters
 |===
+
+== Spring Boot Native Bundles
+
+Spring Boot application bundles with GraalVM Native Image and AOT support.
+
+=== Spring Boot Native Complete Application
+
+For standalone Spring Boot applications compiled to native executables:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.spring.boot.native.complete.application)
+}
+----
+
+Includes everything from `spring-boot-complete-application` plus:
+
+* GraalVM Native Image compilation (`nativeCompile`, `nativeTest`)
+* Spring Boot AOT processing (`processAot`, `processTestAot`)
+* AOT source sets excluded from quality checks (Checkstyle, PMD, SpotBugs)
+* AOT compiler warnings suppressed (`-Xlint:-unchecked`, `-Xlint:-rawtypes`)
+
+=== Spring Boot Native Simple Application
+
+For minimal Spring Boot native applications without quality checks:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.spring.boot.native.application)
+}
+----
+
+== Spring Boot AOT Plugin
+
+Configures Spring Boot AOT compilation and excludes AOT-generated code from quality checks.
+
+=== Usage
+
+Applied automatically by native bundles. Can be applied independently:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.spring.boot.aot)
+}
+----
+
+=== Features
+
+* Suppresses `-Xlint:unchecked` and `-Xlint:rawtypes` warnings on AOT compilation tasks
+* Disables Checkstyle, PMD, and SpotBugs tasks for AOT source sets
+* Resolves slf4j-impl capability conflicts in AOT classpaths
+* Disables AOT processing when no main source exists (prevents build failures in virtual projects)
+
+=== Configuration
+
+[source,kotlin]
+----
+springBootAotConfig {
+    suppressWarnings.set(true) // default: true
+}
+----
+
+Or via `gradle.properties`:
+
+[source,properties]
+----
+springBootAot.suppressWarnings=true
+----
 
 == Spring Boot Simple Bundles
 
@@ -210,7 +293,16 @@ Adds the following test dependencies:
 
 == Properties Reference
 
-No configuration properties required - use the appropriate plugin for your project type.
+[cols="2,1,3"]
+|===
+|Property |Default |Description
+
+|`springBootAot.suppressWarnings`
+|`true`
+|Suppress `-Xlint:unchecked` and `-Xlint:rawtypes` on AOT compilation tasks
+|===
+
+NOTE: GraalVM Native Image properties (`graalvmNative.*`) are documented in the link:../plugins-native/README.adoc[plugins-native] module.
 
 == Running Common Tasks
 
@@ -255,6 +347,7 @@ spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-star
 * link:../plugins-base/README.adoc[plugins-base] - Base Gradle project conventions
 * link:../plugins-check/README.adoc[plugins-check] - Quality checks (used by spring-boot-complete)
 * link:../plugins-test/README.adoc[plugins-test] - Testing infrastructure (used by spring-boot-complete)
+* link:../plugins-native/README.adoc[plugins-native] - GraalVM Native Image support (used by native bundles)
 * link:../plugins-lombok/README.adoc[plugins-lombok] - Lombok support
-* link:../plugins-misc/README.adoc[plugins-misc] - Full `ultima-nexus-jvm` bundle (Spring Boot + Lombok)
+* link:../plugins-misc/README.adoc[plugins-misc] - Full `ultima-nexus-jvm` bundle (Spring Boot + Native + Lombok)
 * link:../README.adoc[Root README] - Project overview and quick start
