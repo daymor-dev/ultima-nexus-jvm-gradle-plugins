@@ -1,0 +1,143 @@
+= Core Plugins
+:description: Internal plugins for composite builds, Gradle plugin publishing, and plugin testing.
+:toc: left
+:toclevels: 3
+
+The core plugins are primarily for plugin developers and internal use within the Gradle plugins project itself.
+They provide composite build support, Gradle Plugin Portal publishing, and testing infrastructure for convention plugins.
+
+== Composite Build Plugin (Settings)
+
+Auto-discovers composite builds, shares the version catalog, and loads shared properties.
+This is a settings plugin used to structure multi-module plugin projects.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.composite-build`
+
+[source,kotlin]
+.settings.gradle.kts
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.composite-build") version "latest.release"
+}
+----
+
+=== What It Does
+
+* *Root project:* Auto-discovers directories matching the `compositeBuildPrefix` pattern and includes them as composite builds
+* *Sub-builds:* Shares the version catalog from `gradle/libs.versions.toml` and loads shared properties from `gradle/shared.properties`
+* Applies `org.gradle.*` properties from shared properties as system properties
+* Sets the root project name from the `rootProjectName` property
+
+=== Configuration
+
+[cols="2,1,3"]
+|===
+|Property |Default |Description
+
+|`rootProjectName`
+|_(required)_
+|Root project name
+
+|`compositeBuildPrefix`
+|_(optional)_
+|Prefix for auto-discovering composite builds (e.g., `plugins-`)
+
+|`sharedGradlePath`
+|`../gradle/`
+|Path to the shared gradle folder (for sub-builds)
+
+|`includedBuilds`
+|_(optional)_
+|Comma-separated list of explicit composite builds for sub-builds
+|===
+
+== Gradle Plugin Publish Plugin
+
+Configures Gradle plugins for publishing to the Gradle Plugin Portal.
+Automatically sets up plugin metadata (display name, description, tags) from `gradle.properties`.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.gradle-plugin-publish`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.gradle.plugin.publish)
+}
+----
+
+=== What It Does
+
+* Applies the `com.gradle.plugin-publish` plugin
+* Sets `group` and `version` from the `ultimaNexus` extension
+* Configures the website URL and VCS URL for each plugin
+* Resolves per-plugin display name and description from `gradle.properties`
+* Applies version mapping for all publications
+
+=== Configuration
+
+[source,properties]
+----
+groupId=dev.daymor.ultimanexus.jvm.gradle
+version=latest.release
+pluginWebsite=https://github.com/your/repo
+pluginVcsUrl=https://github.com/your/repo
+pluginTags=java,convention,quality
+
+# Per-plugin metadata (suffix is plugin ID after removing prefix)
+plugin.check.checkstyle.displayName=Ultima Nexus - Checkstyle
+plugin.check.checkstyle.description=Configures Checkstyle code quality checks
+----
+
+=== Publishing
+
+[source,bash]
+----
+export GRADLE_PUBLISH_KEY=your-key
+export GRADLE_PUBLISH_SECRET=your-secret
+./gradlew publishPlugins
+----
+
+== Gradle Plugin Test Plugin
+
+Convention plugin for testing Gradle plugins with Gradle TestKit.
+Adds JUnit 5 with parameterized test support and AssertJ for fluent assertions.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.test.gradle-plugin`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.test.gradle.plugin)
+}
+----
+
+=== What It Provides
+
+* `gradleTestKit()` as `testImplementation`
+* JUnit Jupiter parameterized tests (`junit-jupiter-params`)
+* AssertJ (`assertj-core`)
+* JUnit 5 test suite
+
+== Unit Test Plugin (Core)
+
+Convention plugin for unit testing utility classes within the plugin project.
+Adds JUnit 5 with MockK for Kotlin-native mocking.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.test.unit`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.test.unit)
+}
+----
+
+=== What It Provides
+
+* JUnit Jupiter parameterized tests (`junit-jupiter-params`)
+* AssertJ (`assertj-core`)
+* MockK (`mockk`) for Kotlin-native mocking
+* JUnit 5 test suite
+
+NOTE: This plugin is distinct from the `test.test` plugin in `plugins-test`, which is designed for Java application testing with JaCoCo and ByteBuddy.
+The `test.unit` plugin is designed for Kotlin-based plugin utility classes.

@@ -1,0 +1,79 @@
+= Lombok Plugins
+:description: Lombok annotation processing for main and test source sets.
+:toc: left
+:toclevels: 3
+
+The Lombok plugins add https://projectlombok.org/[Lombok] annotation processing to your project, enabling annotations like `@Getter`, `@Setter`, `@Builder`, `@Slf4j`, and more.
+
+== Lombok Bundle (Recommended)
+
+Adds Lombok as `compileOnly` + `annotationProcessor` for both main and test sources.
+This is the recommended way to enable Lombok.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.lombok`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.lombok)
+}
+----
+
+This bundle includes:
+
+* `dependency.lombok` -- Lombok for main sources
+* `dependency.lombok-test` -- Lombok for test sources
+
+== Lombok (Main Only)
+
+Adds Lombok as `compileOnly` and `annotationProcessor` for the main source set only.
+Use this when you need Lombok in production code but not in tests.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.dependency.lombok`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.dependency.lombok)
+}
+----
+
+=== What It Configures
+
+* `compileOnly("org.projectlombok:lombok")` -- makes Lombok available at compile time without adding it to the runtime classpath
+* `annotationProcessor("org.projectlombok:lombok")` -- runs the Lombok annotation processor during compilation
+
+== Lombok Test (Test Only)
+
+Adds Lombok as `testCompileOnly` and `testAnnotationProcessor` for the test source set only.
+Use this when you need Lombok in test code but not in production code.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.dependency.lombok-test`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.dependency.lombok.test)
+}
+----
+
+=== What It Configures
+
+* `testCompileOnly("org.projectlombok:lombok")` -- makes Lombok available at test compile time
+* `testAnnotationProcessor("org.projectlombok:lombok")` -- runs the Lombok annotation processor during test compilation
+
+== Version Resolution
+
+The Lombok version is resolved in this order:
+
+1. Version from `libs.versions.toml` (library name: `lombok`)
+2. Built-in fallback version
+
+=== Version Catalog Configuration (Optional)
+
+[source,toml]
+.gradle/libs.versions.toml
+----
+[libraries]
+lombok = { module = "org.projectlombok:lombok", version = "1.18.x" }
+----

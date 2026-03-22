@@ -182,6 +182,51 @@ plugins {
 
 Includes: Gradle project base + Java compilation + `java-library` + Spring Boot library + Spring Boot test.
 
+== Spring Boot AOT Plugin
+
+Configures Spring Boot Ahead-of-Time (AOT) compilation and excludes AOT-generated code from quality checks.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-aot`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.spring.boot.aot)
+}
+----
+
+See xref:native-plugins.adoc#_spring_boot_aot_plugin[Native Image Plugins -- Spring Boot AOT] for full configuration details.
+
+== Native Application Bundles
+
+=== Spring Boot Native Complete Application
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-native-complete-application`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.spring.boot.native.complete.application)
+}
+----
+
+Includes everything from `spring-boot-complete-application` plus GraalVM Native Image and AOT.
+
+=== Spring Boot Native Application
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-native-application`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.spring.boot.native.application)
+}
+----
+
+Includes `spring-boot-simple-application` plus GraalVM Native Image and AOT.
+
+See xref:native-plugins.adoc[Native Image Plugins] for full configuration details and properties.
+
 == Spring Boot Version Management
 
 The Spring Boot version is managed through your version catalog.

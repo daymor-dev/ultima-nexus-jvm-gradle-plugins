@@ -1,9 +1,11 @@
 = Java Plugins
-:description: Java compilation, Javadoc generation, nullability annotations, and Lombok support.
+:description: Java compilation, Javadoc generation, application/library configuration, and nullability annotations.
 :toc: left
 :toclevels: 3
 
-Java plugins configure compilation settings, Javadoc generation, JSpecify nullability annotations, and Lombok annotation processing.
+Java plugins configure compilation settings, Javadoc generation, application and library project types, and JSpecify nullability annotations.
+
+TIP: For Lombok annotation processing, see xref:lombok-plugins.adoc[Lombok Plugins].
 
 == Compile Java Plugin
 
@@ -65,6 +67,43 @@ Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.javadoc`
 ./gradlew javadoc
 ----
 
+== Java Application Plugin
+
+Configures a project as a runnable Java application with `run`, `distZip`, and `distTar` tasks.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.java-application`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.java.application)
+}
+----
+
+=== What It Does
+
+* Applies the Gradle `application` plugin
+* Provides the `run` task for executing the application
+* Provides distribution tasks (`distZip`, `distTar`) for packaging
+
+== Java Library Plugin
+
+Configures a project as a reusable Java library with `api` and `implementation` dependency separation.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.java-library`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.java.library)
+}
+----
+
+=== What It Does
+
+* Applies the Gradle `java-library` plugin
+* Enables `api` and `implementation` dependency configurations for proper transitive dependency management
+
 == JSpecify Plugins
 
 Adds https://jspecify.dev/[JSpecify] nullability annotations.
@@ -110,37 +149,67 @@ public class MyService {
 }
 ----
 
-== Lombok Plugins
+== Java Bundles
 
-Adds https://projectlombok.org/[Lombok] annotation processing.
+=== Java Complete Application
 
-=== Lombok Bundle (Recommended)
+Full-featured Java application with quality checks, testing, reporting, Javadoc, and JSpecify.
 
-Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.lombok`
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete-application`
 
 [source,kotlin]
 ----
 plugins {
-    alias(libs.plugins.ultimanexus.jvm.bundle.lombok)
+    alias(libs.plugins.ultimanexus.jvm.bundle.java.complete.application)
 }
 ----
 
-Adds Lombok as `compileOnly` + `annotationProcessor` for both main and test sources.
+Includes: Gradle project base + compile-java + java-application + quality checks + testing + reporting + Javadoc + JSpecify.
 
-=== Lombok (Main Only)
+=== Java Complete Library
 
-Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.dependency.lombok`
+Full-featured Java library with quality checks, testing, reporting, Javadoc, JSpecify, and Maven publishing.
 
-=== Lombok Test (Test Only)
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete-library`
 
-Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.dependency.lombok-test`
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.java.complete.library)
+}
+----
 
-=== Version Resolution
+Includes: Gradle project base + compile-java + java-library + quality checks + testing + reporting + Javadoc + JSpecify + publish-java.
 
-Lombok version is resolved in this order:
+=== Java Simple Application
 
-1. Version from `libs.versions.toml` (library name: `lombok`)
-2. Built-in fallback version
+Minimal Java application without quality checks, testing, or reporting.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple-application`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.java.simple.application)
+}
+----
+
+Includes: Gradle project base + compile-java + java-application.
+
+=== Java Simple Library
+
+Minimal Java library without quality checks, testing, or reporting.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple-library`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.java.simple.library)
+}
+----
+
+Includes: Gradle project base + compile-java + java-library.
 
 == Properties Reference
 

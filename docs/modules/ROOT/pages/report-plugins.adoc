@@ -61,6 +61,24 @@ Generates a Software Bill of Materials in CycloneDX JSON format.
 
 Output: `build/reports/sbom/bom.json`
 
+== SBOM Support (Settings)
+
+Provides required runtime dependencies for SBOM generation on the settings classpath.
+The CycloneDX Gradle plugin has missing transitive dependencies that must be available at configuration time.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.report.sbom-support`
+
+[source,kotlin]
+.settings.gradle.kts
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.report.sbom-support") version "latest.release"
+}
+----
+
+NOTE: The `ultima-nexus-jvm-settings` bundle automatically includes this plugin.
+You only need to apply it separately if you are not using a settings bundle.
+
 == Test Reports
 
 Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.report.test`
