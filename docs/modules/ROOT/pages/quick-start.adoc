@@ -1,0 +1,273 @@
+= Quick Start
+:toc: left
+:toclevels: 3
+
+Get a fully configured Gradle build running in under five minutes.
+
+== Option A: One-Plugin Setup (Recommended)
+
+For multi-module projects where all subprojects share the same conventions, apply a single plugin in `settings.gradle.kts` and you are done.
+
+=== Step 1: Settings Script
+
+Create or edit `settings.gradle.kts`:
+
+[source,kotlin]
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-complete") version "latest.release"
+}
+----
+
+NOTE: Version catalogs (`libs`) cannot be used in the `settings.gradle.kts` plugins block because the catalog has not been loaded yet at that point. Use the direct `id("...") version "..."` syntax for settings plugins.
+
+=== Step 2: Project Properties
+
+Create or edit `gradle.properties`:
+
+[source,properties]
+----
+# Project identity
+groupId=com.example.myproject
+version=1.0.0-SNAPSHOT
+description=My project description
+
+# Gradle 9.x performance settings (recommended)
+org.gradle.parallel=true
+org.gradle.caching=true
+org.gradle.configuration-cache=true
+org.gradle.vfs.watch=true
+org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+----
+
+=== Step 3: First Build
+
+Run the quality check to verify everything is wired correctly:
+
+[source,bash]
+----
+./gradlew qualityCheck
+----
+
+That is it.
+The `ultima-nexus-jvm-complete` bundle auto-discovers your subprojects, applies the full Ultima Nexus convention stack (quality checks, testing, reporting, Spring Boot, Lombok, JSpecify), and configures the root project with aggregation tasks.
+
+== Option B: Settings + Build Plugins
+
+For projects that need different conventions per subproject, separate the settings-level and build-level concerns.
+
+=== Step 1: Settings Script
+
+[source,kotlin]
+.settings.gradle.kts
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-settings") version "latest.release"
+}
+----
+
+=== Step 2: Root Build Script
+
+[source,kotlin]
+.Root build.gradle.kts
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.gradle.project.root)
+}
+----
+
+=== Step 3: Version Catalog
+
+Create `gradle/libs.versions.toml`:
+
+[source,toml]
+----
+[versions]
+ultima-nexus-plugins = "latest.release"
+
+[plugins]
+ultimanexus-jvm-bundle-gradle-project-root = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project-root", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-ultima-nexus-jvm-application = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-application", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-ultima-nexus-jvm-library = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-library", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-java-complete-library = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete-library", version.ref = "ultima-nexus-plugins" }
+----
+
+=== Step 4: Subproject Build Scripts
+
+Each subproject chooses the bundle that fits its needs:
+
+[source,kotlin]
+.web/build.gradle.kts (Spring Boot application)
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm.application)
+}
+----
+
+[source,kotlin]
+.core/build.gradle.kts (shared library)
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm.library)
+}
+----
+
+[source,kotlin]
+.utils/build.gradle.kts (pure Java library, no Spring Boot)
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.java.complete.library)
+}
+----
+
+=== Step 5: Project Properties and Build
+
+[source,properties]
+.gradle.properties
+----
+groupId=com.example.myproject
+version=1.0.0-SNAPSHOT
+description=My project description
+
+org.gradle.parallel=true
+org.gradle.caching=true
+org.gradle.configuration-cache=true
+org.gradle.vfs.watch=true
+org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+----
+
+[source,bash]
+----
+./gradlew qualityCheck
+----
+
+== Choosing a Bundle
+
+Use the following decision tree to pick the right bundle for each subproject:
+
+[cols="1,3"]
+|===
+|Project Type |Bundle
+
+|Spring Boot application (full-featured)
+|`ultima-nexus-jvm-application`
+
+|Spring Boot library / starter (full-featured)
+|`ultima-nexus-jvm-library`
+
+|Spring Boot application (no quality checks)
+|`spring-boot-simple-application`
+
+|Spring Boot library (no quality checks)
+|`spring-boot-simple-library`
+
+|Pure Java application (no Spring Boot)
+|`java-complete-application`
+
+|Pure Java library (no Spring Boot)
+|`java-complete-library`
+
+|Kotlin / Scala / Groovy project
+|`jvm-complete` + your language plugin
+
+|BOM / version platform
+|`platform`
+
+|Dependency aggregation starter
+|`starter`
+|===
+
+All bundle plugin IDs have the prefix `dev.daymor.ultimanexus.jvm.gradle.bundle.`.
+
+== Recommended gradle.properties
+
+For best performance with Gradle 9.x, use these settings:
+
+[source,properties]
+----
+# ============================================
+# Project Identity
+# ============================================
+groupId=com.example.myproject
+version=1.0.0-SNAPSHOT
+description=My project description
+
+# ============================================
+# Gradle 9.x Performance Settings
+# ============================================
+
+# Enable parallel execution
+org.gradle.parallel=true
+
+# Enable build caching (2x faster rebuilds)
+org.gradle.caching=true
+
+# Enable configuration cache
+org.gradle.configuration-cache=true
+
+# Enable file system watching (faster change detection)
+org.gradle.vfs.watch=true
+
+# ============================================
+# JVM Memory Settings
+# ============================================
+# Adjust based on project size:
+#   Small projects:         -Xmx2g
+#   Medium projects:        -Xmx4g
+#   Large projects (100+):  -Xmx6g
+
+org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+
+# ============================================
+# Java Version (default: 25)
+# ============================================
+# jdkVersion=21
+----
+
+== Verifying the Setup
+
+After applying plugins, run these commands to confirm everything works:
+
+[source,bash]
+----
+# List available tasks (should show qualityCheck, qualityGate, allTest, etc.)
+./gradlew tasks
+
+# Run all quality checks without tests
+./gradlew qualityCheck
+
+# Run quality checks with auto-formatting
+./gradlew qualityGate
+
+# Run unit tests
+./gradlew test
+
+# Run all test types (unit + integration + functional + performance)
+./gradlew allTest
+
+# Full build
+./gradlew build
+----
+
+== Overriding Dependency Versions
+
+The plugins provide built-in fallback versions for common dependencies.
+To override any version, add the dependency to your `gradle/libs.versions.toml`:
+
+[source,toml]
+----
+[libraries]
+lombok = { module = "org.projectlombok:lombok", version = "1.18.42" }
+jspecify = { module = "org.jspecify:jspecify", version = "1.0.0" }
+assertj-core = { module = "org.assertj:assertj-core", version = "3.27.3" }
+----
+
+If a library is defined in your version catalog, that version is used.
+If not, the plugin's built-in fallback version is used transparently.
+
+== Next Steps
+
+* xref:settings-plugins.adoc[Settings Plugins] -- configure project structure, Git hooks, and build cache
+* xref:component-plugins.adoc[Component Plugins] -- understand application vs. library vs. starter modes
+* xref:check-plugins.adoc[Quality Check Plugins] -- customize Checkstyle, PMD, SpotBugs, and Spotless
+* xref:test-plugins.adoc[Test Plugins] -- configure test suites and coverage

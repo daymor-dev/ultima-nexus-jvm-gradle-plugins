@@ -1,0 +1,203 @@
+= Documentation Plugins
+:toc: left
+:toclevels: 3
+
+The documentation plugins integrate https://antora.org/[Antora] into your Gradle build for generating multi-version, multi-repository documentation sites from AsciiDoc content.
+
+== Documentation Bundle
+
+The recommended way to apply all documentation plugins at once.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.documentation`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.documentation)
+}
+----
+
+This bundle includes:
+
+* Antora documentation site generation
+* Antora UI bundle building
+
+== Antora Plugin
+
+Generates documentation sites using Antora.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.antora`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.antora)
+}
+----
+
+=== What Is Antora?
+
+Antora is a documentation site generator that creates static HTML documentation sites from AsciiDoc content.
+It supports:
+
+* Multi-version documentation (document different versions of your software simultaneously)
+* Multi-repository aggregation (pull documentation from multiple Git repositories)
+* Component-based architecture (organize docs into components with separate navigation)
+* Custom UI themes
+
+=== Required Project Structure
+
+[source]
+----
+docs/
++-- antora.yml                    # Component descriptor
++-- antora-playbook.yml           # Site playbook
++-- modules/
+    +-- ROOT/
+        +-- nav.adoc              # Navigation sidebar
+        +-- pages/
+            +-- index.adoc        # Home page
+            +-- getting-started.adoc
+            +-- ...
+----
+
+=== antora.yml
+
+The component descriptor defines the component name, version, and navigation:
+
+[source,yaml]
+----
+name: my-project
+version: '1.0'
+title: My Project Documentation
+nav:
+  - modules/ROOT/nav.adoc
+----
+
+=== antora-playbook.yml
+
+The playbook defines the site structure, content sources, and UI bundle:
+
+[source,yaml]
+----
+site:
+  title: My Project
+  start_page: my-project::index.adoc
+
+content:
+  sources:
+    - url: .
+      start_path: docs
+      branches: HEAD
+
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+
+output:
+  dir: build/docs/antora
+----
+
+=== Auto-Detection
+
+The higher-level bundles (`ultima-nexus-jvm-application`, `ultima-nexus-jvm-library`, `ultima-nexus-jvm-complete`) auto-detect documentation support.
+If an `antora-playbook.yml` file exists in your project, the documentation plugins are applied automatically.
+
+=== Building the Site
+
+[source,bash]
+----
+./gradlew antora
+----
+
+The generated site is output to `build/docs/antora/`.
+
+== Antora UI Plugin
+
+Builds custom Antora UI bundles for theming your documentation site.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.antora-ui`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.antora.ui)
+}
+----
+
+=== Purpose
+
+Create a custom UI theme for your Antora documentation site.
+The Antora UI bundle contains the HTML templates, CSS styles, and JavaScript that control the look and feel of the generated site.
+
+=== UI Project Structure
+
+[source]
+----
+docs/antora-ui/
++-- src/
+|   +-- css/
+|   |   +-- base.css
+|   |   +-- site.css
+|   +-- js/
+|   |   +-- site.js
+|   +-- layouts/
+|   |   +-- default.hbs
+|   +-- partials/
+|   |   +-- header.hbs
+|   |   +-- footer.hbs
+|   +-- img/
+|       +-- logo.png
++-- preview-src/
+|   +-- index.adoc
++-- gulpfile.js
++-- package.json
+----
+
+=== Building the UI Bundle
+
+[source,bash]
+----
+./gradlew antoraUi
+----
+
+== Integration with Bundles
+
+The documentation plugins are included in the top-level bundles:
+
+[cols="1,2"]
+|===
+|Bundle |Documentation Included
+
+|`ultima-nexus-jvm-application`
+|Yes (auto-detected)
+
+|`ultima-nexus-jvm-library`
+|Yes (auto-detected)
+
+|`spring-boot-complete-application`
+|No (add documentation bundle separately)
+
+|`spring-boot-complete-library`
+|No (add documentation bundle separately)
+
+|`java-complete-application`
+|No (add documentation bundle separately)
+
+|`java-complete-library`
+|No (add documentation bundle separately)
+
+|`jvm-complete`
+|Yes (auto-detected)
+|===
+
+To add documentation to a bundle that does not include it:
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.spring.boot.complete.library)
+    alias(libs.plugins.ultimanexus.jvm.bundle.documentation)
+}
+----

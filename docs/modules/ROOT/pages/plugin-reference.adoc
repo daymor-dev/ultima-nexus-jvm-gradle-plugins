@@ -1,0 +1,562 @@
+= Plugin Reference
+:toc: left
+:toclevels: 3
+
+Complete catalog of all 78 Ultima Nexus JVM Gradle plugin IDs, organized by category.
+
+All plugin IDs share the prefix `dev.daymor.ultimanexus.jvm.gradle.`.
+Settings plugins are applied in `settings.gradle.kts`; all others are applied in `build.gradle.kts`.
+
+== Settings Plugins
+
+Settings plugins are applied in `settings.gradle.kts` and configure the build environment before any project build scripts are evaluated.
+
+NOTE: Version catalogs (`libs`) cannot be used in `settings.gradle.kts` plugins blocks.
+Use the direct `id("...") version "..."` syntax.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...feature.project-structure`
+|Auto-discovers subprojects in multi-module builds
+|xref:settings-plugins.adoc[Settings]
+
+|`...feature.git-hooks`
+|Git pre-commit hooks for quality checks
+|xref:settings-plugins.adoc[Settings]
+
+|`...feature.build-cache`
+|Local and remote build cache configuration
+|xref:settings-plugins.adoc[Settings]
+
+|`...report.develocity`
+|FREE Gradle Build Scans with CI auto-publishing
+|xref:settings-plugins.adoc[Settings]
+
+|`...feature.publish-maven-central`
+|Automatic Maven Central publishing aggregation for multi-module projects
+|xref:settings-plugins.adoc[Settings]
+
+|`...report.sbom-support`
+|SBOM runtime dependencies for CycloneDX (complex multi-plugin setups)
+|xref:settings-plugins.adoc[Settings]
+
+|`...feature.composite-build`
+|Composite build auto-discovery for plugin development projects
+|xref:build-plugins.adoc[Build]
+
+|`...bundle.ultima-nexus-jvm-settings`
+|Bundle: project-structure + git-hooks + build-cache + develocity + Maven Central + SBOM support
+|xref:settings-plugins.adoc[Settings]
+
+|`...bundle.ultima-nexus-jvm-complete`
+|All-in-one: settings + root + all subprojects (zero-config multi-module)
+|xref:settings-plugins.adoc[Settings]
+|===
+
+== Base Plugins
+
+Foundation plugins for project identity, lifecycle, dependency management, and repositories.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...base.identity`
+|Configures project group ID, version, and description
+|xref:build-plugins.adoc[Build]
+
+|`...base.lifecycle`
+|Adds `qualityCheck` and `qualityGate` lifecycle tasks
+|xref:build-plugins.adoc[Build]
+
+|`...base.lifecycle.root`
+|Root project lifecycle task configuration and aggregation
+|xref:build-plugins.adoc[Build]
+
+|`...base.dependency-rules`
+|JVM dependency conflict resolution rules
+|xref:build-plugins.adoc[Build]
+
+|`...base.repositories`
+|Maven repositories configuration (Central, custom, private)
+|xref:build-plugins.adoc[Build]
+|===
+
+== Check Plugins
+
+Code quality, static analysis, formatting, and dependency analysis.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...check.checkstyle`
+|Checkstyle code style verification (zero tolerance)
+|xref:check-plugins.adoc[Check]
+
+|`...check.pmd`
+|PMD static code analysis with separate main/test rulesets
+|xref:check-plugins.adoc[Check]
+
+|`...check.spotbugs`
+|SpotBugs bug pattern detection via bytecode analysis
+|xref:check-plugins.adoc[Check]
+
+|`...check.spotless-base`
+|Shared base Spotless configuration (applied automatically)
+|xref:check-plugins.adoc[Check]
+
+|`...check.format-java`
+|Java code formatting (Eclipse formatter, license headers, import ordering)
+|xref:check-plugins.adoc[Check]
+
+|`...check.format-gradle`
+|Gradle script formatting (ktfmt, dependency sorting)
+|xref:check-plugins.adoc[Check]
+
+|`...check.format-gradle.root`
+|Root project Gradle script formatting for plugin source files
+|xref:check-plugins.adoc[Check]
+
+|`...check.dependencies`
+|Dependency analysis and classpath collision detection
+|xref:check-plugins.adoc[Check]
+
+|`...check.dependencies.root`
+|Root project dependency analysis with strict enforcement
+|xref:check-plugins.adoc[Check]
+
+|`...check.dependency-versions`
+|Validates dependency version consistency against platform constraints
+|xref:check-plugins.adoc[Check]
+|===
+
+== Test Plugins
+
+Testing infrastructure for unit, integration, functional, and performance tests.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...test.test`
+|JUnit 5 unit testing with JaCoCo coverage and ByteBuddy agent
+|xref:test-plugins.adoc[Test]
+
+|`...test.test-suites`
+|Configurable test suites (integration, functional, performance, custom)
+|xref:test-plugins.adoc[Test]
+
+|`...test.test-fixtures`
+|Shared test fixtures library support (`java-test-fixtures`)
+|xref:test-plugins.adoc[Test]
+
+|`...test.gradle-plugin`
+|Gradle plugin testing with TestKit, JUnit 5, and AssertJ
+|xref:test-plugins.adoc[Test]
+
+|`...test.unit`
+|Unit testing for utility classes (JUnit 5, AssertJ, MockK)
+|xref:test-plugins.adoc[Test]
+|===
+
+== Report Plugins
+
+Code coverage, SBOM generation, test reports, and build analysis.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...report.code-coverage`
+|JaCoCo code coverage aggregation with auto-discovery of test suites
+|xref:build-plugins.adoc[Build]
+
+|`...report.sbom`
+|Software Bill of Materials generation (CycloneDX JSON)
+|xref:build-plugins.adoc[Build]
+
+|`...report.test`
+|Aggregated test result reports across all test suites
+|xref:build-plugins.adoc[Build]
+
+|`...report.plugin-analysis`
+|Plugin application order analysis and visualization
+|xref:build-plugins.adoc[Build]
+|===
+
+== Java Plugins
+
+Java compilation, application/library mode, Javadoc, and nullability annotations.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...feature.compile-java`
+|Java compilation with toolchain support (default: Java 25)
+|xref:build-plugins.adoc[Build]
+
+|`...feature.java-application`
+|Java application mode (Gradle `application` plugin)
+|xref:build-plugins.adoc[Build]
+
+|`...feature.java-library`
+|Java library mode (Gradle `java-library` plugin)
+|xref:build-plugins.adoc[Build]
+
+|`...feature.javadoc`
+|Javadoc generation configuration
+|xref:build-plugins.adoc[Build]
+|===
+
+== Dependency Plugins
+
+Dependency plugins that add specific libraries to projects.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...dependency.jspecify`
+|JSpecify nullability annotations for main sources (`compileOnly`)
+|xref:build-plugins.adoc[Build]
+
+|`...dependency.jspecify-test`
+|JSpecify nullability annotations for test sources (`testCompileOnly`)
+|xref:build-plugins.adoc[Build]
+
+|`...dependency.lombok`
+|Lombok annotation processor for main sources
+|xref:build-plugins.adoc[Build]
+
+|`...dependency.lombok-test`
+|Lombok annotation processor for test sources
+|xref:build-plugins.adoc[Build]
+
+|`...dependency.spring-boot-test`
+|Spring Boot test dependencies (`spring-boot-starter-test`)
+|xref:spring-boot-plugins.adoc[Spring Boot]
+|===
+
+== Spring Boot Plugins
+
+Spring Boot application/library mode, AOT, and test dependencies.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...feature.spring-boot-application`
+|Spring Boot application mode (bootJar, bootRun, fat JAR, DevTools)
+|xref:spring-boot-plugins.adoc[Spring Boot]
+
+|`...feature.spring-boot-library`
+|Spring Boot library mode (dependency management, standard JAR)
+|xref:spring-boot-plugins.adoc[Spring Boot]
+
+|`...feature.spring-boot-aot`
+|Spring Boot AOT compilation with quality check exclusions
+|xref:native-plugins.adoc[Native]
+|===
+
+== Native Plugins
+
+GraalVM Native Image compilation and testing.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...feature.graalvm-native`
+|GraalVM Native Image compilation and test execution
+|xref:native-plugins.adoc[Native]
+|===
+
+== Publishing Plugins
+
+Maven Central publishing, artifact signing, and Gradle Plugin Portal.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...feature.publish`
+|Maven Central publishing with POM metadata and GPG signing
+|xref:publish-plugins.adoc[Publish]
+
+|`...feature.publish-java`
+|Java library publishing with sources and Javadoc JARs
+|xref:publish-plugins.adoc[Publish]
+
+|`...feature.publish-maven-central-aggregation`
+|Multi-module Maven Central upload aggregation (explicit module list)
+|xref:publish-plugins.adoc[Publish]
+
+|`...feature.gradle-plugin-publish`
+|Gradle Plugin Portal publishing for plugin projects
+|xref:publish-plugins.adoc[Publish]
+|===
+
+== Documentation Plugins
+
+Antora documentation site generation and UI bundles.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...feature.antora`
+|Antora documentation site generation
+|xref:documentation-plugins.adoc[Documentation]
+
+|`...feature.antora-ui`
+|Antora UI bundle building
+|xref:documentation-plugins.adoc[Documentation]
+|===
+
+== Miscellaneous Feature Plugins
+
+Aggregation, version management, and catalog utilities.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...feature.aggregation`
+|Multi-project report aggregation (code coverage, test reports, SBOM)
+|xref:build-plugins.adoc[Build]
+
+|`...feature.version-platform`
+|Java Platform (BOM) with version catalog constraints
+|xref:build-plugins.adoc[Build]
+
+|`...feature.use-all-catalog-versions`
+|Apply all version catalog constraints as a `java-platform`
+|xref:build-plugins.adoc[Build]
+|===
+
+== Bundle Plugins
+
+Bundles compose multiple feature plugins into a single plugin for convenience.
+They are organized in layers, where each level builds on the one below.
+
+=== Level 1 -- Feature Bundles
+
+Group related feature plugins within one concern.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...bundle.check`
+|Checkstyle + PMD + SpotBugs + format-java + format-gradle + dependencies
+|xref:check-plugins.adoc[Check]
+
+|`...bundle.test`
+|Unit tests + configurable test suites + `allTest` aggregation
+|xref:test-plugins.adoc[Test]
+
+|`...bundle.report`
+|Code coverage + SBOM + test reports + plugin analysis
+|xref:build-plugins.adoc[Build]
+
+|`...bundle.jspecify`
+|JSpecify for main + test sources
+|xref:build-plugins.adoc[Build]
+
+|`...bundle.lombok`
+|Lombok for main + test sources
+|xref:build-plugins.adoc[Build]
+
+|`...bundle.documentation`
+|Antora + Antora UI
+|xref:documentation-plugins.adoc[Documentation]
+|===
+
+=== Level 2 -- Project Bundles
+
+Full project setup for a specific project type.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...bundle.gradle-project`
+|Base: lifecycle + identity + dependency-rules + repositories
+|xref:build-plugins.adoc[Build]
+
+|`...bundle.gradle-project-root`
+|Root: lifecycle.root + dependencies.root + format-gradle.root + aggregation
+|xref:build-plugins.adoc[Build]
+
+|`...bundle.platform`
+|BOM/platform: version-platform + identity + dependency-versions
+|xref:component-plugins.adoc[Component]
+
+|`...bundle.starter`
+|Starter: java-library + lifecycle + identity + dependency-rules + publish
+|xref:component-plugins.adoc[Component]
+
+|`...bundle.jvm-complete`
+|Language-agnostic: gradle-project + check + test + report
+|xref:component-plugins.adoc[Component]
+
+|`...bundle.java-simple-application`
+|Java app (minimal): gradle-project + compile-java + application
+|xref:component-plugins.adoc[Component]
+
+|`...bundle.java-simple-library`
+|Java lib (minimal): gradle-project + compile-java + java-library
+|xref:component-plugins.adoc[Component]
+
+|`...bundle.java-complete-application`
+|Java app (full): check + test + report + compile-java + application + jspecify
+|xref:component-plugins.adoc[Component]
+
+|`...bundle.java-complete-library`
+|Java lib (full): check + test + report + compile-java + java-library + publish + jspecify
+|xref:component-plugins.adoc[Component]
+|===
+
+=== Level 3 -- Framework Bundles
+
+Spring Boot integration on top of Java project bundles.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...bundle.spring-boot-simple-application`
+|Spring Boot app (minimal): java-simple-application + spring-boot-application + spring-boot-test
+|xref:spring-boot-plugins.adoc[Spring Boot]
+
+|`...bundle.spring-boot-simple-library`
+|Spring Boot lib (minimal): java-simple-library + spring-boot-library + spring-boot-test
+|xref:spring-boot-plugins.adoc[Spring Boot]
+
+|`...bundle.spring-boot-complete-application`
+|Spring Boot app (full): check + test + report + spring-boot-application + jspecify
+|xref:spring-boot-plugins.adoc[Spring Boot]
+
+|`...bundle.spring-boot-complete-library`
+|Spring Boot lib (full): check + test + report + spring-boot-library + publish + jspecify
+|xref:spring-boot-plugins.adoc[Spring Boot]
+
+|`...bundle.spring-boot-native-application`
+|Spring Boot native app (minimal): spring-boot-simple-application + graalvm-native + spring-boot-aot
+|xref:native-plugins.adoc[Native]
+
+|`...bundle.spring-boot-native-complete-application`
+|Spring Boot native app (full): spring-boot-complete-application + graalvm-native + spring-boot-aot
+|xref:native-plugins.adoc[Native]
+|===
+
+=== Level 4 -- Full Bundles
+
+All-inclusive bundles for the Ultima Nexus JVM Framework.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...bundle.ultima-nexus-jvm-application`
+|Everything: spring-boot-native-complete-application + lombok + documentation
+|xref:component-plugins.adoc[Component]
+
+|`...bundle.ultima-nexus-jvm-library`
+|Everything: spring-boot-complete-library + lombok + documentation
+|xref:component-plugins.adoc[Component]
+|===
+
+== Full Plugin ID List (Alphabetical)
+
+For quick lookup, here is every plugin ID listed alphabetically.
+The common prefix `dev.daymor.ultimanexus.jvm.gradle.` is abbreviated as `...` in the tables above.
+Full IDs are listed here.
+
+[source]
+----
+dev.daymor.ultimanexus.jvm.gradle.base.dependency-rules
+dev.daymor.ultimanexus.jvm.gradle.base.identity
+dev.daymor.ultimanexus.jvm.gradle.base.lifecycle
+dev.daymor.ultimanexus.jvm.gradle.base.lifecycle.root
+dev.daymor.ultimanexus.jvm.gradle.base.repositories
+dev.daymor.ultimanexus.jvm.gradle.bundle.check
+dev.daymor.ultimanexus.jvm.gradle.bundle.documentation
+dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project
+dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project-root
+dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete-application
+dev.daymor.ultimanexus.jvm.gradle.bundle.java-complete-library
+dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple-application
+dev.daymor.ultimanexus.jvm.gradle.bundle.java-simple-library
+dev.daymor.ultimanexus.jvm.gradle.bundle.jspecify
+dev.daymor.ultimanexus.jvm.gradle.bundle.jvm-complete
+dev.daymor.ultimanexus.jvm.gradle.bundle.lombok
+dev.daymor.ultimanexus.jvm.gradle.bundle.platform
+dev.daymor.ultimanexus.jvm.gradle.bundle.report
+dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete-application
+dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete-library
+dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-native-application
+dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-native-complete-application
+dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple-application
+dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple-library
+dev.daymor.ultimanexus.jvm.gradle.bundle.starter
+dev.daymor.ultimanexus.jvm.gradle.bundle.test
+dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-application
+dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-complete
+dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-library
+dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-settings
+dev.daymor.ultimanexus.jvm.gradle.check.checkstyle
+dev.daymor.ultimanexus.jvm.gradle.check.dependencies
+dev.daymor.ultimanexus.jvm.gradle.check.dependencies.root
+dev.daymor.ultimanexus.jvm.gradle.check.dependency-versions
+dev.daymor.ultimanexus.jvm.gradle.check.format-gradle
+dev.daymor.ultimanexus.jvm.gradle.check.format-gradle.root
+dev.daymor.ultimanexus.jvm.gradle.check.format-java
+dev.daymor.ultimanexus.jvm.gradle.check.pmd
+dev.daymor.ultimanexus.jvm.gradle.check.spotbugs
+dev.daymor.ultimanexus.jvm.gradle.check.spotless-base
+dev.daymor.ultimanexus.jvm.gradle.dependency.jspecify
+dev.daymor.ultimanexus.jvm.gradle.dependency.jspecify-test
+dev.daymor.ultimanexus.jvm.gradle.dependency.lombok
+dev.daymor.ultimanexus.jvm.gradle.dependency.lombok-test
+dev.daymor.ultimanexus.jvm.gradle.dependency.spring-boot-test
+dev.daymor.ultimanexus.jvm.gradle.feature.aggregation
+dev.daymor.ultimanexus.jvm.gradle.feature.antora
+dev.daymor.ultimanexus.jvm.gradle.feature.antora-ui
+dev.daymor.ultimanexus.jvm.gradle.feature.build-cache
+dev.daymor.ultimanexus.jvm.gradle.feature.compile-java
+dev.daymor.ultimanexus.jvm.gradle.feature.composite-build
+dev.daymor.ultimanexus.jvm.gradle.feature.git-hooks
+dev.daymor.ultimanexus.jvm.gradle.feature.graalvm-native
+dev.daymor.ultimanexus.jvm.gradle.feature.gradle-plugin-publish
+dev.daymor.ultimanexus.jvm.gradle.feature.java-application
+dev.daymor.ultimanexus.jvm.gradle.feature.java-library
+dev.daymor.ultimanexus.jvm.gradle.feature.javadoc
+dev.daymor.ultimanexus.jvm.gradle.feature.project-structure
+dev.daymor.ultimanexus.jvm.gradle.feature.publish
+dev.daymor.ultimanexus.jvm.gradle.feature.publish-java
+dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central
+dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central-aggregation
+dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-aot
+dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-application
+dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-library
+dev.daymor.ultimanexus.jvm.gradle.feature.use-all-catalog-versions
+dev.daymor.ultimanexus.jvm.gradle.feature.version-platform
+dev.daymor.ultimanexus.jvm.gradle.report.code-coverage
+dev.daymor.ultimanexus.jvm.gradle.report.develocity
+dev.daymor.ultimanexus.jvm.gradle.report.plugin-analysis
+dev.daymor.ultimanexus.jvm.gradle.report.sbom
+dev.daymor.ultimanexus.jvm.gradle.report.sbom-support
+dev.daymor.ultimanexus.jvm.gradle.report.test
+dev.daymor.ultimanexus.jvm.gradle.test.gradle-plugin
+dev.daymor.ultimanexus.jvm.gradle.test.test
+dev.daymor.ultimanexus.jvm.gradle.test.test-fixtures
+dev.daymor.ultimanexus.jvm.gradle.test.test-suites
+dev.daymor.ultimanexus.jvm.gradle.test.unit
+----
+
+Total: 78 plugins across 14 modules.

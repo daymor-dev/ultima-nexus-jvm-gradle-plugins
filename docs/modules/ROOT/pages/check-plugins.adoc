@@ -1,0 +1,503 @@
+= Quality Check Plugins
+:toc: left
+:toclevels: 3
+
+The quality check plugins enforce code style, detect bugs, analyze dependencies, and auto-format source files.
+All check plugins integrate with the `qualityCheck` and `qualityGate` lifecycle tasks.
+
+== Check Bundle
+
+The recommended way to apply all quality checks at once.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.check`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.check)
+}
+----
+
+This bundle includes:
+
+* Checkstyle code style verification
+* PMD static code analysis
+* SpotBugs bug pattern detection
+* Java code formatting (Spotless)
+* Gradle file formatting (Spotless)
+* Dependency analysis
+
+== Lifecycle Integration
+
+All check plugins register their tasks with two lifecycle tasks provided by the `lifecycle` plugin:
+
+`qualityCheck`:: Runs all verification tasks without auto-fixing anything.
+Suitable for CI pipelines where you want to detect issues, not fix them.
+
+`qualityGate`:: Runs auto-formatting first (via Spotless), then runs all verification tasks.
+Suitable for local development.
+Run this before committing.
+
+[source,bash]
+----
+# Verify only (CI)
+./gradlew qualityCheck
+
+# Auto-format then verify (local development)
+./gradlew qualityGate
+----
+
+== Task Execution Order
+
+The check tasks run in a specific order to ensure formatting happens before verification:
+
+1. *Spotless formatting* (`spotlessApply` or `spotlessCheck`)
+2. *Checkstyle* (`checkstyleMain`, `checkstyleTest`, ...)
+3. *PMD* (`pmdMain`, `pmdTest`, ...)
+4. *SpotBugs* (`spotbugsMain`, `spotbugsTest`, ...)
+
+This ordering is important: Spotless formats the code first so that Checkstyle does not report formatting issues that would be auto-fixed anyway.
+
+== Configuration Resolution
+
+All check plugins (Checkstyle, PMD, SpotBugs, format-java) resolve their configuration files using a priority chain:
+
+1. *User-specified file* -- Custom path via extension DSL or `gradle.properties` (highest priority)
+2. *Version catalog check artifact* -- If `ultima-nexus-jvm-check` is defined in your version catalog
+3. *Maven Central check artifact* -- Falls back to `dev.daymor.ultima-nexus.jvm:ultima-nexus-jvm-check` from Maven Central
+4. *Generic defaults* -- Built-in defaults (e.g., PMD uses `category/java/bestpractices.xml`)
+
+This means zero configuration is required for most projects.
+The plugins automatically download and use curated quality rules.
+
+== Checkstyle
+
+Code style verification using https://checkstyle.org/[Checkstyle].
+Enforces zero tolerance: `maxErrors=0`, `maxWarnings=0`.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.check.checkstyle`
+
+=== Extension Configuration
+
+[source,kotlin]
+----
+checkstyleConfig {
+    configFile = "config/checkstyle/checkstyle.xml"
+    headerFile = "config/checkstyle/header.txt"
+    suppressionsFile = "config/checkstyle/suppressions.xml"
+    fileSuppressionsFile = "config/checkstyle/file-suppressions.xml"
+}
+----
+
+=== Properties Configuration
+
+[source,properties]
+----
+checkstyle.configFile=config/checkstyle/checkstyle.xml
+checkstyle.headerFile=config/checkstyle/header.txt
+checkstyle.suppressionsFile=config/checkstyle/suppressions.xml
+checkstyle.fileSuppressionsFile=config/checkstyle/file-suppressions.xml
+----
+
+=== Reports
+
+Checkstyle generates HTML and SARIF reports in `build/reports/checkstyle/`.
+
+=== Running
+
+[source,bash]
+----
+./gradlew checkstyleMain          # Check main sources
+./gradlew checkstyleTest          # Check test sources
+./gradlew checkstyleIntegrationTest  # Check integration test sources
+----
+
+== PMD
+
+Static code analysis using https://pmd.github.io/[PMD].
+Detects common programming flaws, unused code, and suboptimal practices.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.check.pmd`
+
+=== Separate Rulesets for Main and Test Sources
+
+PMD uses two different rulesets:
+
+* *Main sources* (`pmdMain`): Strict rules from `pmdRuleset.xml` for production code
+* *Test sources* (`pmdTest`, `pmdIntegrationTest`, `pmdFunctionalTest`, `pmdPerformanceTest`): Relaxed rules from `pmdRuleset-test.xml` that exclude false positives common in test code
+
+=== Extension Configuration
+
+[source,kotlin]
+----
+pmdConfig {
+    ruleSetFile = "config/pmd/pmd-ruleset.xml"
+    testRuleSetFile = "config/pmd/pmd-ruleset-test.xml"
+    useTestRulesetForMain = false
+}
+----
+
+=== Properties Configuration
+
+[source,properties]
+----
+pmd.ruleSetFile=config/pmd/pmd-ruleset.xml
+pmd.testRuleSetFile=config/pmd/pmd-ruleset-test.xml
+pmd.useTestRulesetForMain=false
+----
+
+=== Test Ruleset for Main Sources
+
+Modules whose `src/main/java` contains test infrastructure code (e.g., test support modules) can opt in to the relaxed test ruleset for `pmdMain`:
+
+[source,properties]
+----
+pmd.useTestRulesetForMain=true
+----
+
+=== Features
+
+* HTML report generation
+* Parallel analysis using half of available CPUs
+* Runs after Checkstyle tasks
+
+=== Running
+
+[source,bash]
+----
+./gradlew pmdMain
+./gradlew pmdTest
+----
+
+== SpotBugs
+
+Bug pattern detection using https://spotbugs.github.io/[SpotBugs].
+Finds potential bugs through bytecode analysis.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.check.spotbugs`
+
+=== Extension Configuration
+
+[source,kotlin]
+----
+spotbugsConfig {
+    ignoreFailures = false
+    showStackTraces = true
+    showProgress = true
+    effort = "MAX"
+    reportLevel = "LOW"
+    excludeFilterFile = "config/spotbugs/exclude-filter.xml"
+    useAuxClasspath = false
+}
+----
+
+=== Properties Configuration
+
+[source,properties]
+----
+spotbugs.ignoreFailures=false
+spotbugs.showStackTraces=true
+spotbugs.showProgress=true
+spotbugs.effort=MAX
+spotbugs.reportLevel=LOW
+spotbugs.excludeFilterFile=config/spotbugs/exclude-filter.xml
+spotbugs.useAuxClasspath=false
+----
+
+=== Auxiliary Classpath
+
+By default, SpotBugs analyzes only the compiled bytecode.
+When `useAuxClasspath` is enabled, it also loads `runtimeClasspath`, `compileClasspath`, and `annotationProcessorPath` classes.
+This allows deeper analysis but may produce false positives for optional dependencies.
+
+[source,properties]
+----
+spotbugs.useAuxClasspath=true
+----
+
+=== Features
+
+* HTML report generation
+* SpotBugs annotations added as `compileOnly` dependency automatically
+* Runs after PMD tasks
+
+=== Running
+
+[source,bash]
+----
+./gradlew spotbugsMain
+./gradlew spotbugsTest
+----
+
+== Java Formatting (Spotless)
+
+Java source code formatting using https://github.com/diffplug/spotless[Spotless] with the Eclipse formatter.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.check.format-java`
+
+=== Extension Configuration
+
+[source,kotlin]
+----
+formatJavaConfig {
+    formatterConfigFile = "config/formatter/eclipse-formatter.xml"
+    licenseHeaderFile = "config/license/header.txt"
+    licenseHeaderText = "/* Copyright 2025 Your Company. */"  // Takes precedence over file
+    importSamePackageDepth = 3
+    importStandardPackageRegex = "^java\\."
+    importSpecialImportsRegex = "^(javax|jakarta)\\."
+}
+----
+
+=== Properties Configuration
+
+[source,properties]
+----
+formatJava.formatterConfigFile=config/formatter/eclipse-formatter.xml
+formatJava.licenseHeaderFile=config/license/header.txt
+formatJava.importSamePackageDepth=3
+formatJava.importStandardPackageRegex=^java\.
+formatJava.importSpecialImportsRegex=^(javax|jakarta)\.
+company=Your Company Name
+----
+
+=== License Headers
+
+The format-java plugin enforces license headers at the top of every Java file.
+The header supports `$YEAR` and `$COMPANY` placeholders:
+
+[source]
+----
+/*
+ * Copyright (C) $YEAR $COMPANY.
+ *
+ * Licensed under the Apache License, Version 2.0 ...
+ */
+----
+
+The `$COMPANY` value comes from the `company` property in `gradle.properties`.
+
+=== Import Ordering
+
+The `JavaImportOrderStep` orders imports to match Checkstyle's `CustomImportOrder` rules:
+
+1. Standard Java packages (`java.*`)
+2. Special imports (`javax.*`, `jakarta.*`)
+3. Third-party packages (all other imports)
+4. Same-package imports (configurable depth)
+5. Static imports
+
+Each group is separated by blank lines and sorted alphabetically.
+This ensures `spotlessApply` and Checkstyle agree on import order.
+
+=== Running
+
+[source,bash]
+----
+./gradlew spotlessApply   # Auto-format all files
+./gradlew spotlessCheck   # Verify formatting without modifying files
+----
+
+== Gradle Formatting (Spotless)
+
+Formats `*.gradle.kts` and `*.kt` files using ktfmt.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.check.format-gradle`
+
+For root projects, use the root variant:
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.check.format-gradle.root`
+
+=== Dependency Sorting
+
+The `GradleDependencySortStep` automatically sorts dependencies in `build.gradle.kts` files:
+
+* Groups by source set (main first, then test, integrationTest, etc.)
+* Orders by scope within each group: `api` -> `implementation` -> `compileOnlyApi` -> `compileOnly` -> `runtimeOnly` -> `annotationProcessor`
+* Places project dependencies before library dependencies
+* Inserts blank lines between source set groups
+
+=== Root Plugin Configuration
+
+[source,kotlin]
+----
+formatGradleRoot {
+    kotlinGradleTarget = "gradle/plugins/src/main/**/*.gradle.kts"
+    kotlinTarget = "gradle/plugins/src/main/**/*.kt"
+}
+----
+
+== Dependency Analysis
+
+Detects unused and misused dependency declarations.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.check.dependencies`
+
+For root projects: `dev.daymor.ultimanexus.jvm.gradle.check.dependencies.root`
+
+=== Features
+
+* Detects unused dependencies
+* Finds misused dependency declarations (e.g., `implementation` that should be `api`)
+* Classpath collision detection
+* Root variant enforces strict failure mode (`severity("fail")`)
+
+=== Running
+
+[source,bash]
+----
+./gradlew projectHealth      # Subproject dependency analysis
+./gradlew buildHealth         # Root project aggregate analysis
+----
+
+== Dependency Versions Check
+
+Validates that dependency versions are consistent across the project.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.check.dependency-versions`
+
+=== Extension Configuration
+
+[source,kotlin]
+----
+dependencyVersions {
+    excludes.add("org.junit.jupiter:junit-jupiter-api")
+}
+----
+
+=== Features
+
+* Compares runtime classpath versions against platform constraints
+* Generates version consistency report at `build/reports/version-consistency.txt`
+* Integrates with `qualityCheck` and `qualityGate` lifecycle tasks
+
+== Spotless Base
+
+Shared base configuration for all Spotless-based formatting plugins.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.check.spotless-base`
+
+This plugin is applied automatically by `format-java` and `format-gradle`.
+You do not need to apply it directly.
+
+== Properties Reference
+
+[cols="2,1,2,3"]
+|===
+|Property |Default |Plugin |Description
+
+|`checkstyle.configFile`
+|_(auto-resolved)_
+|`checkstyle`
+|Path to custom checkstyle.xml
+
+|`checkstyle.headerFile`
+|_(auto-resolved)_
+|`checkstyle`
+|Path to license header file for Checkstyle
+
+|`checkstyle.suppressionsFile`
+|_(auto-resolved)_
+|`checkstyle`
+|Path to Checkstyle suppressions file
+
+|`checkstyle.fileSuppressionsFile`
+|_(auto-resolved)_
+|`checkstyle`
+|Path to file-level Checkstyle suppressions
+
+|`pmd.ruleSetFile`
+|_(auto-resolved)_
+|`pmd`
+|Path to custom PMD ruleset XML (main sources)
+
+|`pmd.testRuleSetFile`
+|_(auto-resolved)_
+|`pmd`
+|Path to custom PMD ruleset XML (test sources)
+
+|`pmd.useTestRulesetForMain`
+|`false`
+|`pmd`
+|Use the test ruleset for `pmdMain`
+
+|`spotbugs.ignoreFailures`
+|`false`
+|`spotbugs`
+|Whether to ignore SpotBugs failures
+
+|`spotbugs.showStackTraces`
+|`true`
+|`spotbugs`
+|Show stack traces in SpotBugs output
+
+|`spotbugs.showProgress`
+|`true`
+|`spotbugs`
+|Show analysis progress
+
+|`spotbugs.effort`
+|`MAX`
+|`spotbugs`
+|Analysis effort: `MIN`, `DEFAULT`, `MAX`
+
+|`spotbugs.reportLevel`
+|`LOW`
+|`spotbugs`
+|Minimum confidence: `LOW`, `MEDIUM`, `HIGH`
+
+|`spotbugs.excludeFilterFile`
+|_(auto-resolved)_
+|`spotbugs`
+|Path to SpotBugs exclude filter XML
+
+|`spotbugs.useAuxClasspath`
+|`false`
+|`spotbugs`
+|Include runtime + compileOnly classpath for analysis
+
+|`formatJava.formatterConfigFile`
+|_(auto-resolved)_
+|`format-java`
+|Path to Eclipse formatter XML
+
+|`formatJava.licenseHeaderFile`
+|_(auto-resolved)_
+|`format-java`
+|Path to license header file
+
+|`formatJava.licenseHeaderText`
+|_(none)_
+|`format-java`
+|Inline license header text (takes precedence over file)
+
+|`formatJava.importSamePackageDepth`
+|`3`
+|`format-java`
+|Package depth for SAME_PACKAGE import grouping
+
+|`formatJava.importStandardPackageRegex`
+|`^java\.`
+|`format-java`
+|Regex matching standard Java packages
+
+|`formatJava.importSpecialImportsRegex`
+|`^(javax\|jakarta)\.`
+|`format-java`
+|Regex matching special imports
+
+|`company`
+|`""`
+|`format-java`
+|Company name for license header `$COMPANY` placeholder
+
+|`formatGradleRoot.kotlinGradleTarget`
+|`gradle/plugins/src/main/\**/*.gradle.kts`
+|`format-gradle.root`
+|Target pattern for Kotlin Gradle files
+
+|`formatGradleRoot.kotlinTarget`
+|`gradle/plugins/src/main/**/*.kt`
+|`format-gradle.root`
+|Target pattern for Kotlin files
+|===

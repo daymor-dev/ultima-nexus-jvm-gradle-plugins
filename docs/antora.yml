@@ -1,0 +1,5 @@
+name: ultima-nexus-jvm-gradle-plugins
+version: latest
+title: Gradle Plugins
+nav:
+  - modules/ROOT/nav.adoc

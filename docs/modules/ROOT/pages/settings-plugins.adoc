@@ -1,0 +1,374 @@
+= Settings Plugins
+:toc: left
+:toclevels: 3
+
+Settings plugins configure the Gradle build environment before any `build.gradle.kts` is evaluated.
+They are applied in `settings.gradle.kts` and control project discovery, caching, Git hooks, build scans, and Maven Central aggregation.
+
+== Settings Bundle
+
+The `ultima-nexus-jvm-settings` bundle is the recommended way to apply all settings plugins at once.
+
+[source,kotlin]
+.settings.gradle.kts
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-settings") version "latest.release"
+}
+----
+
+This bundle includes:
+
+* Project structure auto-discovery
+* Git pre-commit hooks
+* Local and remote build cache
+* Develocity build scans (free)
+* Maven Central publishing aggregation (auto-detected)
+* SBOM runtime dependencies
+* Automatic plugin version resolution
+
+=== Automatic Plugin Version Resolution
+
+When you apply a settings bundle with a version, all `dev.daymor.ultimanexus.jvm.gradle.*` plugins in your subprojects automatically resolve to that same version.
+No `pluginManagement` block or `resolutionStrategy` configuration is needed.
+
+[source,kotlin]
+----
+// settings.gradle.kts -- sets version for ALL Ultima Nexus plugins
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-settings") version "1.2.0"
+}
+
+// subproject build.gradle.kts -- version resolved automatically
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.java.complete.library) // uses 1.2.0
+}
+----
+
+== Complete Bundle
+
+The `ultima-nexus-jvm-complete` bundle goes beyond settings -- it also auto-applies root project and subproject plugins.
+
+[source,kotlin]
+.settings.gradle.kts
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-complete") version "latest.release"
+}
+----
+
+=== What It Configures
+
+*Settings level (always applied):*
+
+* Everything in the settings bundle
+
+*Root project (automatically applied):*
+
+* `lifecycle.root` -- default tasks and build group aggregation
+* `dependencies.root` -- dependency analysis with strict enforcement
+* `format-gradle.root` -- Gradle file formatting for plugin sources
+* `aggregation` -- multi-project report aggregation
+
+*Platform projects (auto-detected):*
+
+* Projects named `platform`, `bom`, `versions`, or `version-platform`
+* Projects with `projectType=platform` in `gradle.properties`
+* Receive the `bundle.platform` plugin instead of the full stack
+
+*All other subprojects (automatically applied):*
+
+* Full `ultima-nexus-jvm` bundle: Spring Boot + quality checks + testing + reporting + Lombok + JSpecify + documentation
+
+=== When to Use
+
+Use `ultima-nexus-jvm-complete` when:
+
+* All subprojects share the same conventions (Spring Boot + Lombok)
+* You want zero-configuration subproject build scripts
+
+Do not use it when:
+
+* Different subprojects need different bundles
+* You need fine-grained control over which plugins apply where
+* You have a single-module project (use `ultima-nexus-jvm-application` or `ultima-nexus-jvm-library` directly)
+
+== Project Structure Plugin
+
+Auto-discovers and includes subprojects by scanning for `build.gradle.kts` files.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.project-structure`
+
+[source,kotlin]
+.settings.gradle.kts
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.project-structure") version "latest.release"
+}
+----
+
+=== Configuration
+
+[cols="2,1,3"]
+|===
+|Property |Default |Description
+
+|`projectStructureDepth`
+|`1`
+|Maximum directory depth to search for subprojects
+
+|`projectStructureExclusions`
+|`gradle/plugins,*-gradle-plugins,build`
+|Comma-separated directory patterns to exclude from scanning
+
+|`rootProjectName`
+|_(directory name)_
+|Custom name for the root project
+|===
+
+=== Example
+
+Given this directory structure with `projectStructureDepth=3`:
+
+[source]
+----
+my-project/
++-- settings.gradle.kts
++-- core/
+|   +-- build.gradle.kts         <-- included as :core
++-- api/
+|   +-- build.gradle.kts         <-- included as :api
++-- modules/
+    +-- web/
+    |   +-- build.gradle.kts     <-- included as :modules:web
+    +-- data/
+        +-- build.gradle.kts     <-- included as :modules:data
+----
+
+=== Features
+
+* Enables Gradle's typesafe project accessors (`projects.core`, `projects.api`, etc.)
+* Configures Maven Central for dependency resolution
+* Respects exclusion patterns to skip build output and plugin directories
+
+== Git Hooks Plugin
+
+Installs a Git pre-commit hook that runs `qualityCheck` before every commit, preventing code that fails quality checks from being committed.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.git-hooks`
+
+[source,kotlin]
+.settings.gradle.kts
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.git-hooks") version "latest.release"
+}
+----
+
+The hook is installed automatically when the build is configured.
+It runs `./gradlew qualityCheck` in the pre-commit phase.
+If the check fails, the commit is aborted.
+
+== Build Cache Plugin
+
+Configures local and remote Gradle build caches for faster rebuilds and CI/CD pipelines.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.build-cache`
+
+[source,kotlin]
+.settings.gradle.kts
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.build-cache") version "latest.release"
+}
+----
+
+IMPORTANT: You must also set `org.gradle.caching=true` in `gradle.properties`.
+The plugin configures the cache backend, but Gradle itself must be told to use it.
+
+=== Configuration
+
+[cols="2,1,3"]
+|===
+|Property |Default |Description
+
+|`buildCache.local.enabled`
+|`true`
+|Enable local build cache
+
+|`buildCache.remote.url`
+|_(none)_
+|Remote cache URL (enables remote caching when set)
+
+|`buildCache.remote.username`
+|_(none)_
+|Username for remote cache authentication
+
+|`buildCache.remote.password`
+|_(none)_
+|Password for remote cache authentication
+
+|`buildCache.remote.push`
+|`true` on CI
+|Whether to push build outputs to the remote cache
+|===
+
+=== Environment Variables
+
+Remote cache credentials can also be provided via environment variables, which take precedence over `gradle.properties`:
+
+* `GRADLE_CACHE_REMOTE_URL`
+* `GRADLE_CACHE_USERNAME`
+* `GRADLE_CACHE_PASSWORD`
+
+=== CI/CD Behavior
+
+* *Local builds:* Local cache is enabled by default.
+Remote cache is used for pulling if configured, but local builds do not push to the remote cache.
+* *CI builds:* Remote cache is used for both pulling and pushing.
+Local cache is disabled when remote cache is configured to avoid redundancy.
+
+== Develocity Plugin
+
+Integrates with https://scans.gradle.com[Gradle Build Scans] (free) to give you detailed build performance insights.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.report.develocity`
+
+[source,kotlin]
+.settings.gradle.kts
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.report.develocity") version "latest.release"
+}
+----
+
+=== Configuration
+
+[cols="2,1,3"]
+|===
+|Property |Default |Description
+
+|`develocity.enabled`
+|`true`
+|Enable or disable Develocity integration
+
+|`develocity.serverUrl`
+|`https://scans.gradle.com`
+|Develocity server URL (use the default for free scans)
+|===
+
+=== Behavior
+
+* *On CI:* Build scans are automatically published after every build.
+* *Locally:* Opt in with the `--scan` flag: `./gradlew build --scan`.
+* *Automatic tags:* Builds are tagged with `CI` or `LOCAL`, and the current Git branch name.
+* *GitHub Actions:* Additional tags for repository name, commit SHA, and run ID.
+* *GitLab CI:* Additional tags for project path and commit SHA.
+
+== Maven Central Publishing Plugin
+
+Automatically aggregates all subprojects that use the `publish` plugin and uploads them to Maven Central in a single operation.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central`
+
+[source,kotlin]
+.settings.gradle.kts
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central") version "latest.release"
+}
+----
+
+=== How It Works
+
+The plugin scans subproject build files and automatically detects which modules use a `publish` plugin.
+Those modules are aggregated into a single Maven Central upload operation.
+
+=== Credentials
+
+[source,properties]
+.gradle.properties (or environment variables)
+----
+mavenCentralUsername=<your-token-username>
+mavenCentralPassword=<your-token-password>
+----
+
+Or:
+
+[source,bash]
+----
+export MAVENCENTRALUSERNAME=<your-token-username>
+export MAVENCENTRALPASSWORD=<your-token-password>
+----
+
+=== Publishing
+
+[source,bash]
+----
+./gradlew publishAggregationToCentralPortal
+----
+
+TIP: For explicit control over which modules to publish, use the `publish-maven-central-aggregation` build plugin instead.
+See xref:publish-plugins.adoc[Publishing Plugins] for details.
+
+=== Auto-Detection by Settings Bundle
+
+When you use the `ultima-nexus-jvm-settings` or `ultima-nexus-jvm-complete` bundle, the Maven Central publishing plugin is automatically applied if any subproject uses a publish plugin.
+You do not need to apply it separately.
+
+== Properties Reference
+
+[cols="2,1,2,3"]
+|===
+|Property |Default |Plugin |Description
+
+|`projectStructureDepth`
+|`1`
+|`project-structure`
+|Maximum directory depth to search for subprojects
+
+|`projectStructureExclusions`
+|`gradle/plugins,*-gradle-plugins,build`
+|`project-structure`
+|Comma-separated directory exclusion patterns
+
+|`rootProjectName`
+|_(directory name)_
+|`project-structure`
+|Custom root project name
+
+|`buildCache.local.enabled`
+|`true`
+|`build-cache`
+|Enable local build cache
+
+|`buildCache.remote.url`
+|_(none)_
+|`build-cache`
+|Remote cache URL
+
+|`buildCache.remote.username`
+|_(none)_
+|`build-cache`
+|Remote cache username
+
+|`buildCache.remote.password`
+|_(none)_
+|`build-cache`
+|Remote cache password
+
+|`buildCache.remote.push`
+|`true` on CI
+|`build-cache`
+|Push to remote cache
+
+|`develocity.enabled`
+|`true`
+|`develocity`
+|Enable Develocity build scans
+
+|`develocity.serverUrl`
+|`\https://scans.gradle.com`
+|`develocity`
+|Develocity server URL
+|===

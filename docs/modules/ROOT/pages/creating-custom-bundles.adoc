@@ -1,0 +1,300 @@
+= Creating Custom Bundles
+:toc: left
+:toclevels: 3
+
+Bundle plugins combine multiple feature plugins into a single, reusable convention.
+You can create your own bundles tailored to your organization's needs by composing the feature plugins provided by Ultima Nexus.
+
+== Why Create Custom Bundles?
+
+The pre-built bundles cover common use cases, but your organization may need:
+
+* A subset of quality checks (e.g., Checkstyle and Spotless without PMD or SpotBugs)
+* Specific testing configurations (e.g., only unit and integration tests, no performance tests)
+* Custom dependency combinations (e.g., Kotlin + specific libraries + quality checks)
+* Standardized conventions across multiple teams or repositories
+
+== Approach 1: Precompiled Script Plugin
+
+The simplest approach is a precompiled Kotlin script plugin in your `buildSrc` or `gradle/plugins` directory.
+
+=== Step 1: Create the Plugin
+
+[source,kotlin]
+.buildSrc/src/main/kotlin/my-java-library.gradle.kts
+----
+plugins {
+    // Base project setup
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project")
+
+    // Quality checks (pick what you need)
+    id("dev.daymor.ultimanexus.jvm.gradle.check.checkstyle")
+    id("dev.daymor.ultimanexus.jvm.gradle.check.format-java")
+    id("dev.daymor.ultimanexus.jvm.gradle.check.format-gradle")
+
+    // Testing (unit + integration only)
+    id("dev.daymor.ultimanexus.jvm.gradle.test.test")
+    id("dev.daymor.ultimanexus.jvm.gradle.test.test-suites")
+
+    // Reporting
+    id("dev.daymor.ultimanexus.jvm.gradle.report.code-coverage")
+    id("dev.daymor.ultimanexus.jvm.gradle.report.test")
+
+    // Java compilation
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.compile-java")
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.java-library")
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.javadoc")
+
+    // Nullability
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.jspecify")
+
+    // Publishing
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.publish-java")
+}
+
+// Custom configuration on top of the plugins
+testSuites {
+    suites.set(listOf("integrationTest"))  // Only integration tests, no functional/performance
+}
+----
+
+=== Step 2: Configure buildSrc
+
+[source,kotlin]
+.buildSrc/build.gradle.kts
+----
+plugins {
+    `kotlin-dsl`
+}
+
+dependencies {
+    // Make Ultima Nexus plugins available in buildSrc
+    implementation("dev.daymor.ultimanexus.jvm.gradle:plugins-base:<version>")
+    implementation("dev.daymor.ultimanexus.jvm.gradle:plugins-check:<version>")
+    implementation("dev.daymor.ultimanexus.jvm.gradle:plugins-test:<version>")
+    implementation("dev.daymor.ultimanexus.jvm.gradle:plugins-report:<version>")
+    implementation("dev.daymor.ultimanexus.jvm.gradle:plugins-java:<version>")
+    implementation("dev.daymor.ultimanexus.jvm.gradle:plugins-publish:<version>")
+}
+----
+
+=== Step 3: Use the Bundle
+
+[source,kotlin]
+.my-module/build.gradle.kts
+----
+plugins {
+    id("my-java-library")
+}
+
+dependencies {
+    api(libs.guava)
+    implementation(libs.jackson.core)
+}
+----
+
+== Approach 2: Composite Convention Plugin
+
+For organizations that maintain a separate plugin repository, create a convention plugin as a proper Gradle plugin.
+
+=== Step 1: Create the Plugin Class
+
+[source,kotlin]
+.src/main/kotlin/com/example/gradle/MyJavaLibraryPlugin.kt
+----
+package com.example.gradle
+
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+
+class MyJavaLibraryPlugin : Plugin<Project> {
+    override fun apply(project: Project) {
+        with(project.pluginManager) {
+            // Base
+            apply("dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project")
+
+            // Quality (selective)
+            apply("dev.daymor.ultimanexus.jvm.gradle.check.checkstyle")
+            apply("dev.daymor.ultimanexus.jvm.gradle.check.pmd")
+            apply("dev.daymor.ultimanexus.jvm.gradle.check.format-java")
+            apply("dev.daymor.ultimanexus.jvm.gradle.check.format-gradle")
+
+            // Testing
+            apply("dev.daymor.ultimanexus.jvm.gradle.bundle.test")
+
+            // Reporting
+            apply("dev.daymor.ultimanexus.jvm.gradle.bundle.report")
+
+            // Java
+            apply("dev.daymor.ultimanexus.jvm.gradle.feature.compile-java")
+            apply("dev.daymor.ultimanexus.jvm.gradle.feature.java-library")
+            apply("dev.daymor.ultimanexus.jvm.gradle.feature.javadoc")
+
+            // Publishing
+            apply("dev.daymor.ultimanexus.jvm.gradle.feature.publish-java")
+        }
+    }
+}
+----
+
+=== Step 2: Register the Plugin
+
+[source,kotlin]
+.build.gradle.kts
+----
+gradlePlugin {
+    plugins {
+        create("myJavaLibrary") {
+            id = "com.example.my-java-library"
+            implementationClass = "com.example.gradle.MyJavaLibraryPlugin"
+        }
+    }
+}
+----
+
+== Composition Patterns
+
+=== Quality-Only Bundle
+
+Only quality checks without testing or publishing:
+
+[source,kotlin]
+.my-quality-only.gradle.kts
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.base.lifecycle")
+    id("dev.daymor.ultimanexus.jvm.gradle.check.checkstyle")
+    id("dev.daymor.ultimanexus.jvm.gradle.check.pmd")
+    id("dev.daymor.ultimanexus.jvm.gradle.check.spotbugs")
+    id("dev.daymor.ultimanexus.jvm.gradle.check.format-java")
+    id("dev.daymor.ultimanexus.jvm.gradle.check.format-gradle")
+    id("dev.daymor.ultimanexus.jvm.gradle.check.dependencies")
+}
+----
+
+=== Kotlin Library Bundle
+
+Quality checks + testing for a Kotlin project:
+
+[source,kotlin]
+.my-kotlin-library.gradle.kts
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.jvm-complete")
+    kotlin("jvm")
+}
+----
+
+=== Minimal Spring Boot Application
+
+Spring Boot with only Checkstyle and Spotless (no PMD, no SpotBugs):
+
+[source,kotlin]
+.my-spring-app.gradle.kts
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project")
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.compile-java")
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-application")
+    id("dev.daymor.ultimanexus.jvm.gradle.dependency.spring-boot-test")
+    id("dev.daymor.ultimanexus.jvm.gradle.check.checkstyle")
+    id("dev.daymor.ultimanexus.jvm.gradle.check.format-java")
+    id("dev.daymor.ultimanexus.jvm.gradle.check.format-gradle")
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.test")
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.report")
+}
+----
+
+=== Library Without Publishing
+
+For internal libraries that are consumed via composite builds rather than published to a repository:
+
+[source,kotlin]
+.my-internal-library.gradle.kts
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project")
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.check")
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.test")
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.report")
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.compile-java")
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.java-library")
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.javadoc")
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.jspecify")
+    // No publish plugin -- this is internal only
+}
+----
+
+== Layering Existing Bundles
+
+You can also layer additional features on top of existing bundles:
+
+[source,kotlin]
+.my-documented-spring-library.gradle.kts
+----
+plugins {
+    // Start with a pre-built bundle
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-complete-library")
+
+    // Layer on additional features
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.lombok")
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.documentation")
+}
+----
+
+This is equivalent to the `ultima-nexus-jvm-library` bundle (minus native support).
+
+== Available Feature Plugins for Composition
+
+These are the individual building blocks you can compose:
+
+[cols="1,3"]
+|===
+|Category |Feature Plugins
+
+|*Base*
+|`base.lifecycle`, `base.identity`, `base.dependency-rules`, `base.repositories`
+
+|*Quality*
+|`check.checkstyle`, `check.pmd`, `check.spotbugs`, `check.format-java`, `check.format-gradle`, `check.dependencies`, `check.dependency-versions`
+
+|*Testing*
+|`test.test`, `test.test-suites`, `test.test-fixtures`
+
+|*Reporting*
+|`report.code-coverage`, `report.sbom`, `report.test`, `report.plugin-analysis`
+
+|*Java*
+|`feature.compile-java`, `feature.java-application`, `feature.java-library`, `feature.javadoc`
+
+|*Spring Boot*
+|`feature.spring-boot-application`, `feature.spring-boot-library`, `feature.spring-boot-aot`, `dependency.spring-boot-test`
+
+|*Native*
+|`feature.graalvm-native`
+
+|*Nullability*
+|`dependency.jspecify`, `dependency.jspecify-test`
+
+|*Lombok*
+|`dependency.lombok`, `dependency.lombok-test`
+
+|*Publishing*
+|`feature.publish`, `feature.publish-java`
+
+|*Documentation*
+|`feature.antora`, `feature.antora-ui`
+
+|*Miscellaneous*
+|`feature.aggregation`, `feature.version-platform`, `feature.use-all-catalog-versions`
+|===
+
+All plugin IDs use the prefix `dev.daymor.ultimanexus.jvm.gradle.`.
+
+== Best Practices
+
+. *Start from the closest existing bundle* and add or remove features rather than building from scratch.
+. *Use bundles for common combinations* -- do not repeat the same set of `id(...)` lines across dozens of subprojects.
+. *Keep bundles focused* -- one bundle per project archetype (e.g., `my-service`, `my-library`, `my-test-support`).
+. *Document your bundles* -- add a comment block explaining what the bundle includes and when to use it.
+. *Test your bundles* -- apply them to a sample project and verify that `./gradlew qualityCheck` and `./gradlew allTest` work correctly.

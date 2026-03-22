@@ -1,0 +1,531 @@
+= Build Plugins
+:toc: left
+:toclevels: 3
+
+Build plugins configure Java compilation, project identity, lifecycle tasks, dependency rules, repositories, Javadoc generation, and reporting.
+These are the foundational plugins that nearly every other plugin depends on.
+
+== Gradle Project Bundle
+
+The base bundle that provides the common foundation for all project types.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.gradle.project)
+}
+----
+
+This bundle includes:
+
+* Lifecycle tasks (`qualityCheck`, `qualityGate`)
+* Project identity (group ID, version, description)
+* Dependency conflict resolution rules
+* Maven Central repository
+
+== Identity Plugin
+
+Configures project group ID, version, and description from `gradle.properties` or an extension DSL.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.base.identity`
+
+=== Extension Configuration
+
+[source,kotlin]
+----
+ultimaNexus {
+    groupId.set("com.example.myproject")
+    version.set("1.0.0-SNAPSHOT")
+    description.set("My project description")
+}
+----
+
+=== Properties Configuration
+
+[source,properties]
+----
+groupId=com.example.myproject
+version=1.0.0-SNAPSHOT
+description=My project description
+----
+
+All three properties are optional.
+They can also be set directly via standard Gradle `project.group`, `project.version`, and `project.description`.
+
+== Lifecycle Plugin
+
+Provides the `qualityCheck` and `qualityGate` lifecycle tasks that all quality plugins register with.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.base.lifecycle`
+
+=== Tasks Provided
+
+[cols="1,3"]
+|===
+|Task |Description
+
+|`qualityCheck`
+|Runs all quality checks without executing tests.
+Other plugins (Checkstyle, PMD, SpotBugs, dependency analysis) register their tasks as dependencies.
+
+|`qualityGate`
+|Runs auto-formatting (Spotless) first, then runs all quality checks.
+The Gradle `check` task depends on `qualityCheck`.
+|===
+
+=== Internal Configuration
+
+The lifecycle plugin also creates an `internal` configuration used by code-coverage and test aggregation plugins for collecting project dependencies in multi-module builds.
+
+=== Root Variant
+
+For multi-module projects, the root project uses a separate lifecycle variant:
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.base.lifecycle.root`
+
+This variant:
+
+* Aggregates results from all subprojects
+* Sets `defaultTasks("tasks")` so running `./gradlew` with no arguments shows available tasks
+
+== Dependency Rules Plugin
+
+Configures JVM dependency conflict resolution using the https://github.com/gradlex-org/jvm-dependency-conflict-resolution[JVM Dependency Conflict Resolution] plugin.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.base.dependency-rules`
+
+=== Extension Configuration
+
+[source,kotlin]
+----
+dependencyRules {
+    platformPath = ":versions"          // Path to version platform project
+    aggregationPath = ":"               // Path to aggregation project
+    autoConsumePlatform = true          // Auto-add platform dependency
+}
+----
+
+=== Properties Configuration
+
+[source,properties]
+----
+dependencyRules.platformPath=:versions
+dependencyRules.aggregationPath=:
+dependencyRules.autoConsumePlatform=true
+----
+
+=== Auto-Consumption of Platform
+
+When a platform project exists (e.g., `:versions` or `:platform`), all modules automatically consume it via `platform(project(...))`.
+This ensures consistent dependency versions across the entire build.
+
+Disable auto-consumption if needed:
+
+[source,properties]
+----
+dependencyRules.autoConsumePlatform=false
+----
+
+== Repositories Plugin
+
+Configures Maven repositories for dependency resolution.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.base.repositories`
+
+By default, only Maven Central is configured.
+
+=== Extension Configuration
+
+[source,kotlin]
+----
+repositoriesConfig {
+    includeMavenCentral.set(true)
+    includeMavenLocal.set(false)
+
+    repository("jitpack") {
+        url.set("https://jitpack.io")
+    }
+
+    repository("company-nexus") {
+        url.set("https://nexus.company.com/repository/maven-releases/")
+        username.set(providers.gradleProperty("nexusUsername").orNull)
+        password.set(providers.gradleProperty("nexusPassword").orNull)
+    }
+}
+----
+
+=== Properties Configuration
+
+[source,properties]
+----
+repositories.includeMavenCentral=true
+repositories.includeMavenLocal=false
+repositories.additional=jitpack,company-nexus
+repositories.repo.jitpack.url=https://jitpack.io
+repositories.repo.company-nexus.url=https://nexus.company.com/repository/maven-releases/
+repositories.repo.company-nexus.username=myuser
+repositories.repo.company-nexus.password=mypassword
+----
+
+=== Environment Variable Support
+
+For CI/CD, credentials can be provided via environment variables:
+
+[source,bash]
+----
+export REPO_COMPANY_NEXUS_USERNAME=ci-user
+export REPO_COMPANY_NEXUS_PASSWORD=ci-token
+----
+
+Environment variables take precedence over `gradle.properties` values.
+
+IMPORTANT: Never commit credentials to version control.
+Store them in `~/.gradle/gradle.properties` (user-level) or use environment variables in CI/CD.
+
+== Compile Java Plugin
+
+Configures Java compilation settings including JDK toolchain version and compiler options.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.compile-java`
+
+=== Extension Configuration
+
+[source,kotlin]
+----
+compileJavaConfig {
+    jdkVersion.set(21)
+}
+----
+
+=== Properties Configuration
+
+[source,properties]
+----
+jdkVersion=21
+----
+
+=== Default Settings
+
+[cols="1,2"]
+|===
+|Setting |Value
+
+|JDK version
+|25
+
+|Fork compilation
+|Enabled
+
+|Encoding
+|UTF-8
+
+|Compiler flags
+|`-parameters`, `-implicit:none`, `-Werror`, `-Xlint:all,-serial,-processing`
+|===
+
+=== Reproducible Builds
+
+Archives produced by this plugin are configured for reproducibility:
+
+* Consistent file order
+* No timestamps preserved
+* Standard file permissions (0664 for files, 0775 for directories)
+
+== Javadoc Plugin
+
+Configures Javadoc generation.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.javadoc`
+
+[source,bash]
+----
+./gradlew javadoc
+----
+
+== JSpecify Plugins
+
+Adds https://jspecify.dev/[JSpecify] nullability annotations.
+
+=== JSpecify Bundle (Recommended)
+
+Adds JSpecify to both main and test sources.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.jspecify`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.jspecify)
+}
+----
+
+=== JSpecify (Main Only)
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.dependency.jspecify`
+
+Adds JSpecify as `compileOnly` for main sources.
+
+=== JSpecify Test (Test Only)
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.dependency.jspecify-test`
+
+Adds JSpecify as `testCompileOnly` for test sources.
+
+=== Usage
+
+[source,java]
+----
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
+@NullMarked
+public class MyService {
+
+    public void process(@Nullable String input) {
+        // ...
+    }
+}
+----
+
+== Lombok Plugins
+
+Adds https://projectlombok.org/[Lombok] annotation processing.
+
+=== Lombok Bundle (Recommended)
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.lombok`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.lombok)
+}
+----
+
+Adds Lombok as `compileOnly` + `annotationProcessor` for both main and test sources.
+
+=== Lombok (Main Only)
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.dependency.lombok`
+
+=== Lombok Test (Test Only)
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.dependency.lombok-test`
+
+=== Version Resolution
+
+Lombok version is resolved in this order:
+
+1. Version from `libs.versions.toml` (library name: `lombok`)
+2. Built-in fallback version
+
+== Report Plugins
+
+=== Report Bundle
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.report`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.report)
+}
+----
+
+Includes: code coverage + SBOM + test reports + plugin analysis.
+
+=== Code Coverage (JaCoCo)
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.report.code-coverage`
+
+Auto-discovers all test suites and creates coverage report tasks:
+
+[cols="1,3"]
+|===
+|Task |Description
+
+|`testCodeCoverageReport`
+|Coverage for unit tests
+
+|`integrationTestCodeCoverageReport`
+|Coverage for integration tests
+
+|`functionalTestCodeCoverageReport`
+|Coverage for functional tests
+
+|`allTestCodeCoverageReport`
+|Combined coverage for ALL test types
+|===
+
+=== Configuration
+
+[source,properties]
+----
+codeCoverage.excludePatterns=**/**_.class,**/**MapperImpl.class,**/**Application.class
+----
+
+=== SBOM (CycloneDX)
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.report.sbom`
+
+Generates a Software Bill of Materials in CycloneDX JSON format.
+
+[source,bash]
+----
+./gradlew cyclonedxBom
+----
+
+Output: `build/reports/sbom/bom.json`
+
+=== Test Reports
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.report.test`
+
+Creates aggregated test result reports for each test suite plus a combined report:
+
+[source,bash]
+----
+./gradlew testAggregateTestReport         # Unit tests
+./gradlew allTestAggregateTestReport      # All test types combined
+----
+
+=== Plugin Analysis
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.report.plugin-analysis`
+
+Analyzes and visualizes the order of plugin application in your build.
+
+== Aggregation Plugin
+
+Automatically aggregates reports and metrics from all subprojects into the root project.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.aggregation`
+
+=== What It Does
+
+* Uses Gradle's `subprojects` to discover all modules automatically
+* Auto-detects which report plugins subprojects use
+* Conditionally applies aggregation for code coverage (JaCoCo), test reports, SBOM, and plugin analysis
+
+== Version Platform Plugin
+
+Creates a Java Platform (BOM) with version constraints from the version catalog.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.version-platform`
+
+=== Spring Boot BOM Auto-Detection
+
+* *Default:* Spring Boot BOM is not included
+* *Auto-enabled:* When `org.springframework.boot` plugin is applied, the Spring Boot BOM is automatically included
+* *Manual override:* Always possible via extension or `gradle.properties`
+
+[source,kotlin]
+----
+versionPlatform {
+    includeSpringBootBom = true
+    springBootBomLibrary = "spring-boot-dependencies"
+}
+----
+
+IMPORTANT: This plugin applies `java-platform` and cannot be combined with `java` or `java-library` plugins.
+
+== Use All Catalog Versions Plugin
+
+Applies `java-platform` and creates strict version constraints for all entries in the version catalog.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.use-all-catalog-versions`
+
+IMPORTANT: Use only in dedicated platform/BOM projects.
+Cannot be combined with `java` or `java-library`.
+
+== Report Output Locations
+
+[source]
+----
+build/
++-- reports/
+    +-- jacoco/
+    |   +-- test/               # Unit test coverage
+    |   +-- integrationTest/    # Integration test coverage
+    |   +-- allTest/            # Combined coverage
+    +-- tests/
+    |   +-- test/               # Unit test results
+    |   +-- integrationTest/    # Integration test results
+    |   +-- allTest/            # Combined test results
+    +-- sbom/
+        +-- bom.json            # CycloneDX SBOM
+----
+
+== Properties Reference
+
+[cols="2,1,2,3"]
+|===
+|Property |Default |Plugin |Description
+
+|`groupId`
+|_(optional)_
+|`identity`
+|Project group ID
+
+|`version`
+|_(optional)_
+|`identity`
+|Project version
+
+|`description`
+|_(optional)_
+|`identity`
+|Project description
+
+|`jdkVersion`
+|`25`
+|`compile-java`
+|JDK version for Java compilation toolchain
+
+|`dependencyRules.platformPath`
+|`:versions`
+|`dependency-rules`
+|Path to the version platform project
+
+|`dependencyRules.aggregationPath`
+|`:`
+|`dependency-rules`
+|Path to the aggregation project
+
+|`dependencyRules.autoConsumePlatform`
+|`true`
+|`dependency-rules`
+|Auto-add platform project as dependency
+
+|`repositories.includeMavenCentral`
+|`true`
+|`repositories`
+|Include Maven Central repository
+
+|`repositories.includeMavenLocal`
+|`false`
+|`repositories`
+|Include Maven Local repository
+
+|`repositories.additional`
+|_(empty)_
+|`repositories`
+|Comma-separated list of additional repository names
+
+|`codeCoverage.excludePatterns`
+|`\**/**_.class,...`
+|`code-coverage`
+|Comma-separated patterns for classes to exclude from coverage
+
+|`versionPlatform.includeSpringBootBom`
+|`false` (auto-enabled with Spring Boot)
+|`version-platform`
+|Whether to include Spring Boot BOM
+
+|`versionPlatform.springBootBomLibrary`
+|`spring-boot-dependencies`
+|`version-platform`
+|Catalog library name for Spring Boot BOM
+|===

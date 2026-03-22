@@ -1,0 +1,192 @@
+= Ultima Nexus JVM Gradle Plugins
+:toc: left
+:toclevels: 3
+
+Reusable Gradle convention plugins for JVM projects with quality checks, testing infrastructure, publishing, and Spring Boot support.
+
+== What Are Convention Plugins?
+
+Convention plugins are Gradle plugins that encode your organization's build standards into reusable, composable units.
+Instead of copying and pasting `build.gradle.kts` boilerplate across dozens of projects, you apply a single plugin that configures everything: compilation settings, quality checks, test infrastructure, publishing metadata, and more.
+
+Ultima Nexus JVM Gradle Plugins provides a comprehensive set of 78 convention plugins organized into 14 modules.
+They can be used independently, combined a la carte, or consumed through high-level "bundle" plugins that give you a fully configured build in a single line.
+
+== Philosophy
+
+=== Convention Over Configuration
+
+Every plugin ships with sensible defaults.
+Apply a plugin, and it works immediately with zero configuration.
+Need to customize?
+Override any default via `gradle.properties`, an extension DSL in your `build.gradle.kts`, or environment variables.
+
+=== Composition Model: Features and Bundles
+
+The plugin ecosystem is built on a two-tier composition model:
+
+Feature plugins:: Low-level, single-responsibility plugins that configure one concern.
+Examples: `compile-java`, `checkstyle`, `publish`, `graalvm-native`.
+
+Bundle plugins:: Higher-level plugins that compose multiple feature plugins into a cohesive experience for a specific use case.
+Bundles are layered so that each level builds on the one below.
+
+[source]
+----
+Level 0 - Feature Plugins (single concern):
+  compile-java, checkstyle, pmd, spotbugs, format-java,
+  test, test-suites, code-coverage, publish, javadoc, ...
+
+Level 1 - Feature Bundles (group related features):
+  check        = checkstyle + pmd + spotbugs + format-java + format-gradle + dependencies
+  test         = test + test-suites (integration, functional, performance)
+  report       = code-coverage + sbom + test-report + plugin-analysis
+  jspecify     = jspecify + jspecify-test
+  lombok       = lombok + lombok-test
+  documentation = antora + antora-ui
+
+Level 2 - Project Bundles (full project setup):
+  gradle-project           = lifecycle + identity + dependency-rules + repositories
+  jvm-complete             = gradle-project + check + test + report
+  java-complete-library    = jvm-complete + compile-java + java-library + publish + jspecify
+  java-complete-application = jvm-complete + compile-java + application + jspecify
+
+Level 3 - Framework Bundles (framework-specific):
+  spring-boot-complete-library    = java-complete-library + spring-boot-library + spring-boot-test
+  spring-boot-complete-application = java-complete-application + spring-boot-application + spring-boot-test
+
+Level 4 - Full Bundles (all-inclusive):
+  ultima-nexus-jvm-library     = spring-boot-complete-library + lombok + documentation
+  ultima-nexus-jvm-application = spring-boot-native-complete-application + lombok + documentation
+----
+
+This means you can always drop down to a lower level for fine-grained control, or go up to a higher level for convenience.
+
+=== Language Agnostic at the Core
+
+While the highest-level bundles target Java and Spring Boot, the foundation (`jvm-complete`) is language-agnostic.
+Kotlin, Scala, and Groovy projects can use the `jvm-complete` bundle and add their own language plugins on top.
+
+=== Zero-Configuration Dependency Versions
+
+Plugins provide built-in fallback versions for common dependencies (Lombok, JSpecify, JUnit, AssertJ, ByteBuddy, SLF4J, and more).
+If your version catalog defines these libraries, the catalog version wins.
+If not, the built-in fallback is used transparently.
+This allows a fresh project to build immediately without any `libs.versions.toml` configuration.
+
+== Module Map
+
+The plugins are organized across 14 modules, each published as a separate artifact:
+
+[cols="1,3,1"]
+|===
+|Module |Purpose |Plugins
+
+|`plugins-core`
+|Foundation: shared utilities, composite build, testing infrastructure for plugin development
+|4
+
+|`plugins-base`
+|Base: project identity, lifecycle tasks (`qualityCheck`/`qualityGate`), dependency rules, repositories
+|6
+
+|`plugins-check`
+|Quality: Checkstyle, PMD, SpotBugs, Spotless formatting, dependency analysis
+|11
+
+|`plugins-test`
+|Testing: unit, integration, functional, performance test source sets; test fixtures
+|4
+
+|`plugins-report`
+|Reporting: JaCoCo code coverage, CycloneDX SBOM, test reports, plugin analysis
+|6
+
+|`plugins-publish`
+|Publishing: Maven Central with signing, sources JAR, Javadoc JAR
+|3
+
+|`plugins-java`
+|Java: compilation toolchain, application/library mode, Javadoc, JSpecify
+|11
+
+|`plugins-spring-boot`
+|Spring Boot: application/library mode, test dependencies, AOT, native bundles
+|10
+
+|`plugins-lombok`
+|Lombok: annotation processing for main and test source sets
+|3
+
+|`plugins-documentation`
+|Documentation: Antora site generation and UI bundles
+|3
+
+|`plugins-settings`
+|Settings: project structure discovery, Git hooks, build cache, Develocity, Maven Central aggregation
+|7
+
+|`plugins-misc`
+|Miscellaneous: aggregation, version platform, JVM-complete bundle, full Ultima Nexus bundles
+|9
+
+|`plugins-native`
+|Native: GraalVM Native Image compilation and testing
+|1
+
+|`plugins-common`
+|Common: shared internal code between modules
+|0
+|===
+
+== How It All Fits Together
+
+A typical multi-module Spring Boot project uses these plugins at three levels:
+
+[source,kotlin]
+.settings.gradle.kts
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-settings") version "latest.release"
+}
+----
+
+[source,kotlin]
+.Root build.gradle.kts
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.gradle.project.root)
+}
+----
+
+[source,kotlin]
+.Subproject build.gradle.kts
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm.library)
+}
+----
+
+Or, for maximum convenience, apply a single plugin in `settings.gradle.kts` and let it configure everything:
+
+[source,kotlin]
+.settings.gradle.kts (one-plugin setup)
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-complete") version "latest.release"
+}
+----
+
+No `build.gradle.kts` configuration needed -- plugins are applied automatically to all subprojects.
+
+== Requirements
+
+* Gradle 9.0 or later (tested with Gradle 9.2.1+)
+* Java 17 or later (configured for Java 25 by default)
+* Docker (for integration and functional tests)
+
+== Next Steps
+
+* xref:quick-start.adoc[Quick Start] -- get a build running in under five minutes
+* xref:plugin-reference.adoc[Plugin Reference] -- full table of every plugin ID
+* xref:creating-custom-bundles.adoc[Creating Custom Bundles] -- compose your own bundle from feature plugins
