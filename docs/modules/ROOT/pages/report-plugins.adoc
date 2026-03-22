@@ -1,0 +1,122 @@
+= Report Plugins
+:description: Code coverage, SBOM generation, test reports, build analysis, and aggregation.
+:toc: left
+:toclevels: 3
+
+Report plugins generate code coverage reports, Software Bills of Materials, aggregated test reports, and build analysis.
+
+== Report Bundle
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.report`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.report)
+}
+----
+
+Includes: code coverage + SBOM + test reports + plugin analysis.
+
+== Code Coverage (JaCoCo)
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.report.code-coverage`
+
+Auto-discovers all test suites and creates coverage report tasks:
+
+[cols="1,3"]
+|===
+|Task |Description
+
+|`testCodeCoverageReport`
+|Coverage for unit tests
+
+|`integrationTestCodeCoverageReport`
+|Coverage for integration tests
+
+|`functionalTestCodeCoverageReport`
+|Coverage for functional tests
+
+|`allTestCodeCoverageReport`
+|Combined coverage for ALL test types
+|===
+
+=== Configuration
+
+[source,properties]
+----
+codeCoverage.excludePatterns=**/**_.class,**/**MapperImpl.class,**/**Application.class
+----
+
+== SBOM (CycloneDX)
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.report.sbom`
+
+Generates a Software Bill of Materials in CycloneDX JSON format.
+
+[source,bash]
+----
+./gradlew cyclonedxBom
+----
+
+Output: `build/reports/sbom/bom.json`
+
+== Test Reports
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.report.test`
+
+Creates aggregated test result reports for each test suite plus a combined report:
+
+[source,bash]
+----
+./gradlew testAggregateTestReport         # Unit tests
+./gradlew allTestAggregateTestReport      # All test types combined
+----
+
+== Plugin Analysis
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.report.plugin-analysis`
+
+Analyzes and visualizes the order of plugin application in your build.
+
+== Aggregation Plugin
+
+Automatically aggregates reports and metrics from all subprojects into the root project.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.aggregation`
+
+=== What It Does
+
+* Uses Gradle's `subprojects` to discover all modules automatically
+* Auto-detects which report plugins subprojects use
+* Conditionally applies aggregation for code coverage (JaCoCo), test reports, SBOM, and plugin analysis
+
+== Report Output Locations
+
+[source]
+----
+build/
++-- reports/
+    +-- jacoco/
+    |   +-- test/               # Unit test coverage
+    |   +-- integrationTest/    # Integration test coverage
+    |   +-- allTest/            # Combined coverage
+    +-- tests/
+    |   +-- test/               # Unit test results
+    |   +-- integrationTest/    # Integration test results
+    |   +-- allTest/            # Combined test results
+    +-- sbom/
+        +-- bom.json            # CycloneDX SBOM
+----
+
+== Properties Reference
+
+[cols="2,1,2,3"]
+|===
+|Property |Default |Plugin |Description
+
+|`codeCoverage.excludePatterns`
+|`\**/**_.class,...`
+|`code-coverage`
+|Comma-separated patterns for classes to exclude from coverage
+|===

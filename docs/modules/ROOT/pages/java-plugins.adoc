@@ -1,0 +1,155 @@
+= Java Plugins
+:description: Java compilation, Javadoc generation, nullability annotations, and Lombok support.
+:toc: left
+:toclevels: 3
+
+Java plugins configure compilation settings, Javadoc generation, JSpecify nullability annotations, and Lombok annotation processing.
+
+== Compile Java Plugin
+
+Configures Java compilation settings including JDK toolchain version and compiler options.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.compile-java`
+
+=== Extension Configuration
+
+[source,kotlin]
+----
+compileJavaConfig {
+    jdkVersion.set(21)
+}
+----
+
+=== Properties Configuration
+
+[source,properties]
+----
+jdkVersion=21
+----
+
+=== Default Settings
+
+[cols="1,2"]
+|===
+|Setting |Value
+
+|JDK version
+|25
+
+|Fork compilation
+|Enabled
+
+|Encoding
+|UTF-8
+
+|Compiler flags
+|`-parameters`, `-implicit:none`, `-Werror`, `-Xlint:all,-serial,-processing`
+|===
+
+=== Reproducible Builds
+
+Archives produced by this plugin are configured for reproducibility:
+
+* Consistent file order
+* No timestamps preserved
+* Standard file permissions (0664 for files, 0775 for directories)
+
+== Javadoc Plugin
+
+Configures Javadoc generation.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.javadoc`
+
+[source,bash]
+----
+./gradlew javadoc
+----
+
+== JSpecify Plugins
+
+Adds https://jspecify.dev/[JSpecify] nullability annotations.
+
+=== JSpecify Bundle (Recommended)
+
+Adds JSpecify to both main and test sources.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.jspecify`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.jspecify)
+}
+----
+
+=== JSpecify (Main Only)
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.dependency.jspecify`
+
+Adds JSpecify as `compileOnly` for main sources.
+
+=== JSpecify Test (Test Only)
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.dependency.jspecify-test`
+
+Adds JSpecify as `testCompileOnly` for test sources.
+
+=== Usage
+
+[source,java]
+----
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
+@NullMarked
+public class MyService {
+
+    public void process(@Nullable String input) {
+        // ...
+    }
+}
+----
+
+== Lombok Plugins
+
+Adds https://projectlombok.org/[Lombok] annotation processing.
+
+=== Lombok Bundle (Recommended)
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.lombok`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.lombok)
+}
+----
+
+Adds Lombok as `compileOnly` + `annotationProcessor` for both main and test sources.
+
+=== Lombok (Main Only)
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.dependency.lombok`
+
+=== Lombok Test (Test Only)
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.dependency.lombok-test`
+
+=== Version Resolution
+
+Lombok version is resolved in this order:
+
+1. Version from `libs.versions.toml` (library name: `lombok`)
+2. Built-in fallback version
+
+== Properties Reference
+
+[cols="2,1,2,3"]
+|===
+|Property |Default |Plugin |Description
+
+|`jdkVersion`
+|`25`
+|`compile-java`
+|JDK version for Java compilation toolchain
+|===

@@ -253,12 +253,12 @@ Each test source set inherits the dependencies of `test` (JUnit 5, assertion lib
 
 == Integration with Reports
 
-The test plugins work seamlessly with the xref:build-plugins.adoc[report plugins]:
+The test plugins work seamlessly with the xref:report-plugins.adoc[report plugins]:
 
 * *Code coverage:* Each test suite gets its own JaCoCo report task (e.g., `testCodeCoverageReport`, `integrationTestCodeCoverageReport`), plus a combined `allTestCodeCoverageReport`.
 * *Test reports:* Each suite gets an aggregated test report task (e.g., `testAggregateTestReport`), plus a combined `allTestAggregateTestReport`.
 
-See the xref:build-plugins.adoc[Build Plugins] section for report plugin details.
+See the xref:report-plugins.adoc[Report Plugins] section for details.
 
 == Properties Reference
 

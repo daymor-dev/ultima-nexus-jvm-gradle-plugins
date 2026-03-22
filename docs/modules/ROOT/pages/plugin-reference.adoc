@@ -44,7 +44,7 @@ Use the direct `id("...") version "..."` syntax.
 
 |`...feature.composite-build`
 |Composite build auto-discovery for plugin development projects
-|xref:build-plugins.adoc[Build]
+|xref:settings-plugins.adoc[Settings]
 
 |`...bundle.ultima-nexus-jvm-settings`
 |Bundle: project-structure + git-hooks + build-cache + develocity + Maven Central + SBOM support
@@ -65,23 +65,23 @@ Foundation plugins for project identity, lifecycle, dependency management, and r
 
 |`...base.identity`
 |Configures project group ID, version, and description
-|xref:build-plugins.adoc[Build]
+|xref:base-plugins.adoc[Base]
 
 |`...base.lifecycle`
 |Adds `qualityCheck` and `qualityGate` lifecycle tasks
-|xref:build-plugins.adoc[Build]
+|xref:base-plugins.adoc[Base]
 
 |`...base.lifecycle.root`
 |Root project lifecycle task configuration and aggregation
-|xref:build-plugins.adoc[Build]
+|xref:base-plugins.adoc[Base]
 
 |`...base.dependency-rules`
 |JVM dependency conflict resolution rules
-|xref:build-plugins.adoc[Build]
+|xref:base-plugins.adoc[Base]
 
 |`...base.repositories`
 |Maven repositories configuration (Central, custom, private)
-|xref:build-plugins.adoc[Build]
+|xref:base-plugins.adoc[Base]
 |===
 
 == Check Plugins
@@ -172,19 +172,19 @@ Code coverage, SBOM generation, test reports, and build analysis.
 
 |`...report.code-coverage`
 |JaCoCo code coverage aggregation with auto-discovery of test suites
-|xref:build-plugins.adoc[Build]
+|xref:report-plugins.adoc[Report]
 
 |`...report.sbom`
 |Software Bill of Materials generation (CycloneDX JSON)
-|xref:build-plugins.adoc[Build]
+|xref:report-plugins.adoc[Report]
 
 |`...report.test`
 |Aggregated test result reports across all test suites
-|xref:build-plugins.adoc[Build]
+|xref:report-plugins.adoc[Report]
 
 |`...report.plugin-analysis`
 |Plugin application order analysis and visualization
-|xref:build-plugins.adoc[Build]
+|xref:report-plugins.adoc[Report]
 |===
 
 == Java Plugins
@@ -197,19 +197,19 @@ Java compilation, application/library mode, Javadoc, and nullability annotations
 
 |`...feature.compile-java`
 |Java compilation with toolchain support (default: Java 25)
-|xref:build-plugins.adoc[Build]
+|xref:java-plugins.adoc[Java]
 
 |`...feature.java-application`
 |Java application mode (Gradle `application` plugin)
-|xref:build-plugins.adoc[Build]
+|xref:java-plugins.adoc[Java]
 
 |`...feature.java-library`
 |Java library mode (Gradle `java-library` plugin)
-|xref:build-plugins.adoc[Build]
+|xref:java-plugins.adoc[Java]
 
 |`...feature.javadoc`
 |Javadoc generation configuration
-|xref:build-plugins.adoc[Build]
+|xref:java-plugins.adoc[Java]
 |===
 
 == Dependency Plugins
@@ -222,19 +222,19 @@ Dependency plugins that add specific libraries to projects.
 
 |`...dependency.jspecify`
 |JSpecify nullability annotations for main sources (`compileOnly`)
-|xref:build-plugins.adoc[Build]
+|xref:java-plugins.adoc[Java]
 
 |`...dependency.jspecify-test`
 |JSpecify nullability annotations for test sources (`testCompileOnly`)
-|xref:build-plugins.adoc[Build]
+|xref:java-plugins.adoc[Java]
 
 |`...dependency.lombok`
 |Lombok annotation processor for main sources
-|xref:build-plugins.adoc[Build]
+|xref:java-plugins.adoc[Java]
 
 |`...dependency.lombok-test`
 |Lombok annotation processor for test sources
-|xref:build-plugins.adoc[Build]
+|xref:java-plugins.adoc[Java]
 
 |`...dependency.spring-boot-test`
 |Spring Boot test dependencies (`spring-boot-starter-test`)
@@ -327,15 +327,15 @@ Aggregation, version management, and catalog utilities.
 
 |`...feature.aggregation`
 |Multi-project report aggregation (code coverage, test reports, SBOM)
-|xref:build-plugins.adoc[Build]
+|xref:report-plugins.adoc[Report]
 
 |`...feature.version-platform`
 |Java Platform (BOM) with version catalog constraints
-|xref:build-plugins.adoc[Build]
+|xref:bundle-plugins.adoc[Bundle]
 
 |`...feature.use-all-catalog-versions`
 |Apply all version catalog constraints as a `java-platform`
-|xref:build-plugins.adoc[Build]
+|xref:bundle-plugins.adoc[Bundle]
 |===
 
 == Bundle Plugins
@@ -361,15 +361,15 @@ Group related feature plugins within one concern.
 
 |`...bundle.report`
 |Code coverage + SBOM + test reports + plugin analysis
-|xref:build-plugins.adoc[Build]
+|xref:report-plugins.adoc[Report]
 
 |`...bundle.jspecify`
 |JSpecify for main + test sources
-|xref:build-plugins.adoc[Build]
+|xref:java-plugins.adoc[Java]
 
 |`...bundle.lombok`
 |Lombok for main + test sources
-|xref:build-plugins.adoc[Build]
+|xref:java-plugins.adoc[Java]
 
 |`...bundle.documentation`
 |Antora + Antora UI
@@ -386,39 +386,39 @@ Full project setup for a specific project type.
 
 |`...bundle.gradle-project`
 |Base: lifecycle + identity + dependency-rules + repositories
-|xref:build-plugins.adoc[Build]
+|xref:base-plugins.adoc[Base]
 
 |`...bundle.gradle-project-root`
 |Root: lifecycle.root + dependencies.root + format-gradle.root + aggregation
-|xref:build-plugins.adoc[Build]
+|xref:bundle-plugins.adoc[Bundle]
 
 |`...bundle.platform`
 |BOM/platform: version-platform + identity + dependency-versions
-|xref:component-plugins.adoc[Component]
+|xref:bundle-plugins.adoc[Bundle]
 
 |`...bundle.starter`
 |Starter: java-library + lifecycle + identity + dependency-rules + publish
-|xref:component-plugins.adoc[Component]
+|xref:bundle-plugins.adoc[Bundle]
 
 |`...bundle.jvm-complete`
 |Language-agnostic: gradle-project + check + test + report
-|xref:component-plugins.adoc[Component]
+|xref:bundle-plugins.adoc[Bundle]
 
 |`...bundle.java-simple-application`
 |Java app (minimal): gradle-project + compile-java + application
-|xref:component-plugins.adoc[Component]
+|xref:bundle-plugins.adoc[Bundle]
 
 |`...bundle.java-simple-library`
 |Java lib (minimal): gradle-project + compile-java + java-library
-|xref:component-plugins.adoc[Component]
+|xref:bundle-plugins.adoc[Bundle]
 
 |`...bundle.java-complete-application`
 |Java app (full): check + test + report + compile-java + application + jspecify
-|xref:component-plugins.adoc[Component]
+|xref:bundle-plugins.adoc[Bundle]
 
 |`...bundle.java-complete-library`
 |Java lib (full): check + test + report + compile-java + java-library + publish + jspecify
-|xref:component-plugins.adoc[Component]
+|xref:bundle-plugins.adoc[Bundle]
 |===
 
 === Level 3 -- Framework Bundles
@@ -464,11 +464,11 @@ All-inclusive bundles for the Ultima Nexus JVM Framework.
 
 |`...bundle.ultima-nexus-jvm-application`
 |Everything: spring-boot-native-complete-application + lombok + documentation
-|xref:component-plugins.adoc[Component]
+|xref:bundle-plugins.adoc[Bundle]
 
 |`...bundle.ultima-nexus-jvm-library`
 |Everything: spring-boot-complete-library + lombok + documentation
-|xref:component-plugins.adoc[Component]
+|xref:bundle-plugins.adoc[Bundle]
 |===
 
 == Full Plugin ID List (Alphabetical)

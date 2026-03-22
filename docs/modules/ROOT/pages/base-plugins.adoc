@@ -1,0 +1,238 @@
+= Base Plugins
+:description: Foundation plugins for project identity, lifecycle, dependency management, and repositories.
+:toc: left
+:toclevels: 3
+
+Base plugins configure project identity, lifecycle tasks, dependency rules, and repositories.
+These are the foundational plugins that nearly every other plugin depends on.
+
+== Gradle Project Bundle
+
+The base bundle that provides the common foundation for all project types.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.gradle.project)
+}
+----
+
+This bundle includes:
+
+* Lifecycle tasks (`qualityCheck`, `qualityGate`)
+* Project identity (group ID, version, description)
+* Dependency conflict resolution rules
+* Maven Central repository
+
+== Identity Plugin
+
+Configures project group ID, version, and description from `gradle.properties` or an extension DSL.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.base.identity`
+
+=== Extension Configuration
+
+[source,kotlin]
+----
+ultimaNexus {
+    groupId.set("com.example.myproject")
+    version.set("1.0.0-SNAPSHOT")
+    description.set("My project description")
+}
+----
+
+=== Properties Configuration
+
+[source,properties]
+----
+groupId=com.example.myproject
+version=1.0.0-SNAPSHOT
+description=My project description
+----
+
+All three properties are optional.
+They can also be set directly via standard Gradle `project.group`, `project.version`, and `project.description`.
+
+== Lifecycle Plugin
+
+Provides the `qualityCheck` and `qualityGate` lifecycle tasks that all quality plugins register with.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.base.lifecycle`
+
+=== Tasks Provided
+
+[cols="1,3"]
+|===
+|Task |Description
+
+|`qualityCheck`
+|Runs all quality checks without executing tests.
+Other plugins (Checkstyle, PMD, SpotBugs, dependency analysis) register their tasks as dependencies.
+
+|`qualityGate`
+|Runs auto-formatting (Spotless) first, then runs all quality checks.
+The Gradle `check` task depends on `qualityCheck`.
+|===
+
+=== Internal Configuration
+
+The lifecycle plugin also creates an `internal` configuration used by code-coverage and test aggregation plugins for collecting project dependencies in multi-module builds.
+
+=== Root Variant
+
+For multi-module projects, the root project uses a separate lifecycle variant:
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.base.lifecycle.root`
+
+This variant:
+
+* Aggregates results from all subprojects
+* Sets `defaultTasks("tasks")` so running `./gradlew` with no arguments shows available tasks
+
+== Dependency Rules Plugin
+
+Configures JVM dependency conflict resolution using the https://github.com/gradlex-org/jvm-dependency-conflict-resolution[JVM Dependency Conflict Resolution] plugin.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.base.dependency-rules`
+
+=== Extension Configuration
+
+[source,kotlin]
+----
+dependencyRules {
+    platformPath = ":versions"          // Path to version platform project
+    aggregationPath = ":"               // Path to aggregation project
+    autoConsumePlatform = true          // Auto-add platform dependency
+}
+----
+
+=== Properties Configuration
+
+[source,properties]
+----
+dependencyRules.platformPath=:versions
+dependencyRules.aggregationPath=:
+dependencyRules.autoConsumePlatform=true
+----
+
+=== Auto-Consumption of Platform
+
+When a platform project exists (e.g., `:versions` or `:platform`), all modules automatically consume it via `platform(project(...))`.
+This ensures consistent dependency versions across the entire build.
+
+Disable auto-consumption if needed:
+
+[source,properties]
+----
+dependencyRules.autoConsumePlatform=false
+----
+
+== Repositories Plugin
+
+Configures Maven repositories for dependency resolution.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.base.repositories`
+
+By default, only Maven Central is configured.
+
+=== Extension Configuration
+
+[source,kotlin]
+----
+repositoriesConfig {
+    includeMavenCentral.set(true)
+    includeMavenLocal.set(false)
+
+    repository("jitpack") {
+        url.set("https://jitpack.io")
+    }
+
+    repository("company-nexus") {
+        url.set("https://nexus.company.com/repository/maven-releases/")
+        username.set(providers.gradleProperty("nexusUsername").orNull)
+        password.set(providers.gradleProperty("nexusPassword").orNull)
+    }
+}
+----
+
+=== Properties Configuration
+
+[source,properties]
+----
+repositories.includeMavenCentral=true
+repositories.includeMavenLocal=false
+repositories.additional=jitpack,company-nexus
+repositories.repo.jitpack.url=https://jitpack.io
+repositories.repo.company-nexus.url=https://nexus.company.com/repository/maven-releases/
+repositories.repo.company-nexus.username=myuser
+repositories.repo.company-nexus.password=mypassword
+----
+
+=== Environment Variable Support
+
+For CI/CD, credentials can be provided via environment variables:
+
+[source,bash]
+----
+export REPO_COMPANY_NEXUS_USERNAME=ci-user
+export REPO_COMPANY_NEXUS_PASSWORD=ci-token
+----
+
+Environment variables take precedence over `gradle.properties` values.
+
+IMPORTANT: Never commit credentials to version control.
+Store them in `~/.gradle/gradle.properties` (user-level) or use environment variables in CI/CD.
+
+== Properties Reference
+
+[cols="2,1,2,3"]
+|===
+|Property |Default |Plugin |Description
+
+|`groupId`
+|_(optional)_
+|`identity`
+|Project group ID
+
+|`version`
+|_(optional)_
+|`identity`
+|Project version
+
+|`description`
+|_(optional)_
+|`identity`
+|Project description
+
+|`dependencyRules.platformPath`
+|`:versions`
+|`dependency-rules`
+|Path to the version platform project
+
+|`dependencyRules.aggregationPath`
+|`:`
+|`dependency-rules`
+|Path to the aggregation project
+
+|`dependencyRules.autoConsumePlatform`
+|`true`
+|`dependency-rules`
+|Auto-add platform project as dependency
+
+|`repositories.includeMavenCentral`
+|`true`
+|`repositories`
+|Include Maven Central repository
+
+|`repositories.includeMavenLocal`
+|`false`
+|`repositories`
+|Include Maven Local repository
+
+|`repositories.additional`
+|_(empty)_
+|`repositories`
+|Comma-separated list of additional repository names
+|===
