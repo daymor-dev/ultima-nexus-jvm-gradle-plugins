@@ -327,15 +327,15 @@ Aggregation, version management, and catalog utilities.
 
 |`...feature.aggregation`
 |Multi-project report aggregation (code coverage, test reports, SBOM)
-|xref:report-plugins.adoc[Report]
+|xref:misc-plugins.adoc[Misc]
 
 |`...feature.version-platform`
 |Java Platform (BOM) with version catalog constraints
-|xref:bundle-plugins.adoc[Bundle]
+|xref:misc-plugins.adoc[Misc]
 
 |`...feature.use-all-catalog-versions`
 |Apply all version catalog constraints as a `java-platform`
-|xref:bundle-plugins.adoc[Bundle]
+|xref:misc-plugins.adoc[Misc]
 |===
 
 == Bundle Plugins
@@ -390,35 +390,35 @@ Full project setup for a specific project type.
 
 |`...bundle.gradle-project-root`
 |Root: lifecycle.root + dependencies.root + format-gradle.root + aggregation
-|xref:bundle-plugins.adoc[Bundle]
+|xref:misc-plugins.adoc[Misc]
 
 |`...bundle.platform`
 |BOM/platform: version-platform + identity + dependency-versions
-|xref:bundle-plugins.adoc[Bundle]
+|xref:misc-plugins.adoc[Misc]
 
 |`...bundle.starter`
 |Starter: java-library + lifecycle + identity + dependency-rules + publish
-|xref:bundle-plugins.adoc[Bundle]
+|xref:misc-plugins.adoc[Misc]
 
 |`...bundle.jvm-complete`
 |Language-agnostic: gradle-project + check + test + report
-|xref:bundle-plugins.adoc[Bundle]
+|xref:misc-plugins.adoc[Misc]
 
 |`...bundle.java-simple-application`
 |Java app (minimal): gradle-project + compile-java + application
-|xref:bundle-plugins.adoc[Bundle]
+|xref:misc-plugins.adoc[Misc]
 
 |`...bundle.java-simple-library`
 |Java lib (minimal): gradle-project + compile-java + java-library
-|xref:bundle-plugins.adoc[Bundle]
+|xref:misc-plugins.adoc[Misc]
 
 |`...bundle.java-complete-application`
 |Java app (full): check + test + report + compile-java + application + jspecify
-|xref:bundle-plugins.adoc[Bundle]
+|xref:misc-plugins.adoc[Misc]
 
 |`...bundle.java-complete-library`
 |Java lib (full): check + test + report + compile-java + java-library + publish + jspecify
-|xref:bundle-plugins.adoc[Bundle]
+|xref:misc-plugins.adoc[Misc]
 |===
 
 === Level 3 -- Framework Bundles
@@ -464,11 +464,11 @@ All-inclusive bundles for the Ultima Nexus JVM Framework.
 
 |`...bundle.ultima-nexus-jvm-application`
 |Everything: spring-boot-native-complete-application + lombok + documentation
-|xref:bundle-plugins.adoc[Bundle]
+|xref:misc-plugins.adoc[Misc]
 
 |`...bundle.ultima-nexus-jvm-library`
 |Everything: spring-boot-complete-library + lombok + documentation
-|xref:bundle-plugins.adoc[Bundle]
+|xref:misc-plugins.adoc[Misc]
 |===
 
 == Full Plugin ID List (Alphabetical)

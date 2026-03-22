@@ -12,6 +12,6 @@
 * xref:native-plugins.adoc[Native Image]
 * xref:publish-plugins.adoc[Publishing]
 * xref:documentation-plugins.adoc[Documentation]
-* xref:bundle-plugins.adoc[Bundles]
+* xref:misc-plugins.adoc[Miscellaneous]
 * xref:creating-custom-bundles.adoc[Creating Custom Bundles]
 * xref:plugin-reference.adoc[Plugin Reference]

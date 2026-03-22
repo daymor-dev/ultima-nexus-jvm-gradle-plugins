@@ -1,5 +1,5 @@
 = Report Plugins
-:description: Code coverage, SBOM generation, test reports, build analysis, and aggregation.
+:description: Code coverage, SBOM generation, test reports, and build analysis.
 :toc: left
 :toclevels: 3
 
@@ -96,18 +96,6 @@ Creates aggregated test result reports for each test suite plus a combined repor
 Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.report.plugin-analysis`
 
 Analyzes and visualizes the order of plugin application in your build.
-
-== Aggregation Plugin
-
-Automatically aggregates reports and metrics from all subprojects into the root project.
-
-Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.aggregation`
-
-=== What It Does
-
-* Uses Gradle's `subprojects` to discover all modules automatically
-* Auto-detects which report plugins subprojects use
-* Conditionally applies aggregation for code coverage (JaCoCo), test reports, SBOM, and plugin analysis
 
 == Report Output Locations
 

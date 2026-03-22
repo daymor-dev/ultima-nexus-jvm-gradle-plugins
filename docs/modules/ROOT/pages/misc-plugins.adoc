@@ -1,0 +1,189 @@
+= Miscellaneous Plugins
+:description: Aggregation, version platforms, starters, root projects, and top-level bundles.
+:toc: left
+:toclevels: 3
+
+The `plugins-misc` module provides utility plugins for project structure roles (root, starter, platform) and top-level bundles that compose plugins from all other modules.
+
+== Aggregation Plugin
+
+Aggregates reports (JaCoCo, test reports, SBOM, plugin analysis) from subprojects into the root project.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.aggregation`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.aggregation)
+}
+----
+
+Conditionally applies aggregation when the corresponding report plugins are present in subprojects.
+
+== Version Platform Plugin
+
+Creates a Java Platform (BOM) with version constraints from the version catalog.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.version-platform`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.version.platform)
+}
+----
+
+=== Configuration
+
+[source,kotlin]
+----
+versionPlatform {
+    includeSpringBootBom = true
+    springBootBomLibrary = "spring-boot-dependencies"
+}
+----
+
+[source,properties]
+----
+versionPlatform.includeSpringBootBom=false
+versionPlatform.springBootBomLibrary=spring-boot-dependencies
+----
+
+When the `org.springframework.boot` plugin is applied, the Spring Boot BOM is automatically included.
+
+IMPORTANT: This plugin applies `java-platform` and cannot be combined with `java` or `java-library`.
+
+== Use All Catalog Versions Plugin
+
+Applies `java-platform` and creates strict version constraints for every entry in the version catalog.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.use-all-catalog-versions`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.use.all.catalog.versions)
+}
+----
+
+IMPORTANT: Use only in dedicated platform/BOM projects. Cannot be combined with `java` or `java-library`.
+
+== Starter Bundle
+
+For starter subprojects that aggregate dependencies without containing source code.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.starter`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.starter)
+}
+
+dependencies {
+    api(libs.spring.boot.starter.web)
+    api(project(":my-common-utils"))
+}
+----
+
+Includes: `java-library` + lifecycle + identity + dependency-rules + publish.
+
+== Platform Bundle
+
+For BOM (Bill of Materials) projects that manage dependency versions.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.platform`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.platform)
+}
+
+dependencies {
+    constraints {
+        api(libs.guava)
+        api(libs.jackson.core)
+    }
+}
+----
+
+Includes: `version-platform` + `identity` + `dependency-versions`.
+
+== Root Project Bundle
+
+For the root `build.gradle.kts` of multi-module projects.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.gradle-project-root`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.gradle.project.root)
+}
+----
+
+Includes: `lifecycle.root` + `dependencies.root` + `format-gradle.root` + `aggregation`.
+
+== JVM Complete Bundle
+
+For Kotlin, Scala, Groovy, or other JVM languages. Provides quality checks, testing, and reporting without Java-specific features.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.jvm-complete`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.jvm.complete)
+    kotlin("jvm")  // Add your language plugin
+}
+----
+
+Includes: Gradle project base + quality checks + testing + reporting.
+
+Does NOT include: `compile-java`, `javadoc`, `jspecify`, `lombok`, or any Spring Boot plugin.
+
+== Ultima Nexus JVM Application Bundle
+
+The most comprehensive application bundle.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-application`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm.application)
+}
+----
+
+Includes: Spring Boot application + GraalVM Native Image + AOT + quality checks + testing + reporting + Lombok + JSpecify + documentation.
+
+== Ultima Nexus JVM Library Bundle
+
+The most comprehensive library bundle.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-library`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm.library)
+}
+----
+
+Includes: Spring Boot library + quality checks + testing + reporting + publishing + Lombok + JSpecify + documentation.
+
+== Properties Reference
+
+[cols="2,1,3"]
+|===
+| Property | Default | Description
+
+| `versionPlatform.includeSpringBootBom`
+| `false` (auto-enabled with Spring Boot)
+| Whether to include Spring Boot BOM
+
+| `versionPlatform.springBootBomLibrary`
+| `spring-boot-dependencies`
+| Catalog library name for Spring Boot BOM
+|===
