@@ -1,4 +1,0 @@
-= Component Plugins
-:toc: left
-
-This page has been moved. See xref:bundle-plugins.adoc[Bundle Plugins].

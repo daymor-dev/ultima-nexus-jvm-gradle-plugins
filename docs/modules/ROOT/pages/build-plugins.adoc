@@ -1,9 +1,0 @@
-= Build Plugins
-:toc: left
-
-This page has been reorganized. See:
-
-* xref:base-plugins.adoc[Base Plugins] -- identity, lifecycle, dependency rules, repositories
-* xref:java-plugins.adoc[Java Plugins] -- compilation, Javadoc, JSpecify, Lombok
-* xref:report-plugins.adoc[Report Plugins] -- code coverage, SBOM, test reports, plugin analysis
-* xref:bundle-plugins.adoc[Bundle Plugins] -- version platform, catalog versions, component types
