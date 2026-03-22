@@ -1,9 +1,9 @@
 = Native Image Plugins
+:description: GraalVM Native Image plugin for Ultima Nexus JVM Gradle Plugins
 :toc: left
 :toclevels: 3
 
-The native image plugins configure GraalVM Native Image compilation and testing.
-These plugins are framework-agnostic and work with Spring Boot, Micronaut, Quarkus, or any JVM application that supports native compilation.
+The `plugins-native` module provides GraalVM Native Image compilation support.
 
 == GraalVM Native Plugin
 
@@ -23,17 +23,16 @@ plugins {
 * Applies the GraalVM Native Build Tools plugin
 * Configures `nativeCompile` task for building native executables
 * Configures `nativeTest` task for running tests in native mode
-* Provides extension DSL and properties-based configuration
 
 === Extension Configuration
 
 [source,kotlin]
 ----
 graalvmNativeConfig {
-    verbose.set(false)        // Enable verbose native image output
-    quickBuild.set(false)     // Enable quick build mode (faster, less optimized)
-    fallback.set(false)       // Allow fallback to JVM when native image fails
-    richOutput.set(true)      // Enable rich output during compilation
+    verbose.set(false)
+    quickBuild.set(false)
+    fallback.set(false)
+    richOutput.set(true)
 }
 ----
 
@@ -60,120 +59,29 @@ graalvmNative.richOutput=true
 
 === Prerequisites
 
-* GraalVM JDK (or GraalVM Community Edition)
-* `native-image` tool (bundled with GraalVM 22.3+, or install via `gu install native-image`)
-
-== Spring Boot AOT Plugin
-
-Configures Spring Boot Ahead-of-Time (AOT) compilation and excludes AOT-generated code from quality checks.
-
-Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-aot`
-
-[source,kotlin]
-----
-plugins {
-    alias(libs.plugins.ultimanexus.jvm.feature.spring.boot.aot)
-}
-----
-
-=== What It Does
-
-* Enables Spring Boot AOT processing (`processAot`, `processTestAot` tasks)
-* Suppresses `-Xlint:unchecked` and `-Xlint:rawtypes` warnings on AOT compilation tasks (AOT-generated code is not human-written and typically triggers these warnings)
-* Disables Checkstyle, PMD, and SpotBugs tasks for AOT source sets
-* Resolves slf4j-impl capability conflicts in AOT classpaths
-* Disables AOT processing when no main source exists (prevents build failures in virtual projects)
-
-=== Configuration
-
-[source,kotlin]
-----
-springBootAotConfig {
-    suppressWarnings.set(true)  // default: true
-}
-----
-
-Or via `gradle.properties`:
-
-[source,properties]
-----
-springBootAot.suppressWarnings=true
-----
-
-== Native Application Bundles
-
-=== Spring Boot Native Complete Application
-
-Full-featured Spring Boot application with GraalVM Native Image, AOT, and quality checks.
-
-Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-native-complete-application`
-
-[source,kotlin]
-----
-plugins {
-    alias(libs.plugins.ultimanexus.jvm.bundle.spring.boot.native.complete.application)
-}
-----
-
-Includes everything from `spring-boot-complete-application` plus:
-
-* GraalVM Native Image compilation (`nativeCompile`, `nativeTest`)
-* Spring Boot AOT processing (`processAot`, `processTestAot`)
-* AOT source sets excluded from quality checks
-
-=== Spring Boot Native Simple Application
-
-Minimal Spring Boot application with native support, without quality checks.
-
-Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-native-application`
-
-[source,kotlin]
-----
-plugins {
-    alias(libs.plugins.ultimanexus.jvm.bundle.spring.boot.native.application)
-}
-----
-
-Includes: `spring-boot-simple-application` + GraalVM Native Image + Spring Boot AOT.
-
-== Full Bundle with Native Support
-
-The `ultima-nexus-jvm-application` bundle includes native support by default:
-
-[source,kotlin]
-----
-plugins {
-    alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm.application)
-}
-----
-
-This is the recommended bundle for standalone Spring Boot applications that may be compiled to native executables.
+* GraalVM JDK 22.3+ (includes `native-image` by default)
 
 == Properties Reference
 
 [cols="2,1,3"]
 |===
-|Property |Default |Description
+| Property | Default | Description
 
-|`graalvmNative.verbose`
-|`false`
-|Enable verbose GraalVM Native Image output
+| `graalvmNative.verbose`
+| `false`
+| Enable verbose GraalVM Native Image output
 
-|`graalvmNative.quickBuild`
-|`false`
-|Enable quick build mode (faster but less optimized)
+| `graalvmNative.quickBuild`
+| `false`
+| Enable quick build mode (faster but less optimized)
 
-|`graalvmNative.fallback`
-|`false`
-|Allow fallback to JVM when native image cannot be built
+| `graalvmNative.fallback`
+| `false`
+| Allow fallback to JVM when native image cannot be built
 
-|`graalvmNative.richOutput`
-|`true`
-|Enable rich output during native image compilation
-
-|`springBootAot.suppressWarnings`
-|`true`
-|Suppress unchecked/rawtypes warnings on AOT compilation tasks
+| `graalvmNative.richOutput`
+| `true`
+| Enable rich output during native image compilation
 |===
 
 == When to Use Native Compilation
@@ -183,10 +91,10 @@ Native compilation is beneficial when:
 * *Startup time matters* -- Native executables start in milliseconds instead of seconds
 * *Memory footprint matters* -- Native images use significantly less memory
 * *Deploying to serverless/containers* -- Faster cold starts and smaller footprint
-* *CLI tools* -- Instant startup for command-line applications
 
 Native compilation is less suitable when:
 
-* *Development velocity is priority* -- Native compilation is slow (minutes vs. seconds)
-* *Dynamic features are required* -- Reflection, dynamic proxies, and class loading require explicit configuration
-* *Debugging complex issues* -- JVM debugging tools are more mature
+* *Development velocity is priority* -- Native compilation is slow (3-10 minutes)
+* *Dynamic features are required* -- Reflection and dynamic proxies need explicit configuration
+
+TIP: For Spring Boot native applications, use the bundles in xref:spring-boot-plugins.adoc[Spring Boot Plugins] which combine this plugin with Spring Boot AOT processing.

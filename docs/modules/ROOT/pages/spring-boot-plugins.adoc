@@ -55,7 +55,7 @@ plugins {
 
 === Application vs. Library
 
-[cols="1,1,1,1"]
+[%autowidth.stretch,cols="1,1,1,1"]
 |===
 |Feature |Application |Library |Notes
 
@@ -195,7 +195,19 @@ plugins {
 }
 ----
 
-See xref:native-plugins.adoc#_spring_boot_aot_plugin[Native Image Plugins -- Spring Boot AOT] for full configuration details.
+=== What It Does
+
+* Enables Spring Boot AOT processing (`processAot`, `processTestAot` tasks)
+* Suppresses `-Xlint:unchecked` and `-Xlint:rawtypes` warnings on AOT compilation tasks
+* Disables Checkstyle, PMD, and SpotBugs tasks for AOT source sets
+* Disables AOT processing when no main source exists (e.g., starter modules)
+
+=== Configuration
+
+[source,properties]
+----
+springBootAot.suppressWarnings=true
+----
 
 == Native Application Bundles
 
@@ -225,7 +237,7 @@ plugins {
 
 Includes `spring-boot-simple-application` plus GraalVM Native Image and AOT.
 
-See xref:native-plugins.adoc[Native Image Plugins] for full configuration details and properties.
+See xref:native-plugins.adoc[Native Image Plugins] for GraalVM configuration and properties.
 
 == Spring Boot Version Management
 

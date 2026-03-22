@@ -129,7 +129,7 @@ build/
 
 == Properties Reference
 
-[cols="2,1,2,3"]
+[%autowidth.stretch,cols="2,1,2,3"]
 |===
 |Property |Default |Plugin |Description
 

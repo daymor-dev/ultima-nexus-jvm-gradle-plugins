@@ -326,7 +326,7 @@ Includes: `lifecycle.root` + `dependencies.root` + `format-gradle.root` + `aggre
 
 == Bundle Comparison
 
-[cols="1,1,1,1,1,1,1"]
+[%autowidth.stretch,cols="1,1,1,1,1,1,1"]
 |===
 |Bundle |Quality |Tests |Report |Publish |Spring |Native
 
@@ -445,7 +445,7 @@ Includes: `lifecycle.root` + `dependencies.root` + `format-gradle.root` + `aggre
 
 == Properties Reference
 
-[cols="2,1,2,3"]
+[%autowidth.stretch,cols="2,1,2,3"]
 |===
 |Property |Default |Plugin |Description
 

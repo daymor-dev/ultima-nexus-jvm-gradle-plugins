@@ -262,7 +262,7 @@ See the xref:report-plugins.adoc[Report Plugins] section for details.
 
 == Properties Reference
 
-[cols="2,1,2,3"]
+[%autowidth.stretch,cols="2,1,2,3"]
 |===
 |Property |Default |Plugin |Description
 
