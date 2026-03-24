@@ -5,6 +5,8 @@
 :source-highlighter: highlight.js
 :highlightjs-theme: monokai
 
+image::ultima-nexus-logo.png[Ultima Nexus JVM Gradle Plugins,200]
+
 image:https://img.shields.io/github/v/release/daymor-dev/ultima-nexus-jvm-gradle-plugins?label=version[Version, link="https://github.com/daymor-dev/ultima-nexus-jvm-gradle-plugins/releases/latest"]
 image:https://img.shields.io/github/license/daymor-dev/ultima-nexus-jvm-gradle-plugins[License]
 image:https://github.com/daymor-dev/ultima-nexus-jvm-gradle-plugins/actions/workflows/ci.yml/badge.svg[CI, link="https://github.com/daymor-dev/ultima-nexus-jvm-gradle-plugins/actions/workflows/ci.yml"]
