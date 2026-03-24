@@ -43,5 +43,6 @@ tasks.named("antora") {
 
 tasks.register<Copy>("addStaticIndex") {
     from(file("$projectDir/index.html"))
+    from(fileTree(projectDir).matching { include("*.png", "*.ico", "*.svg", "*.jpg", "*.webp") })
     into(layout.buildDirectory)
 }
