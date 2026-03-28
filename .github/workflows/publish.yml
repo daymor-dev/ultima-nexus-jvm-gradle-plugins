@@ -56,7 +56,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Build and Validate All
         run: ./gradlew buildAll validateAll --parallel
@@ -124,7 +124,7 @@ jobs:
 
       - name: Setup Gradle
         if: steps.check.outputs.should_publish == 'true'
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Publish to Gradle Plugin Portal
         if: steps.check.outputs.should_publish == 'true'
