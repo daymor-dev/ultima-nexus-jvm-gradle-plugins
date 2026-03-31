@@ -147,6 +147,10 @@ object PropertyKeys {
         const val ALLOW_INSECURE_SUFFIX = ".allowInsecureProtocol"
     }
 
+    object Antora {
+        const val STATIC_FILE_PATTERNS = "antora.staticFilePatterns"
+    }
+
     object GraalvmNative {
         const val VERBOSE = "graalvmNative.verbose"
         const val QUICK_BUILD = "graalvmNative.quickBuild"

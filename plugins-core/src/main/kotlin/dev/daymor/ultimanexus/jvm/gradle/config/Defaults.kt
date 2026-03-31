@@ -36,6 +36,10 @@ object Defaults {
     const val SETTINGS_GRADLE_KTS = "settings.gradle.kts"
     const val GRADLE_KTS_EXTENSION = ".gradle.kts"
 
+    object Antora {
+        val STATIC_FILE_PATTERNS = listOf("*.html", "*.png", "*.ico", "*.svg", "*.jpg", "*.webp")
+    }
+
     object DependencyScope {
         const val IMPLEMENTATION = "implementation"
         const val API = "api"

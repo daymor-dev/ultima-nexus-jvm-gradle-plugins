@@ -16,23 +16,38 @@
 
 
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
+import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
+import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromProperty
 
 /**
  * Feature plugin for Antora documentation generation.
  * Configures Antora with Lunr search extension and sets up
  * documentation-related tasks.
  *
- * Usage:
+ * Configuration via antoraConfig extension:
  * ```kotlin
- * plugins {
- *     alias(libs.plugins.ultimanexus.jvm.feature.antora)
+ * antoraConfig {
+ *     staticFilePatterns = listOf("*.html", "*.png", "*.ico", "*.svg", "*.jpg", "*.webp")
  * }
+ * ```
+ *
+ * Or via gradle.properties:
+ * ```properties
+ * antora.staticFilePatterns = *.html, *.png, *.ico, *.svg, *.jpg, *.webp
  * ```
  */
 plugins {
     id("org.antora")
     id("com.github.node-gradle.node")
 }
+
+interface AntoraConfigExtension {
+    val staticFilePatterns: ListProperty<String>
+}
+
+val antoraConfig = extensions.create<AntoraConfigExtension>("antoraConfig")
+
+antoraConfig.staticFilePatterns.conventionFromProperty(project, PropertyKeys.Antora.STATIC_FILE_PATTERNS, Defaults.Antora.STATIC_FILE_PATTERNS)
 
 antora { packages.put("@antora/lunr-extension", "latest") }
 
@@ -42,7 +57,6 @@ tasks.named("antora") {
 }
 
 tasks.register<Copy>("addStaticIndex") {
-    from(file("$projectDir/index.html"))
-    from(fileTree(projectDir).matching { include("*.png", "*.ico", "*.svg", "*.jpg", "*.webp") })
+    from(fileTree(projectDir).matching { include(antoraConfig.staticFilePatterns.get()) })
     into(layout.buildDirectory)
 }

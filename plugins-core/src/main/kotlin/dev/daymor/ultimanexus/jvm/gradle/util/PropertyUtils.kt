@@ -17,6 +17,7 @@
 package dev.daymor.ultimanexus.jvm.gradle.util
 
 import org.gradle.api.Project
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 
 object PropertyUtils {
@@ -40,6 +41,14 @@ object PropertyUtils {
 
     fun Property<Int>.conventionFromProperty(project: Project, key: String, default: Int) {
         convention(project.findPropertyAsInt(key, default))
+    }
+
+    fun ListProperty<String>.conventionFromProperty(project: Project, key: String, default: List<String>) {
+        val fromProperty = project.findPropertyOrNull(key)
+            ?.split(",")
+            ?.map { it.trim() }
+            ?.filter { it.isNotEmpty() }
+        convention(fromProperty ?: default)
     }
 
     fun <T : Any> Property<T>.conventionIfNotNull(value: T?) {
