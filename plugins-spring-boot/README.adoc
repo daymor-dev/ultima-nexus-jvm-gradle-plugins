@@ -95,6 +95,7 @@ Includes:
 * Java compilation and Javadoc
 * Full Spring Boot plugin (`bootJar`, `bootRun`)
 * Spring Boot DevTools for development
+* Spring Boot Docker Compose support for development
 * JSpecify nullability annotations (main and test sources)
 
 === Spring Boot Complete Library
@@ -251,6 +252,7 @@ plugins {
 * Creates executable fat JAR
 * Configures `productionRuntimeClasspath` and `developmentOnly` configurations
 * Adds Spring Boot DevTools
+* Adds Spring Boot Docker Compose support
 
 == Spring Boot Library Plugin
 
@@ -338,6 +340,7 @@ spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
 
 [libraries]
 spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools", version.ref = "spring-boot" }
+spring-boot-docker-compose = { module = "org.springframework.boot:spring-boot-docker-compose", version.ref = "spring-boot" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring-boot" }
 ----
 

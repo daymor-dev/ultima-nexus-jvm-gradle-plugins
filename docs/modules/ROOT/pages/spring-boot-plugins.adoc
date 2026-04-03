@@ -24,6 +24,7 @@ plugins {
 * Creates an executable fat JAR containing all dependencies
 * Configures `productionRuntimeClasspath` and `developmentOnly` configurations
 * Adds Spring Boot DevTools as a `developmentOnly` dependency
+* Adds Spring Boot Docker Compose support as a `developmentOnly` dependency (auto-starts containers from `docker-compose.yaml` on `bootRun`)
 
 === Running
 
@@ -78,6 +79,11 @@ plugins {
 |Yes
 |No
 |DevTools is only for development applications
+
+|Docker Compose
+|Yes
+|No
+|Auto-starts containers from `docker-compose.yaml` on `bootRun`
 
 |Publishing
 |No

@@ -279,7 +279,7 @@ For detailed documentation on each module, see the individual README files:
 |Java: Compilation, application/library mode, Javadoc, JSpecify
 
 |link:plugins-spring-boot/README.adoc[plugins-spring-boot]
-|Spring Boot: Application/library mode, test dependencies, DevTools
+|Spring Boot: Application/library mode, test dependencies, DevTools, Docker Compose
 
 |link:plugins-lombok/README.adoc[plugins-lombok]
 |Lombok: Annotation processing for main and test sources

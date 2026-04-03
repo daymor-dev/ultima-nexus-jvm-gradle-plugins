@@ -30,6 +30,7 @@ import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNu
  * - Creates executable fat JAR
  * - Configures productionRuntimeClasspath and developmentOnly
  * - Adds Spring Boot DevTools for development
+ * - Adds Spring Boot Docker Compose support for development
  * - Spring Boot BOM for dependency management
  *
  * Usage:
@@ -72,8 +73,11 @@ dependencies {
 
 val devtools = libs?.let { getLibraryOrNull(it, "spring-boot-devtools") }
     ?: Fallbacks.SPRING_BOOT_DEVTOOLS
+val dockerCompose = libs?.let { getLibraryOrNull(it, "spring-boot-docker-compose") }
+    ?: Fallbacks.SPRING_BOOT_DOCKER_COMPOSE
 dependencies {
     add("developmentOnly", devtools)
+    add("developmentOnly", dockerCompose)
 }
 
 val jspecify = libs?.let { getLibraryOrNull(it, "jspecify") } ?: Fallbacks.JSPECIFY

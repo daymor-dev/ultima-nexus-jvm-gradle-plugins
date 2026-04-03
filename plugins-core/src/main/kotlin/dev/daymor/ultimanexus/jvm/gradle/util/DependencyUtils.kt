@@ -66,6 +66,7 @@ object DependencyUtils {
         const val MOCKK = "io.mockk:mockk:${FallbackVersions.MOCKK}"
         const val SLF4J_SIMPLE = "org.slf4j:slf4j-simple:${FallbackVersions.SLF4J}"
         const val SPRING_BOOT_DEVTOOLS = "org.springframework.boot:spring-boot-devtools:${FallbackVersions.SPRING_BOOT}"
+        const val SPRING_BOOT_DOCKER_COMPOSE = "org.springframework.boot:spring-boot-docker-compose:${FallbackVersions.SPRING_BOOT}"
         const val SPRING_BOOT_BOM = "org.springframework.boot:spring-boot-dependencies:${FallbackVersions.SPRING_BOOT}"
         const val ULTIMA_NEXUS_JVM_CHECK = "dev.daymor.ultima-nexus.jvm:ultima-nexus-jvm-check:${FallbackVersions.ULTIMA_NEXUS_JVM_CHECK}"
     }
