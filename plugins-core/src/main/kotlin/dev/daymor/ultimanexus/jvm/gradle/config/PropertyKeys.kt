@@ -123,6 +123,12 @@ object PropertyKeys {
         const val SPRING_BOOT_BOM_LIBRARY = "versionPlatform.springBootBomLibrary"
     }
 
+    object UltimaNexusJvm {
+        const val USE_PREDEFINED_STARTER = "ultimaNexusJvm.usePredefinedStarter"
+        const val APPLICATION_TYPE = "ultimaNexusJvm.applicationType"
+        const val USE_HIBERNATE = "ultimaNexusJvm.useHibernate"
+    }
+
     object Develocity {
         const val ENABLED = "develocity.enabled"
         const val SERVER_URL = "develocity.serverUrl"

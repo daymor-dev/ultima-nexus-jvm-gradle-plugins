@@ -149,7 +149,7 @@ Use the following decision tree to pick the right bundle for each subproject:
 |===
 |Project Type |Bundle
 
-|Spring Boot application (full-featured)
+|**Ultima Nexus application** (zero-config — auto-includes starter, annotations, and processor)
 |`ultima-nexus-jvm-application`
 
 |Spring Boot library / starter (full-featured)
