@@ -245,8 +245,8 @@ To override any fallback version, add the dependency to your `libs.versions.toml
 [source,toml]
 ----
 [libraries]
-lombok = { module = "org.projectlombok:lombok", version = "1.18.42" }
-jspecify = { module = "org.jspecify:jspecify", version = "1.0.0" }
+lombok = { module = "org.projectlombok:lombok", version = "latest.release" }
+jspecify = { module = "org.jspecify:jspecify", version = "latest.release" }
 ----
 
 == Module Documentation

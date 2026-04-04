@@ -75,5 +75,5 @@ The Lombok version is resolved in this order:
 .gradle/libs.versions.toml
 ----
 [libraries]
-lombok = { module = "org.projectlombok:lombok", version = "1.18.x" }
+lombok = { module = "org.projectlombok:lombok", version = "latest.release" }
 ----
