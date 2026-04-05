@@ -19,9 +19,6 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 10
     groups:
-      all-dependencies:
+      github-actions:
         patterns:
           - "*"
-        update-types:
-          - "minor"
-          - "patch"
