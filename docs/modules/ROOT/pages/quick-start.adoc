@@ -149,7 +149,7 @@ Use the following decision tree to pick the right bundle for each subproject:
 |===
 |Project Type |Bundle
 
-|Spring Boot application (full-featured)
+|**Ultima Nexus application** (zero-config — auto-includes starter, annotations, and processor)
 |`ultima-nexus-jvm-application`
 
 |Spring Boot library / starter (full-featured)
@@ -257,9 +257,9 @@ To override any version, add the dependency to your `gradle/libs.versions.toml`:
 [source,toml]
 ----
 [libraries]
-lombok = { module = "org.projectlombok:lombok", version = "1.18.42" }
-jspecify = { module = "org.jspecify:jspecify", version = "1.0.0" }
-assertj-core = { module = "org.assertj:assertj-core", version = "3.27.3" }
+lombok = { module = "org.projectlombok:lombok", version = "latest.release" }
+jspecify = { module = "org.jspecify:jspecify", version = "latest.release" }
+assertj-core = { module = "org.assertj:assertj-core", version = "latest.release" }
 ----
 
 If a library is defined in your version catalog, that version is used.

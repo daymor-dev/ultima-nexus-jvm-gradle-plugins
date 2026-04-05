@@ -52,6 +52,7 @@ object DependencyUtils {
         const val PMD = "7.19.0"
         const val SLF4J = "2.0.17"
         const val SPRING_BOOT = "4.0.5"
+        const val ULTIMA_NEXUS_JVM = "0.2.0-SNAPSHOT"
         const val ULTIMA_NEXUS_JVM_CHECK = "1.0.0"
     }
 
@@ -66,8 +67,26 @@ object DependencyUtils {
         const val MOCKK = "io.mockk:mockk:${FallbackVersions.MOCKK}"
         const val SLF4J_SIMPLE = "org.slf4j:slf4j-simple:${FallbackVersions.SLF4J}"
         const val SPRING_BOOT_DEVTOOLS = "org.springframework.boot:spring-boot-devtools:${FallbackVersions.SPRING_BOOT}"
+        const val SPRING_BOOT_DOCKER_COMPOSE = "org.springframework.boot:spring-boot-docker-compose:${FallbackVersions.SPRING_BOOT}"
         const val SPRING_BOOT_BOM = "org.springframework.boot:spring-boot-dependencies:${FallbackVersions.SPRING_BOOT}"
         const val ULTIMA_NEXUS_JVM_CHECK = "dev.daymor.ultima-nexus.jvm:ultima-nexus-jvm-check:${FallbackVersions.ULTIMA_NEXUS_JVM_CHECK}"
+
+        private const val UN_GROUP = "dev.daymor.ultimanexus.jvm"
+        private const val UN_VERSION = FallbackVersions.ULTIMA_NEXUS_JVM
+        const val ULTIMA_NEXUS_JVM_STARTER_REST_API =
+            "$UN_GROUP:starter-spring-rest-api-application:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_STARTER_PREDEFINED_REST_API =
+            "$UN_GROUP:starter-predefined-spring-rest-api-application:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_ANNOTATION =
+            "$UN_GROUP:annotation-jvm:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_PROCESSOR_JAVA =
+            "$UN_GROUP:processor-java:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_PROCESSOR_JAVA_HIBERNATE =
+            "$UN_GROUP:processor-java-hibernate:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_PROCESSOR_SPRING_APPLICATION =
+            "$UN_GROUP:processor-java-spring-application:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_PROCESSOR_SPRING_HIBERNATE =
+            "$UN_GROUP:processor-java-spring-hibernate:$UN_VERSION"
     }
 
     fun getLibrary(versionCatalog: VersionCatalog, name: String): Provider<MinimalExternalModuleDependency> =

@@ -250,7 +250,7 @@ Spring Boot application/library mode, AOT, and test dependencies.
 |Plugin ID |Description |Page
 
 |`...feature.spring-boot-application`
-|Spring Boot application mode (bootJar, bootRun, fat JAR, DevTools)
+|Spring Boot application mode (bootJar, bootRun, fat JAR, DevTools, Docker Compose)
 |xref:spring-boot-plugins.adoc[Spring Boot]
 
 |`...feature.spring-boot-library`

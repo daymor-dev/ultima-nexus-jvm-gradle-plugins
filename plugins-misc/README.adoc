@@ -36,7 +36,7 @@ The `plugins-misc` module provides:
 |Language-agnostic JVM bundle with quality checks, testing, and reporting
 
 |`dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-application`
-|Complete Ultima Nexus JVM Framework for applications (Spring Boot + GraalVM Native + Lombok)
+|All-in-one Ultima Nexus JVM application (Spring Boot + GraalVM + Lombok + auto-included starter, annotations, and processor)
 
 |`dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-library`
 |Complete Ultima Nexus JVM Framework for libraries (Spring Boot + publishing)
@@ -122,14 +122,79 @@ The complete Ultima Nexus JVM Framework experience with all conventions (Spring 
 
 === Ultima Nexus JVM Application
 
-For standalone Spring Boot applications:
+All-in-one bundle — no dependencies block needed:
 
 [source,kotlin]
 ----
 plugins {
     alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm.application)
 }
+// Zero dependencies — starter, annotations, and processor are auto-included
 ----
+
+The plugin automatically adds:
+
+* **Starter** (`implementation`) — predefined or plain, based on `ultimaNexusJvm.usePredefinedStarter`
+* **Annotations** (`compileOnly`) — `@GenerateCrud`, `@GenerateApplication`, etc.
+* **Processor** (`annotationProcessor`) — selected based on `ultimaNexusJvm.applicationType` and `ultimaNexusJvm.useHibernate`
+
+==== Configuration
+
+[cols="2,1,3"]
+|===
+|Property |Default |Description
+
+|`ultimaNexusJvm.applicationType`
+|`spring-rest-api`
+|Application type. Determines which starter and processor to use. Supported: `spring-rest-api`, `entity-only`
+
+|`ultimaNexusJvm.usePredefinedStarter`
+|`true`
+|Use the opinionated starter. Set `false` for the minimal starter. Ignored for `entity-only`.
+
+|`ultimaNexusJvm.useHibernate`
+|`true`
+|Use Hibernate generation. Set `false` for plain JPA identity methods.
+|===
+
+==== Processor Selection
+
+The processor is selected automatically:
+
+[cols="1,1,2"]
+|===
+|Application Type |Hibernate |Processor
+
+|`spring-rest-api`
+|`true` (default)
+|`processor-java-spring-hibernate` (full stack + Hibernate)
+
+|`spring-rest-api`
+|`false`
+|`processor-java-spring-application` (full stack + plain identity)
+
+|`entity-only`
+|`true`
+|`processor-java-hibernate` (entity only + Hibernate)
+
+|`entity-only`
+|`false`
+|`processor-java` (entity only + plain identity)
+|===
+
+==== Version Catalog Overrides
+
+Override the auto-included dependencies via version catalog entries:
+
+[source,toml]
+----
+[libraries]
+ultima-nexus-jvm-starter = { module = "dev.daymor.ultima-nexus.jvm:starter-predefined-spring-rest-api-application", version = "latest.release" }
+ultima-nexus-jvm-annotation = { module = "dev.daymor.ultima-nexus.jvm:annotation-jvm", version = "latest.release" }
+ultima-nexus-jvm-processor = { module = "dev.daymor.ultima-nexus.jvm:processor-java-spring-hibernate", version = "latest.release" }
+----
+
+When present, catalog entries take precedence over the automatic selection.
 
 === Ultima Nexus JVM Library
 
@@ -142,7 +207,7 @@ plugins {
 }
 ----
 
-=== Includes
+=== Includes (Both Bundles)
 
 * Everything in `spring-boot-native-complete-application` or `spring-boot-complete-library`:
 ** Base Gradle project conventions
@@ -154,6 +219,7 @@ plugins {
 * Application bundle also includes:
 ** GraalVM Native Image compilation (`nativeCompile`, `nativeTest`)
 ** Spring Boot AOT processing
+** Ultima Nexus starter, annotations, and processor (auto-included)
 * Library bundle also includes Maven Central publishing
 * Lombok support (main and test sources)
 * Documentation support (auto-detected if `antora-playbook.yml` exists)
@@ -409,6 +475,21 @@ IMPORTANT: This plugin *cannot* be used with `java`, `java-library`, or any bund
 [cols="2,1,2,3"]
 |===
 |Property |Default |Plugin |Description
+
+|`ultimaNexusJvm.applicationType`
+|`spring-rest-api`
+|`ultima-nexus-jvm-application`
+|Application type: `spring-rest-api` or `entity-only`
+
+|`ultimaNexusJvm.usePredefinedStarter`
+|`true`
+|`ultima-nexus-jvm-application`
+|Use opinionated starter
+
+|`ultimaNexusJvm.useHibernate`
+|`true`
+|`ultima-nexus-jvm-application`
+|Use Hibernate generation
 
 |`versionPlatform.includeSpringBootBom`
 |`false` (auto-enabled with Spring Boot)

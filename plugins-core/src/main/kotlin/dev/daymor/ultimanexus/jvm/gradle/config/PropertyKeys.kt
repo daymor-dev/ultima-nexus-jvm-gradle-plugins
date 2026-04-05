@@ -123,6 +123,12 @@ object PropertyKeys {
         const val SPRING_BOOT_BOM_LIBRARY = "versionPlatform.springBootBomLibrary"
     }
 
+    object UltimaNexusJvm {
+        const val USE_PREDEFINED_STARTER = "ultimaNexusJvm.usePredefinedStarter"
+        const val APPLICATION_TYPE = "ultimaNexusJvm.applicationType"
+        const val USE_HIBERNATE = "ultimaNexusJvm.useHibernate"
+    }
+
     object Develocity {
         const val ENABLED = "develocity.enabled"
         const val SERVER_URL = "develocity.serverUrl"
@@ -145,6 +151,10 @@ object PropertyKeys {
         const val USERNAME_SUFFIX = ".username"
         const val PASSWORD_SUFFIX = ".password"
         const val ALLOW_INSECURE_SUFFIX = ".allowInsecureProtocol"
+    }
+
+    object Antora {
+        const val STATIC_FILE_PATTERNS = "antora.staticFilePatterns"
     }
 
     object GraalvmNative {

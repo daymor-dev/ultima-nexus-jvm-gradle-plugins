@@ -36,11 +36,16 @@ object Defaults {
     const val SETTINGS_GRADLE_KTS = "settings.gradle.kts"
     const val GRADLE_KTS_EXTENSION = ".gradle.kts"
 
+    object Antora {
+        val STATIC_FILE_PATTERNS = listOf("*.html", "*.png", "*.ico", "*.svg", "*.jpg", "*.webp")
+    }
+
     object DependencyScope {
         const val IMPLEMENTATION = "implementation"
         const val API = "api"
         const val COMPILE_ONLY = "compileOnly"
         const val RUNTIME_ONLY = "runtimeOnly"
+        const val ANNOTATION_PROCESSOR = "annotationProcessor"
         const val TEST_IMPLEMENTATION = "testImplementation"
     }
 
@@ -59,6 +64,25 @@ object Defaults {
         const val PMD_CHECK_ARTIFACT = "pmdCheckArtifact"
         const val SPOTBUGS_CHECK_ARTIFACT = "spotbugsCheckArtifact"
         const val FORMAT_CHECK_ARTIFACT = "formatCheckArtifact"
+    }
+
+    object UltimaNexusJvm {
+
+        object ApplicationType {
+            const val SPRING_REST_API = "spring-rest-api"
+            const val ENTITY_ONLY = "entity-only"
+            val SUPPORTED = listOf(SPRING_REST_API, ENTITY_ONLY)
+        }
+
+        const val DEFAULT_APPLICATION_TYPE = ApplicationType.SPRING_REST_API
+        const val DEFAULT_USE_PREDEFINED_STARTER = true
+        const val DEFAULT_USE_HIBERNATE = true
+
+        object CatalogLibrary {
+            const val STARTER = "ultima-nexus-jvm-starter"
+            const val ANNOTATION = "ultima-nexus-jvm-annotation"
+            const val PROCESSOR = "ultima-nexus-jvm-processor"
+        }
     }
 
     object Repositories {

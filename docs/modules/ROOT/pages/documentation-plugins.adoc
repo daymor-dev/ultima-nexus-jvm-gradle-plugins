@@ -35,6 +35,28 @@ plugins {
 }
 ----
 
+=== Extension Configuration
+
+[source,kotlin]
+----
+antoraConfig {
+    staticFilePatterns = listOf("*.html", "*.png", "*.ico", "*.svg", "*.jpg", "*.webp")
+}
+----
+
+=== Properties Configuration
+
+[source,properties]
+----
+antora.staticFilePatterns = *.html, *.png, *.ico, *.svg, *.jpg, *.webp
+----
+
+=== Static Files
+
+The `addStaticIndex` task copies files matching the configured patterns from the project directory into the build output.
+By default, it copies `*.html`, `*.png`, `*.ico`, `*.svg`, `*.jpg`, and `*.webp` files.
+Customize via the extension or `gradle.properties` to add or restrict file types.
+
 === What Is Antora?
 
 Antora is a documentation site generator that creates static HTML documentation sites from AsciiDoc content.
@@ -201,3 +223,15 @@ plugins {
     alias(libs.plugins.ultimanexus.jvm.bundle.documentation)
 }
 ----
+
+== Properties Reference
+
+[cols="2,2,1,3"]
+|===
+|Property |Default |Plugin |Description
+
+|`antora.staticFilePatterns`
+|`*.html, *.png, *.ico, *.svg, *.jpg, *.webp`
+|`antora`
+|Comma-separated glob patterns for static files copied to build output
+|===

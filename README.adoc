@@ -245,8 +245,8 @@ To override any fallback version, add the dependency to your `libs.versions.toml
 [source,toml]
 ----
 [libraries]
-lombok = { module = "org.projectlombok:lombok", version = "1.18.42" }
-jspecify = { module = "org.jspecify:jspecify", version = "1.0.0" }
+lombok = { module = "org.projectlombok:lombok", version = "latest.release" }
+jspecify = { module = "org.jspecify:jspecify", version = "latest.release" }
 ----
 
 == Module Documentation
@@ -279,7 +279,7 @@ For detailed documentation on each module, see the individual README files:
 |Java: Compilation, application/library mode, Javadoc, JSpecify
 
 |link:plugins-spring-boot/README.adoc[plugins-spring-boot]
-|Spring Boot: Application/library mode, test dependencies, DevTools
+|Spring Boot: Application/library mode, test dependencies, DevTools, Docker Compose
 
 |link:plugins-lombok/README.adoc[plugins-lombok]
 |Lombok: Annotation processing for main and test sources
