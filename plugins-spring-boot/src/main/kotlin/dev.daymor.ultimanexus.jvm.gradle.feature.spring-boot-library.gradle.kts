@@ -23,11 +23,11 @@ import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNu
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-library
  *
  * Feature plugin for Spring Boot library/starter development.
- * Uses Spring Dependency Management without the full Spring Boot plugin.
+ * Uses Gradle's native platform BOM support for dependency management.
  *
  * Features:
  * - Creates standard JAR (not fat JAR)
- * - Uses Spring Boot BOM for dependency management
+ * - Uses Spring Boot BOM via Gradle platform() for dependency management
  * - No bootJar or bootRun tasks
  * - Suitable for Spring Boot starters and shared libraries
  *
@@ -40,7 +40,6 @@ import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNu
  */
 plugins {
     `java-library`
-    id("io.spring.dependency-management")
     id("dev.daymor.ultimanexus.jvm.gradle.base.dependency-rules")
 }
 

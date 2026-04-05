@@ -44,8 +44,8 @@ import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
  *     Supported types:
  *       - spring-rest-api : Spring Boot REST API with Spring Data JPA
  *       - entity-only     : Only entity generation (no Spring layers)
- *   ultimaNexusJvm.usePredefinedStarter=true  (default: true)
- *   ultimaNexusJvm.useHibernate=true  (default: true)
+ *   ultimaNexusJvm.usePredefinedStarter=true   (default: true)
+ *   ultimaNexusJvm.useHibernate=true            (default: true)
  *
  * Override dependencies via version catalog entries:
  *   ultima-nexus-jvm-starter       -> overrides starter (implementation)
@@ -132,6 +132,9 @@ dependencies {
     if (processorDep != null) {
         add(DependencyScope.ANNOTATION_PROCESSOR, processorDep)
     } else {
-        add(DependencyScope.ANNOTATION_PROCESSOR, resolveProcessorFallback(applicationType, useHibernate))
+        add(
+            DependencyScope.ANNOTATION_PROCESSOR,
+            resolveProcessorFallback(applicationType, useHibernate)
+        )
     }
 }

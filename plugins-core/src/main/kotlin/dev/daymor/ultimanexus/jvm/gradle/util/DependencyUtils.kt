@@ -52,7 +52,7 @@ object DependencyUtils {
         const val PMD = "7.19.0"
         const val SLF4J = "2.0.17"
         const val SPRING_BOOT = "4.0.2"
-        const val ULTIMA_NEXUS_JVM = "0.2.0"
+        const val ULTIMA_NEXUS_JVM = "0.2.0-SNAPSHOT"
         const val ULTIMA_NEXUS_JVM_CHECK = "1.0.0"
     }
 
@@ -71,7 +71,7 @@ object DependencyUtils {
         const val SPRING_BOOT_BOM = "org.springframework.boot:spring-boot-dependencies:${FallbackVersions.SPRING_BOOT}"
         const val ULTIMA_NEXUS_JVM_CHECK = "dev.daymor.ultima-nexus.jvm:ultima-nexus-jvm-check:${FallbackVersions.ULTIMA_NEXUS_JVM_CHECK}"
 
-        private const val UN_GROUP = "dev.daymor.ultima-nexus.jvm"
+        private const val UN_GROUP = "dev.daymor.ultimanexus.jvm"
         private const val UN_VERSION = FallbackVersions.ULTIMA_NEXUS_JVM
         const val ULTIMA_NEXUS_JVM_STARTER_REST_API =
             "$UN_GROUP:starter-spring-rest-api-application:$UN_VERSION"

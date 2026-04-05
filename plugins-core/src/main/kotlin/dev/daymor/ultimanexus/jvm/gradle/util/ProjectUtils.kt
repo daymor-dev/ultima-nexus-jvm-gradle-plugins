@@ -26,7 +26,7 @@ object ProjectUtils {
     fun Settings.includeDir(depth: Int = 1, exclusionPatterns: List<String> = getExclusionPatterns()) {
         rootDir.walk()
             .maxDepth(depth)
-            .onEnter { it.isDirectory }
+            .onEnter { it.isDirectory && !isExcluded(it.toRelativeString(rootDir), it.name, exclusionPatterns) }
             .filter { dir ->
                 val relativePath = dir.toRelativeString(rootDir)
                 !isExcluded(relativePath, dir.name, exclusionPatterns) &&
