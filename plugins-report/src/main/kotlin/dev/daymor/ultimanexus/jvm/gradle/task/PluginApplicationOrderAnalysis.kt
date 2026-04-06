@@ -22,11 +22,19 @@ import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 
+@DisableCachingByDefault(
+    because = "Analysis task that generates a PlantUML diagram — cheap to re-run"
+)
 abstract class PluginApplicationOrderAnalysis : DefaultTask() {
 
-    @get:InputFiles abstract val pluginSrcFolders: ConfigurableFileCollection
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val pluginSrcFolders: ConfigurableFileCollection
 
     @get:OutputFile abstract val pluginApplicationDiagram: RegularFileProperty
 
