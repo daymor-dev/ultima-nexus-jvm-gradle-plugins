@@ -134,9 +134,6 @@ The plugins are organized across 14 modules, each published as a separate artifa
 |Native: GraalVM Native Image compilation and testing
 |1
 
-|`plugins-common`
-|Common: shared internal code between modules
-|0
 |===
 
 == How It All Fits Together

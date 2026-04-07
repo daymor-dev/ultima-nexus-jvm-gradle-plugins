@@ -72,7 +72,9 @@ org.gradle.parallel=true
 org.gradle.caching=true
 org.gradle.configuration-cache=true
 org.gradle.vfs.watch=true
-org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+org.gradle.workers.max=6
+org.gradle.jvmargs=-Xmx2g -Xms256m -XX:MaxMetaspaceSize=384m -XX:+UseParallelGC -Dfile.encoding=UTF-8 -XX:+HeapDumpOnOutOfMemoryError
+kotlin.daemon.jvmargs=-Xmx1g -XX:MaxMetaspaceSize=256m
 ----
 
 That's it! No `build.gradle.kts` configuration needed - plugins are applied automatically to all projects.
@@ -97,28 +99,17 @@ description=My project description
 # ============================================
 # Performance Settings (Gradle 9.x Recommended)
 # ============================================
-
-# Enable parallel execution
 org.gradle.parallel=true
-
-# Enable build caching (2x faster rebuilds)
 org.gradle.caching=true
-
-# Enable configuration cache (preferred mode in Gradle 9.x)
 org.gradle.configuration-cache=true
-
-# Enable file system watching (faster change detection)
 org.gradle.vfs.watch=true
 
 # ============================================
-# JVM Memory Settings
+# Worker & JVM Memory Settings
 # ============================================
-# Adjust based on project size:
-#   Small projects: -Xmx2g
-#   Medium projects: -Xmx4g
-#   Large projects (100+ modules): -Xmx6g
-
-org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+org.gradle.workers.max=6
+org.gradle.jvmargs=-Xmx2g -Xms256m -XX:MaxMetaspaceSize=384m -XX:+UseParallelGC -Dfile.encoding=UTF-8 -XX:+HeapDumpOnOutOfMemoryError
+kotlin.daemon.jvmargs=-Xmx1g -XX:MaxMetaspaceSize=256m
 ----
 
 === Usage by Project Type
