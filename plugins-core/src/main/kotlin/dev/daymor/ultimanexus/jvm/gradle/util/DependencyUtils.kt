@@ -41,7 +41,7 @@ object DependencyUtils {
 
     object FallbackVersions {
         const val ASSERTJ = "3.27.7"
-        const val BYTE_BUDDY_AGENT = "1.18.7"
+        const val BYTE_BUDDY_AGENT = "1.18.8"
         const val CHECKSTYLE = "12.3.0"
         const val ECLIPSE_JDT = "4.38"
         const val JSPECIFY = "1.0.0"
