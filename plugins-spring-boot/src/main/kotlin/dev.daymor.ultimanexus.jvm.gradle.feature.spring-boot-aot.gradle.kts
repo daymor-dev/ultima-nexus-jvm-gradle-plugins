@@ -30,8 +30,8 @@ import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromProper
  * on AOT compilation tasks only.
  *
  * Features:
- * - Suppresses unchecked and rawtypes warnings on compileAotJava task
- * - Suppresses unchecked and rawtypes warnings on compileAotTestJava task
+ * - Suppresses unchecked, rawtypes, and cast warnings on compileAotJava task
+ * - Suppresses unchecked, rawtypes, and cast warnings on compileAotTestJava task
  * - Excludes AOT source sets from quality checks (Checkstyle, PMD, SpotBugs)
  * - Resolves slf4j-impl capability conflicts in AOT classpaths
  * - Disables AOT processing when no main source exists
@@ -68,7 +68,7 @@ tasks.withType<JavaCompile>().configureEach {
     if (name == "compileAotJava" || name == "compileAotTestJava") {
         options.compilerArgs.addAll(
             springBootAotConfig.suppressWarnings.map { suppress ->
-                if (suppress) listOf("-Xlint:-unchecked", "-Xlint:-rawtypes")
+                if (suppress) listOf("-Xlint:-unchecked", "-Xlint:-rawtypes", "-Xlint:-cast")
                 else emptyList()
             }.get()
         )
