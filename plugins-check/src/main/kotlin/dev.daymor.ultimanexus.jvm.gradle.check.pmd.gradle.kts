@@ -88,7 +88,7 @@ pmd {
 
     val customRuleSetFile = pmdConfig.ruleSetFile.orNull
     when {
-        customRuleSetFile != null -> ruleSetFiles = files(customRuleSetFile)
+        customRuleSetFile != null -> ruleSetFiles = files(rootProject.file(customRuleSetFile))
         checkJarFile != null -> ruleSetConfig =
             resources.text.fromArchiveEntry(checkJarFile!!, "pmdRuleset.xml")
         else -> ruleSets = listOf("category/java/bestpractices.xml")
@@ -113,7 +113,7 @@ tasks.withType<Pmd> {
     if (useTestRuleset) {
         val customTestRuleSetFile = pmdConfig.testRuleSetFile.orNull
         when {
-            customTestRuleSetFile != null -> ruleSetFiles = files(customTestRuleSetFile)
+            customTestRuleSetFile != null -> ruleSetFiles = files(rootProject.file(customTestRuleSetFile))
             checkJarFile != null -> ruleSetConfig =
                 resources.text.fromArchiveEntry(checkJarFile!!, "pmdRuleset-test.xml")
         }
