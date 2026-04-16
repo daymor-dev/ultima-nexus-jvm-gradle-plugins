@@ -23,11 +23,13 @@ import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.createCheckConf
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.resolveCheckJarOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibraryOrNull
+import dev.daymor.ultimanexus.jvm.gradle.util.SpotBugsFilterMerger
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromProperty
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.TaskConfigUtils.configureAllCheckTasksWithJavaPlugin
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.jvm.tasks.Jar
 
 /**
  * Convention plugin for SpotBugs static analysis.
@@ -92,6 +94,59 @@ val checkJarFile: File? by lazy {
     checkArtifactConfig.resolveCheckJarOrNull()
 }
 
+val resolvedBaseFilterFile: File? by lazy {
+    val customExcludeFilterFile = spotbugsConfig.excludeFilterFile.orNull
+    when {
+        customExcludeFilterFile != null -> file(customExcludeFilterFile)
+        checkJarFile != null -> zipTree(checkJarFile!!)
+            .matching { include("spotbugs-filter.xml") }
+            .singleOrNull()
+        else -> null
+    }
+}
+
+val generatedFilterDir: Provider<Directory> =
+    layout.buildDirectory.dir("classes/java/main/META-INF/spotbugs-filters")
+
+val mergedFilterFile: Provider<RegularFile> =
+    layout.buildDirectory.file("spotbugs/merged-exclude-filter.xml")
+
+val mergeSpotBugsFilter = tasks.register("mergeSpotBugsFilter") {
+    group = Defaults.TaskGroup.VERIFICATION_OTHER
+    description = "Merges the base SpotBugs filter with annotation-processor-generated filter fragments."
+    dependsOn(tasks.named("compileJava"))
+
+    val baseFilter: File? = resolvedBaseFilterFile
+    val generatedDir: File = generatedFilterDir.get().asFile
+    val mergedOut: File = mergedFilterFile.get().asFile
+
+    if (baseFilter != null) {
+        inputs.file(baseFilter).withPropertyName("baseFilter")
+    }
+    inputs.files(project.fileTree(generatedDir) { include("*.xml") })
+        .withPropertyName("generatedFilters")
+        .optional()
+    outputs.file(mergedOut).withPropertyName("mergedFilter")
+
+    doLast {
+        val baseXml: String? = baseFilter
+            ?.takeIf { it.exists() }
+            ?.readText(Charsets.UTF_8)
+        val fragments: List<String> = if (generatedDir.isDirectory) {
+            generatedDir.walkTopDown()
+                .filter { it.isFile && it.extension == "xml" }
+                .sortedBy { it.absolutePath }
+                .map { it.readText(Charsets.UTF_8) }
+                .toList()
+        } else {
+            emptyList()
+        }
+        val merged = SpotBugsFilterMerger.merge(baseXml, fragments)
+        mergedOut.parentFile.mkdirs()
+        mergedOut.writeText(merged, Charsets.UTF_8)
+    }
+}
+
 spotbugs {
     ignoreFailures = spotbugsConfig.ignoreFailures.get()
     showStackTraces = spotbugsConfig.showStackTraces.get()
@@ -99,18 +154,8 @@ spotbugs {
     effort = Effort.valueOf(spotbugsConfig.effort.get().uppercase())
     reportLevel = Confidence.valueOf(spotbugsConfig.reportLevel.get().uppercase())
 
-    val customExcludeFilterFile = spotbugsConfig.excludeFilterFile.orNull
-    when {
-        customExcludeFilterFile != null -> excludeFilter = file(customExcludeFilterFile)
-        checkJarFile != null -> {
-            val filterFile = zipTree(checkJarFile!!)
-                .matching { include("spotbugs-filter.xml") }
-                .singleOrNull()
-            if (filterFile != null) {
-                excludeFilter = filterFile
-            }
-        }
-        else -> {}
+    if (resolvedBaseFilterFile != null) {
+        excludeFilter = mergedFilterFile.get().asFile
     }
 }
 
@@ -118,6 +163,11 @@ tasks.withType<SpotBugsTask> {
     group = Defaults.TaskGroup.VERIFICATION_OTHER
     reports.create("html") { required = true }
     mustRunAfter(tasks.withType<Pmd>())
+    dependsOn(mergeSpotBugsFilter)
+}
+
+tasks.withType<Jar>().configureEach {
+    exclude("META-INF/spotbugs-filters/**")
 }
 
 if (spotbugsConfig.useAuxClasspath.get()) {
