@@ -117,6 +117,7 @@ val mergeSpotBugsFilter = tasks.register("mergeSpotBugsFilter") {
     dependsOn(tasks.named("compileJava"))
 
     val baseFilter: File? = resolvedBaseFilterFile
+    val baseXml: String? = baseFilter?.takeIf { it.exists() }?.readText(Charsets.UTF_8)
     val generatedDir: File = generatedFilterDir.get().asFile
     val mergedOut: File = mergedFilterFile.get().asFile
 
@@ -129,9 +130,6 @@ val mergeSpotBugsFilter = tasks.register("mergeSpotBugsFilter") {
     outputs.file(mergedOut).withPropertyName("mergedFilter")
 
     doLast {
-        val baseXml: String? = baseFilter
-            ?.takeIf { it.exists() }
-            ?.readText(Charsets.UTF_8)
         val fragments: List<String> = if (generatedDir.isDirectory) {
             generatedDir.walkTopDown()
                 .filter { it.isFile && it.extension == "xml" }

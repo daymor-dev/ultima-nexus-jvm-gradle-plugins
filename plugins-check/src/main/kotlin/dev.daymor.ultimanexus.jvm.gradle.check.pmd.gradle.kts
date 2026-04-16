@@ -122,6 +122,8 @@ val mergePmdFilter = tasks.register("mergePmdFilter") {
     val generatedDir: File = generatedPmdFilterDir.get().asFile
     val mainOut: File = mergedMainRulesetFile.get().asFile
     val testOut: File = mergedTestRulesetFile.get().asFile
+    val mainBase: String? = resolvedBaseRulesetContent
+    val testBase: String? = resolvedTestRulesetContent
 
     inputs.files(project.fileTree(generatedDir) { include("*.xml") })
         .withPropertyName("generatedPmdFilters")
@@ -141,11 +143,9 @@ val mergePmdFilter = tasks.register("mergePmdFilter") {
         }
 
         mainOut.parentFile.mkdirs()
-        val mainBase = resolvedBaseRulesetContent
         if (mainBase != null) {
             mainOut.writeText(PmdRulesetMerger.merge(mainBase, fragments), Charsets.UTF_8)
         }
-        val testBase = resolvedTestRulesetContent
         if (testBase != null) {
             testOut.writeText(PmdRulesetMerger.merge(testBase, fragments), Charsets.UTF_8)
         }
