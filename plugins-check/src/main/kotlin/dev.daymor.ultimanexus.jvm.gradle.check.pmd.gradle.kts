@@ -16,14 +16,17 @@
 
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
+import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.createCheckConfiguration
 import dev.daymor.ultimanexus.jvm.gradle.util.CheckArtifactUtils.resolveCheckJarOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.FallbackVersions
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getVersionOrNull
+import dev.daymor.ultimanexus.jvm.gradle.util.PmdRulesetMerger
 import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.TaskConfigUtils.configureAllCheckTasksWithJavaPlugin
 import org.gradle.api.artifacts.Configuration
+import org.gradle.jvm.tasks.Jar
 
 /**
  * Convention plugin for PMD static code analysis.
@@ -82,15 +85,81 @@ val checkJarFile: File? by lazy {
 
 val defaultPmdVersion = FallbackVersions.PMD
 
+val resolvedBaseRulesetContent: String? by lazy {
+    val customRuleSetFile = pmdConfig.ruleSetFile.orNull
+    when {
+        customRuleSetFile != null -> rootProject.file(customRuleSetFile)
+            .takeIf { it.exists() }?.readText(Charsets.UTF_8)
+        checkJarFile != null -> CheckArtifactUtils.readFromJar(checkJarFile!!, "pmdRuleset.xml")
+        else -> null
+    }
+}
+
+val resolvedTestRulesetContent: String? by lazy {
+    val customTestRuleSetFile = pmdConfig.testRuleSetFile.orNull
+    when {
+        customTestRuleSetFile != null -> rootProject.file(customTestRuleSetFile)
+            .takeIf { it.exists() }?.readText(Charsets.UTF_8)
+        checkJarFile != null -> CheckArtifactUtils.readFromJar(checkJarFile!!, "pmdRuleset-test.xml")
+        else -> null
+    }
+}
+
+val generatedPmdFilterDir: Provider<Directory> =
+    layout.buildDirectory.dir("classes/java/main/META-INF/pmd-filters")
+
+val mergedMainRulesetFile: Provider<RegularFile> =
+    layout.buildDirectory.file("pmd/merged-ruleset.xml")
+
+val mergedTestRulesetFile: Provider<RegularFile> =
+    layout.buildDirectory.file("pmd/merged-ruleset-test.xml")
+
+val mergePmdFilter = tasks.register("mergePmdFilter") {
+    group = Defaults.TaskGroup.VERIFICATION_OTHER
+    description = "Merges the base PMD ruleset with annotation-processor-generated rule suppressions."
+    dependsOn(tasks.named("compileJava"))
+
+    val generatedDir: File = generatedPmdFilterDir.get().asFile
+    val mainOut: File = mergedMainRulesetFile.get().asFile
+    val testOut: File = mergedTestRulesetFile.get().asFile
+
+    inputs.files(project.fileTree(generatedDir) { include("*.xml") })
+        .withPropertyName("generatedPmdFilters")
+        .optional()
+    outputs.file(mainOut).withPropertyName("mergedMainRuleset")
+    outputs.file(testOut).withPropertyName("mergedTestRuleset")
+
+    doLast {
+        val fragments: List<String> = if (generatedDir.isDirectory) {
+            generatedDir.walkTopDown()
+                .filter { it.isFile && it.extension == "xml" }
+                .sortedBy { it.absolutePath }
+                .map { it.readText(Charsets.UTF_8) }
+                .toList()
+        } else {
+            emptyList()
+        }
+
+        mainOut.parentFile.mkdirs()
+        val mainBase = resolvedBaseRulesetContent
+        if (mainBase != null) {
+            mainOut.writeText(PmdRulesetMerger.merge(mainBase, fragments), Charsets.UTF_8)
+        }
+        val testBase = resolvedTestRulesetContent
+        if (testBase != null) {
+            testOut.writeText(PmdRulesetMerger.merge(testBase, fragments), Charsets.UTF_8)
+        }
+    }
+}
+
 pmd {
     toolVersion = libs?.let { getVersionOrNull(it, "pmd") } ?: defaultPmdVersion
     ruleSets = emptyList()
 
     val customRuleSetFile = pmdConfig.ruleSetFile.orNull
     when {
-        customRuleSetFile != null -> ruleSetFiles = files(rootProject.file(customRuleSetFile))
-        checkJarFile != null -> ruleSetConfig =
-            resources.text.fromArchiveEntry(checkJarFile!!, "pmdRuleset.xml")
+        customRuleSetFile != null -> ruleSetFiles = files(mergedMainRulesetFile)
+        checkJarFile != null -> ruleSetFiles = files(mergedMainRulesetFile)
         else -> ruleSets = listOf("category/java/bestpractices.xml")
     }
 
@@ -104,20 +173,20 @@ tasks.withType<Pmd> {
         html.required = true
     }
     mustRunAfter(tasks.withType<Checkstyle>())
+    dependsOn(mergePmdFilter)
 
-    if (pmdConfig.ruleSetFile.isPresent && checkJarFile != null) {
+    if (checkJarFile != null) {
         pmdClasspath = pmdClasspath.plus(files(checkJarFile!!))
     }
 
     val useTestRuleset = name != "pmdMain" || pmdConfig.useTestRulesetForMain.get()
     if (useTestRuleset) {
-        val customTestRuleSetFile = pmdConfig.testRuleSetFile.orNull
-        when {
-            customTestRuleSetFile != null -> ruleSetFiles = files(rootProject.file(customTestRuleSetFile))
-            checkJarFile != null -> ruleSetConfig =
-                resources.text.fromArchiveEntry(checkJarFile!!, "pmdRuleset-test.xml")
-        }
+        ruleSetFiles = files(mergedTestRulesetFile)
     }
+}
+
+tasks.withType<Jar>().configureEach {
+    exclude("META-INF/pmd-filters/**")
 }
 
 project.configureAllCheckTasksWithJavaPlugin<Pmd>()
