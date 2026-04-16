@@ -201,11 +201,21 @@ This avoids false positives from strict production rules on code that is inheren
 
 Custom configuration is only needed to override defaults.
 
+=== Filter Fragment Merging
+
+PMD ruleset fragments placed under `META-INF/pmd-filters/` during compilation are automatically merged into the base ruleset by the `mergePmdFilter` task.
+This allows build-time tooling to add per-class `violationSuppressXPath` entries without modifying the base ruleset or adding `@SuppressWarnings` annotations.
+Merged output: `build/pmd/merged-ruleset.xml` and `build/pmd/merged-ruleset-test.xml`.
+Fragments are excluded from the final JAR.
+
+NOTE: The https://github.com/daymor-dev/ultima-nexus-jvm[Ultima Nexus JVM] framework uses this to suppress false positives on generated code and JPA entities.
+
 === Features
 
 * HTML report generation
 * Parallel analysis using half of available CPUs
 * Separate rulesets for main and test sources
+* Filter fragment merging from `META-INF/pmd-filters/`
 * Runs after Checkstyle tasks
 
 == SpotBugs Plugin
@@ -253,10 +263,20 @@ spotbugs.useAuxClasspath=true
 
 If `excludeFilterFile` is not set, uses `spotbugs-filter.xml` from the https://github.com/daymor-dev/ultima-nexus-jvm-check[ultima-nexus-jvm-check] artifact.
 
+=== Filter Fragment Merging
+
+SpotBugs exclusion filter fragments placed under `META-INF/spotbugs-filters/` during compilation are automatically merged into the base filter by the `mergeSpotBugsFilter` task.
+This allows build-time tooling to add per-class exclusion entries without modifying the base filter or adding `@SuppressFBWarnings` annotations.
+Merged output: `build/spotbugs/merged-exclude-filter.xml`.
+Fragments are excluded from the final JAR.
+
+NOTE: The https://github.com/daymor-dev/ultima-nexus-jvm[Ultima Nexus JVM] framework uses this to suppress false positives on generated code and JPA entities.
+
 === Features
 
 * HTML report generation
 * SpotBugs annotations added as compile-only dependency
+* Filter fragment merging from `META-INF/spotbugs-filters/`
 * Runs after PMD tasks
 * Optional auxiliary classpath (runtime and compileOnly) for resolving transitive classes during analysis
 
@@ -530,10 +550,11 @@ The check tasks run in this order:
 
 1. Spotless formatting (spotlessCheck/spotlessApply)
 2. Checkstyle
-3. PMD
-4. SpotBugs
+3. PMD (preceded by `mergePmdFilter`)
+4. SpotBugs (preceded by `mergeSpotBugsFilter`)
 
 This ensures code is formatted before style checks run.
+The merge tasks depend on `compileJava` and run automatically before their respective analysis tools.
 
 == Running Quality Checks
 

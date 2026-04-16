@@ -53,10 +53,11 @@ The check tasks run in a specific order to ensure formatting happens before veri
 
 1. *Spotless formatting* (`spotlessApply` or `spotlessCheck`)
 2. *Checkstyle* (`checkstyleMain`, `checkstyleTest`, ...)
-3. *PMD* (`pmdMain`, `pmdTest`, ...)
-4. *SpotBugs* (`spotbugsMain`, `spotbugsTest`, ...)
+3. *PMD* (`pmdMain`, `pmdTest`, ...) -- preceded by `mergePmdFilter`
+4. *SpotBugs* (`spotbugsMain`, `spotbugsTest`, ...) -- preceded by `mergeSpotBugsFilter`
 
 This ordering is important: Spotless formats the code first so that Checkstyle does not report formatting issues that would be auto-fixed anyway.
+The merge tasks depend on `compileJava` and run automatically before their respective analysis tools.
 
 == Configuration Resolution
 
@@ -155,10 +156,21 @@ Modules whose `src/main/java` contains test infrastructure code (e.g., test supp
 pmd.useTestRulesetForMain=true
 ----
 
+=== Filter Fragment Merging
+
+PMD ruleset fragments placed under `META-INF/pmd-filters/` during compilation are automatically merged into the base ruleset by the `mergePmdFilter` task.
+This allows build-time tooling to add per-class `violationSuppressXPath` entries without modifying the base ruleset or adding `@SuppressWarnings` annotations.
+
+Merged output: `build/pmd/merged-ruleset.xml` and `build/pmd/merged-ruleset-test.xml`.
+Fragments are excluded from the final JAR.
+
+NOTE: The https://github.com/daymor-dev/ultima-nexus-jvm[Ultima Nexus JVM] framework uses this to suppress false positives on generated code and JPA entities.
+
 === Features
 
 * HTML report generation
 * Parallel analysis using half of available CPUs
+* Filter fragment merging from `META-INF/pmd-filters/`
 * Runs after Checkstyle tasks
 
 === Running
@@ -215,10 +227,21 @@ This allows deeper analysis but may produce false positives for optional depende
 spotbugs.useAuxClasspath=true
 ----
 
+=== Filter Fragment Merging
+
+SpotBugs exclusion filter fragments placed under `META-INF/spotbugs-filters/` during compilation are automatically merged into the base filter by the `mergeSpotBugsFilter` task.
+This allows build-time tooling to add per-class exclusion entries without modifying the base filter or adding `@SuppressFBWarnings` annotations.
+
+Merged output: `build/spotbugs/merged-exclude-filter.xml`.
+Fragments are excluded from the final JAR.
+
+NOTE: The https://github.com/daymor-dev/ultima-nexus-jvm[Ultima Nexus JVM] framework uses this to suppress false positives on generated code and JPA entities.
+
 === Features
 
 * HTML report generation
 * SpotBugs annotations added as `compileOnly` dependency automatically
+* Filter fragment merging from `META-INF/spotbugs-filters/`
 * Runs after PMD tasks
 
 === Running
