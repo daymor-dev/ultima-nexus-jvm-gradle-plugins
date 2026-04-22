@@ -67,4 +67,29 @@ class PmdRulesetMergerTest {
         val merged = PmdRulesetMerger.merge(null, listOf(fragment))
         assertThat(merged).contains("<ruleset").contains("MissingStaticMethodInNonInstantiatableClass")
     }
+
+    @Test
+    fun `should merge multiple fragments targeting the same rule into a single rule entry`() {
+        val secondFragment = """
+            <?xml version="1.0"?>
+            <ruleset name="Generated">
+                <rule ref="category/java/errorprone.xml/MissingStaticMethodInNonInstantiatableClass">
+                    <properties>
+                        <property name="violationSuppressXPath"
+                                  value="//ClassDeclaration[@SimpleName='Tier1Showcase'] or //ClassDeclaration[@SimpleName='AdvancedShowcase']"/>
+                    </properties>
+                </rule>
+            </ruleset>
+        """.trimIndent()
+
+        val merged = PmdRulesetMerger.merge(baseRuleset, listOf(fragment, secondFragment))
+
+        val ruleRefOccurrences = merged.split(
+            "<rule ref=\"category/java/errorprone.xml/MissingStaticMethodInNonInstantiatableClass\">"
+        ).size - 1
+        assertThat(ruleRefOccurrences).isEqualTo(1)
+        assertThat(merged).contains("SpringRestApi")
+        assertThat(merged).contains("Tier1Showcase")
+        assertThat(merged).contains("AdvancedShowcase")
+    }
 }
