@@ -61,7 +61,7 @@ object PmdRulesetMerger {
                 append("\n    <rule ref=\"").append(rule).append("\">\n")
                 append("        <properties>\n")
                 append("            <property name=\"violationSuppressXPath\"\n")
-                append("                      value=\"").append(xpaths.joinToString(" or ")).append("\"/>\n")
+                append("                      value=\"").append(xpaths.joinToString(" | ")).append("\"/>\n")
                 append("        </properties>\n")
                 append("    </rule>\n")
             }
@@ -134,7 +134,7 @@ object PmdRulesetMerger {
         }
         val combined = xpathMatch.groupValues[1]
         val bucket = bodiesByRule.getOrPut(ruleRef) { linkedSetOf() }
-        combined.split(" or ")
+        combined.split(" | ")
             .map { it.trim() }
             .filter { it.isNotEmpty() }
             .forEach { bucket.add(it) }

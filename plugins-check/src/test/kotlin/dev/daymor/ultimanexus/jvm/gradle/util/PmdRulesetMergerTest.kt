@@ -76,7 +76,7 @@ class PmdRulesetMergerTest {
                 <rule ref="category/java/errorprone.xml/MissingStaticMethodInNonInstantiatableClass">
                     <properties>
                         <property name="violationSuppressXPath"
-                                  value="//ClassDeclaration[@SimpleName='Tier1Showcase'] or //ClassDeclaration[@SimpleName='AdvancedShowcase']"/>
+                                  value="//ClassDeclaration[@SimpleName='Tier1Showcase'] | //ClassDeclaration[@SimpleName='AdvancedShowcase']"/>
                     </properties>
                 </rule>
             </ruleset>

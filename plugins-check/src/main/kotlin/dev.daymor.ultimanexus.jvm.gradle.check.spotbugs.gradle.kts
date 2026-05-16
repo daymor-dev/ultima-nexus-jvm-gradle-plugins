@@ -169,11 +169,14 @@ tasks.withType<Jar>().configureEach {
 }
 
 if (spotbugsConfig.useAuxClasspath.get()) {
+    val javaExtension = project.the<JavaPluginExtension>()
     tasks.withType<SpotBugsTask>().configureEach {
-        val mainSourceSet = project.the<JavaPluginExtension>()
-            .sourceSets.getByName("main")
-        auxClassPaths.from(mainSourceSet.runtimeClasspath)
-        auxClassPaths.from(mainSourceSet.compileClasspath)
+        val sourceSetName = name.removePrefix("spotbugs")
+            .replaceFirstChar { it.lowercase() }
+        val sourceSet = javaExtension.sourceSets.findByName(sourceSetName)
+            ?: javaExtension.sourceSets.getByName("main")
+        auxClassPaths.from(sourceSet.runtimeClasspath)
+        auxClassPaths.from(sourceSet.compileClasspath)
     }
 }
 
