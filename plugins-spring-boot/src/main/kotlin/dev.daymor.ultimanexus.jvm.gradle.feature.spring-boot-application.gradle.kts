@@ -18,6 +18,8 @@
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.Fallbacks
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibraryOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
+import org.gradlex.jvm.dependency.conflict.detection.rules.CapabilityDefinition
+import org.gradlex.jvm.dependency.conflict.resolution.JvmDependencyConflictsExtension
 
 /**
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-application
@@ -44,6 +46,12 @@ plugins {
     java
     id("org.springframework.boot")
     id("dev.daymor.ultimanexus.jvm.gradle.base.dependency-rules")
+}
+
+extensions.configure<JvmDependencyConflictsExtension>("jvmDependencyConflicts") {
+    conflictResolution {
+        select(CapabilityDefinition.JAKARTA_SERVLET_API, "org.apache.tomcat.embed:tomcat-embed-core")
+    }
 }
 
 val libs: VersionCatalog? = getLibsCatalogOrNull(project)
