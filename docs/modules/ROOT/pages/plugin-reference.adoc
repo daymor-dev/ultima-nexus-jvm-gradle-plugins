@@ -38,10 +38,6 @@ Use the direct `id("...") version "..."` syntax.
 |Automatic Maven Central publishing aggregation for multi-module projects
 |xref:settings-plugins.adoc[Settings]
 
-|`...report.sbom-support`
-|SBOM runtime dependencies for CycloneDX (complex multi-plugin setups)
-|xref:settings-plugins.adoc[Settings]
-
 |`...feature.composite-build`
 |Composite build auto-discovery for plugin development projects
 |xref:settings-plugins.adoc[Settings]
@@ -550,7 +546,6 @@ dev.daymor.ultimanexus.jvm.gradle.report.code-coverage
 dev.daymor.ultimanexus.jvm.gradle.report.develocity
 dev.daymor.ultimanexus.jvm.gradle.report.plugin-analysis
 dev.daymor.ultimanexus.jvm.gradle.report.sbom
-dev.daymor.ultimanexus.jvm.gradle.report.sbom-support
 dev.daymor.ultimanexus.jvm.gradle.report.test
 dev.daymor.ultimanexus.jvm.gradle.test.gradle-plugin
 dev.daymor.ultimanexus.jvm.gradle.test.test
@@ -559,4 +554,4 @@ dev.daymor.ultimanexus.jvm.gradle.test.test-suites
 dev.daymor.ultimanexus.jvm.gradle.test.unit
 ----
 
-Total: 78 plugins across 14 modules.
+Total: 77 plugins across 14 modules.

@@ -26,7 +26,6 @@ import java.util.Properties
  * and conditionally includes Maven Central publishing aggregation.
  *
  * Included plugins (always):
- *   - dev.daymor.ultimanexus.jvm.gradle.report.sbom-support
  *   - dev.daymor.ultimanexus.jvm.gradle.feature.project-structure
  *   - dev.daymor.ultimanexus.jvm.gradle.feature.git-hooks
  *   - dev.daymor.ultimanexus.jvm.gradle.feature.build-cache
@@ -60,7 +59,6 @@ import java.util.Properties
  *   - Enables TYPESAFE_PROJECT_ACCESSORS (project-structure)
  *   - Installs Git pre-commit hooks running qualityCheck (git-hooks)
  *   - Auto-configures Maven Central publishing when publish plugins are detected
- *   - Provides runtime dependencies for SBOM generation (sbom-support)
  *   - Automatic plugin version resolution
  */
 
@@ -89,7 +87,6 @@ pluginManagement {
 }
 
 plugins {
-    id("dev.daymor.ultimanexus.jvm.gradle.report.sbom-support")
     id("dev.daymor.ultimanexus.jvm.gradle.feature.project-structure")
     id("dev.daymor.ultimanexus.jvm.gradle.feature.git-hooks")
     id("dev.daymor.ultimanexus.jvm.gradle.feature.build-cache")

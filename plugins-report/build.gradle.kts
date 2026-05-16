@@ -23,8 +23,6 @@ dependencies {
     implementation(libs.ultima.nexus.jvm.core)
     implementation(libs.ultima.nexus.jvm.base)
     implementation(libs.cyclonedx.gradle.plugin)
-    // Required for CycloneDX POM parsing - XmlStreamReader is in plexus-xml
-    api(libs.plexus.xml)
 }
 
 testing.suites.named<JvmTestSuite>("test") {

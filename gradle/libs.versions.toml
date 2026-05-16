@@ -4,7 +4,7 @@ antora = "1.0.0"
 gradle-develocity = "4.3"
 gradle-plugin-publish = "2.0.0"
 classpath-collision-detector = "1.0.0"
-cyclonedx-gradle-plugin = "3.1.0"
+cyclonedx-gradle-plugin = "3.2.4"
 dependency-analysis-gradle-plugin = "3.6.1"
 gradle-pre-commit-git-hooks = "2.1.12"
 gradleup-nmcp = "1.4.4"
@@ -32,9 +32,6 @@ slf4j = "2.0.17"
 # TEST LIBRARY VERSIONS (used by test convention plugins)
 assertj = "3.27.7"
 mockk = "1.14.9"
-
-# FIX FOR CYCLONEDX MISSING TRANSITIVE DEPENDENCY
-plexus-xml = "4.1.1"
 
 [libraries]
 # GRADLE PLUGINS (implementation dependencies for convention plugins)
@@ -68,9 +65,6 @@ spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools
 # TEST LIBRARIES (used by test convention plugins)
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
-
-# FIX FOR CYCLONEDX MISSING TRANSITIVE DEPENDENCY
-plexus-xml = { module = "org.codehaus.plexus:plexus-xml", version.ref = "plexus-xml" }
 
 # Check artifact (configuration files for checkstyle, PMD, spotbugs, formatter)
 ultima-nexus-jvm-check-project = { module = "dev.daymor.ultima-nexus.jvm:ultima-nexus-jvm-check", version.ref = "ultima-nexus-jvm-check" }
