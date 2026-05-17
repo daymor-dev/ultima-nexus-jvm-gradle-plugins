@@ -35,6 +35,6 @@ tasks.cyclonedxDirectBom {
 }
 
 tasks.cyclonedxBom {
-    jsonOutput = layout.buildDirectory.dir("reports/sbom").get().asFile
+    jsonOutput = layout.buildDirectory.file("reports/sbom/bom.json")
     xmlOutput.unsetConvention()
 }
