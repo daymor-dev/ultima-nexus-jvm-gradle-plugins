@@ -9,7 +9,7 @@ Reusable Gradle convention plugins for JVM projects with quality checks, testing
 Convention plugins are Gradle plugins that encode your organization's build standards into reusable, composable units.
 Instead of copying and pasting `build.gradle.kts` boilerplate across dozens of projects, you apply a single plugin that configures everything: compilation settings, quality checks, test infrastructure, publishing metadata, and more.
 
-Ultima Nexus JVM Gradle Plugins provides a comprehensive set of 78 convention plugins organized into 14 modules.
+Ultima Nexus JVM Gradle Plugins provides a comprehensive set of 79 convention plugins organized into 15 modules.
 They can be used independently, combined a la carte, or consumed through high-level "bundle" plugins that give you a fully configured build in a single line.
 
 == Philosophy
@@ -76,7 +76,7 @@ This allows a fresh project to build immediately without any `libs.versions.toml
 
 == Module Map
 
-The plugins are organized across 14 modules, each published as a separate artifact:
+The plugins are organized across 15 modules, each published as a separate artifact:
 
 [cols="1,3,1"]
 |===
@@ -117,6 +117,10 @@ The plugins are organized across 14 modules, each published as a separate artifa
 |`plugins-lombok`
 |Lombok: annotation processing for main and test source sets
 |3
+
+|`plugins-mapstruct`
+|MapStruct: annotation processor wiring with optional Spring component-model overlay
+|2
 
 |`plugins-documentation`
 |Documentation: Antora site generation and UI bundles

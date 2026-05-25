@@ -1,0 +1,78 @@
+= MapStruct Plugins
+:description: MapStruct annotation processing wiring for the main source set, with an optional Spring component-model overlay.
+:toc: left
+:toclevels: 3
+
+The MapStruct plugins add https://mapstruct.org/[MapStruct] annotation processing to the main source set. Mapper interfaces are compiled into `*Impl` classes by the MapStruct annotation processor at build time; this module provides the wiring that puts MapStruct on the right configurations and (optionally) flips the generated impls into Spring components.
+
+== MapStruct (Framework-Neutral)
+
+Adds MapStruct as `implementation` and `annotationProcessor`. Generated `*Impl` classes use MapStruct's `default` component model, so they ship with a public no-arg constructor plus a static `INSTANCE` accessor via `Mappers.getMapper(...)` and carry no DI-framework annotations.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.mapstruct`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.mapstruct)
+}
+----
+
+=== What It Configures
+
+* `implementation("org.mapstruct:mapstruct")` -- runtime types (`@Mapper`, `@Mapping`, `@MappingTarget`, `MappingConstants`, …)
+* `annotationProcessor("org.mapstruct:mapstruct-processor")` -- generates the `*Impl` classes at compile time
+* `annotationProcessor("org.projectlombok:lombok-mapstruct-binding")` -- mandatory since Lombok 1.18.16, makes Lombok-generated accessors visible to MapStruct (no-op when Lombok is absent)
+
+== MapStruct Spring (Overlay)
+
+Applies `feature.mapstruct` AND adds the annotation-processor option `-Amapstruct.defaultComponentModel=spring` to every `JavaCompile` task. Generated `*Impl` classes are then emitted with `@Component` and constructor-injected dependencies, automatically discoverable by Spring's component scanning.
+
+The source `@Mapper` interface itself stays Spring-free — only the generated impl carries the Spring annotation. The same mapper source compiles unchanged for a non-Spring downstream that applies `feature.mapstruct` instead.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.mapstruct-spring`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.mapstruct.spring)
+}
+----
+
+=== What It Configures
+
+Everything from `feature.mapstruct`, plus:
+
+[source,kotlin]
+----
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-Amapstruct.defaultComponentModel=spring")
+}
+----
+
+== Version Resolution
+
+The MapStruct versions are resolved in this order:
+
+1. Version from `libs.versions.toml` (library names: `mapstruct`, `mapstruct-processor`, `lombok-mapstruct-binding`)
+2. Built-in fallback versions
+
+=== Version Catalog Configuration (Optional)
+
+[source,toml]
+.gradle/libs.versions.toml
+----
+[versions]
+mapstruct = "1.6.3"
+
+[libraries]
+mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
+mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }
+lombok-mapstruct-binding = { module = "org.projectlombok:lombok-mapstruct-binding", version = "0.2.0" }
+----
+
+== Annotation Processor Ordering
+
+When `feature.mapstruct` is applied alongside `dependency.lombok`, the framework declares them on `annotationProcessor` in the correct order (Lombok first, MapStruct second). The `lombok-mapstruct-binding` jar bridges Lombok's generated members into MapStruct's processor view — without it, MapStruct silently emits empty mappers for Lombok-built target types.
+
+The framework's `bundle.ultima-nexus-jvm-application` plugin applies both `bundle.lombok` and `feature.mapstruct-spring` in the right order; if you compose the plugins manually, make sure Lombok is declared before MapStruct.

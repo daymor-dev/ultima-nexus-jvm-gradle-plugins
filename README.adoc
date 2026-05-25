@@ -35,6 +35,7 @@ The plugins can be used independently or combined through predefined "bundle" pl
 * *Publishing*: Maven Central publishing with signing support
 * *Spring Boot Support*: Preconfigured Spring Boot development and test dependencies
 * *Nullability*: JSpecify and Lombok integration
+* *Bean Mapping*: MapStruct with optional Spring component-model overlay
 * *Reporting*: Code coverage (JaCoCo), SBOM generation, test reports
 * *Documentation*: Antora documentation generation
 * *Plug-and-Play*: Built-in fallback versions for dependencies - works out of the box
@@ -275,6 +276,9 @@ For detailed documentation on each module, see the individual README files:
 |link:plugins-lombok/README.adoc[plugins-lombok]
 |Lombok: Annotation processing for main and test sources
 
+|link:plugins-mapstruct/README.adoc[plugins-mapstruct]
+|MapStruct: Annotation processor wiring with optional Spring component-model overlay
+
 |link:plugins-documentation/README.adoc[plugins-documentation]
 |Documentation: Antora site generation
 
@@ -361,6 +365,9 @@ This project was inspired by and builds upon the excellent work of many open sou
 
 |https://projectlombok.org/[Lombok]
 |Java annotation library to reduce boilerplate
+
+|https://mapstruct.org/[MapStruct]
+|Compile-time bean mapper
 
 |https://junit.org/junit5/[JUnit 5]
 |Java testing framework

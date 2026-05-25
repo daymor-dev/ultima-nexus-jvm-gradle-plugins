@@ -80,6 +80,7 @@ ultima-nexus-jvm-spring-boot = { module = "dev.daymor.ultima-nexus.jvm.gradle:pl
 ultima-nexus-jvm-lombok = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-lombok" }
 ultima-nexus-jvm-java = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-java" }
 ultima-nexus-jvm-native = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-native" }
+ultima-nexus-jvm-mapstruct = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-mapstruct" }
 
 [plugins]
 # External plugins

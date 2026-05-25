@@ -5,6 +5,7 @@
 * xref:core-plugins.adoc[Core]
 * xref:java-plugins.adoc[Java]
 * xref:lombok-plugins.adoc[Lombok]
+* xref:mapstruct-plugins.adoc[MapStruct]
 * xref:check-plugins.adoc[Quality Check]
 * xref:test-plugins.adoc[Test]
 * xref:report-plugins.adoc[Report]

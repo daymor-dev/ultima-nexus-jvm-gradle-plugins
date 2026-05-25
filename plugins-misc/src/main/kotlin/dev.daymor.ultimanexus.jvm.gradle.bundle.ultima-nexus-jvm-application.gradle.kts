@@ -62,6 +62,7 @@ import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
 plugins {
     id("dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-native-complete-application")
     id("dev.daymor.ultimanexus.jvm.gradle.bundle.lombok")
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.mapstruct-spring")
 }
 
 if (file("antora-playbook.yml").exists()) {

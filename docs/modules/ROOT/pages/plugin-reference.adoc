@@ -258,6 +258,23 @@ Spring Boot application/library mode, AOT, and test dependencies.
 |xref:native-plugins.adoc[Native]
 |===
 
+== MapStruct Plugins
+
+MapStruct annotation processor wiring with optional Spring component-model overlay.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...feature.mapstruct`
+|MapStruct annotation processor (framework-neutral, lombok-binding aware)
+|xref:mapstruct-plugins.adoc[MapStruct]
+
+|`...feature.mapstruct-spring`
+|MapStruct with `-Amapstruct.defaultComponentModel=spring` overlay for Spring-based projects
+|xref:mapstruct-plugins.adoc[MapStruct]
+|===
+
 == Native Plugins
 
 GraalVM Native Image compilation and testing.
@@ -532,6 +549,8 @@ dev.daymor.ultimanexus.jvm.gradle.feature.gradle-plugin-publish
 dev.daymor.ultimanexus.jvm.gradle.feature.java-application
 dev.daymor.ultimanexus.jvm.gradle.feature.java-library
 dev.daymor.ultimanexus.jvm.gradle.feature.javadoc
+dev.daymor.ultimanexus.jvm.gradle.feature.mapstruct
+dev.daymor.ultimanexus.jvm.gradle.feature.mapstruct-spring
 dev.daymor.ultimanexus.jvm.gradle.feature.project-structure
 dev.daymor.ultimanexus.jvm.gradle.feature.publish
 dev.daymor.ultimanexus.jvm.gradle.feature.publish-java
@@ -554,4 +573,4 @@ dev.daymor.ultimanexus.jvm.gradle.test.test-suites
 dev.daymor.ultimanexus.jvm.gradle.test.unit
 ----
 
-Total: 77 plugins across 14 modules.
+Total: 79 plugins across 15 modules.
