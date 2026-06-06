@@ -84,10 +84,21 @@ configurations.configureEach {
     }
 }
 
-tasks.matching { it.name == "processAot" || it.name == "processTestAot" }
-    .configureEach {
-        enabled = project.file("src/main/java").exists()
+val hasMainSource = project.file("src/main/java").exists()
+
+tasks.matching { it.name == "processAot" }.configureEach {
+    enabled = hasMainSource
+}
+
+tasks.matching { it.name == "processTestAot" }.configureEach {
+    enabled = hasMainSource
+    if (this is JavaExec) {
+        val taskClasspath = classpath
+        onlyIf {
+            taskClasspath.any { it.name.startsWith("spring-boot-test-") }
+        }
     }
+}
 
 val aotQualityTasks = setOf(
     "checkstyleAot", "checkstyleAotTest",
