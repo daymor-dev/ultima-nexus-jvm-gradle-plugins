@@ -204,16 +204,10 @@ plugins {
 === What It Does
 
 * Enables Spring Boot AOT processing (`processAot`, `processTestAot` tasks)
-* Suppresses `-Xlint:unchecked` and `-Xlint:rawtypes` warnings on AOT compilation tasks
 * Disables Checkstyle, PMD, and SpotBugs tasks for AOT source sets
 * Disables AOT processing when no main source exists (e.g., starter modules)
 
-=== Configuration
-
-[source,properties]
-----
-springBootAot.suppressWarnings=true
-----
+NOTE: The AOT compile tasks are exempt from `-Werror` by the xref:java-plugins.adoc[compile-java] plugin — Spring AOT-generated sources are machine-written and read a wide dependency surface that javac flags with mandatory classfile diagnostics.
 
 == Native Application Bundles
 
@@ -284,14 +278,5 @@ spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-star
 ----
 
 == Properties Reference
-
-[cols="2,1,3"]
-|===
-|Property |Default |Description
-
-|`springBootAot.suppressWarnings`
-|`true`
-|Suppress `-Xlint:unchecked` and `-Xlint:rawtypes` on AOT compilation tasks
-|===
 
 NOTE: Native image properties are documented in the xref:native-plugins.adoc[Native Image Plugins] page.

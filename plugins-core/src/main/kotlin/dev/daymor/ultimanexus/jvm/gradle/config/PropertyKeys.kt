@@ -163,8 +163,4 @@ object PropertyKeys {
         const val FALLBACK = "graalvmNative.fallback"
         const val RICH_OUTPUT = "graalvmNative.richOutput"
     }
-
-    object SpringBootAot {
-        const val SUPPRESS_AOT_WARNINGS = "springBootAot.suppressWarnings"
-    }
 }

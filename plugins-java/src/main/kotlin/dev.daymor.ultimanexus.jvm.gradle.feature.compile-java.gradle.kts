@@ -63,8 +63,11 @@ tasks {
             encoding = Defaults.FILE_ENCODING
             compilerArgs.add("-parameters")
             compilerArgs.add("-implicit:none")
-            compilerArgs.add("-Werror")
-            compilerArgs.add("-Xlint:all,-serial,-processing")
+
+            if (name != "compileAotJava" && name != "compileAotTestJava") {
+                compilerArgs.add("-Werror")
+                compilerArgs.add("-Xlint:all,-serial,-processing")
+            }
         }
     }
     withType<AbstractArchiveTask>().configureEach {

@@ -14,65 +14,24 @@
  * limitations under the License.
  */
 
-import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
-import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.conventionFromProperty
-
 /**
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-aot
  *
  * Feature plugin for Spring Boot AOT (Ahead-of-Time) compilation support.
- * Configures AOT-specific compiler settings to suppress warnings generated
- * by Spring Boot AOT-generated code.
  *
- * Spring AOT generates code that triggers -Xlint:unchecked and -Xlint:rawtypes
- * warnings. When combined with the compile-java plugin (which sets -Werror),
- * these warnings become build-breaking errors. This plugin suppresses them
- * on AOT compilation tasks only.
+ * The compile-java plugin already exempts the AOT compile tasks from -Werror
+ * (Spring AOT-generated sources are machine-written), so this plugin only
+ * handles the AOT classpath, lifecycle, and quality-check concerns.
  *
  * Features:
- * - Suppresses unchecked, rawtypes, and cast warnings on compileAotJava task
- * - Suppresses unchecked, rawtypes, and cast warnings on compileAotTestJava task
  * - Excludes AOT source sets from quality checks (Checkstyle, PMD, SpotBugs)
  * - Resolves slf4j-impl capability conflicts in AOT classpaths
  * - Disables AOT processing when no main source exists
- * - Configurable via extension DSL or gradle.properties
- *
- * Extension configuration:
- * ```kotlin
- * springBootAotConfig {
- *     suppressWarnings.set(true)
- * }
- * ```
- *
- * Or via gradle.properties:
- * ```properties
- * springBootAot.suppressWarnings=true
- * ```
+ * - Skips processTestAot when spring-boot-test is absent from the test
+ *   classpath (a pure unit-test source set has no AOT-processable tests)
  */
 plugins {
     java
-}
-
-interface SpringBootAotConfigExtension {
-    val suppressWarnings: Property<Boolean>
-}
-
-val springBootAotConfig =
-    extensions.create<SpringBootAotConfigExtension>("springBootAotConfig")
-
-springBootAotConfig.suppressWarnings.conventionFromProperty(
-    project, PropertyKeys.SpringBootAot.SUPPRESS_AOT_WARNINGS, true
-)
-
-tasks.withType<JavaCompile>().configureEach {
-    if (name == "compileAotJava" || name == "compileAotTestJava") {
-        options.compilerArgs.addAll(
-            springBootAotConfig.suppressWarnings.map { suppress ->
-                if (suppress) listOf("-Xlint:-unchecked", "-Xlint:-rawtypes", "-Xlint:-cast")
-                else emptyList()
-            }.get()
-        )
-    }
 }
 
 configurations.configureEach {
