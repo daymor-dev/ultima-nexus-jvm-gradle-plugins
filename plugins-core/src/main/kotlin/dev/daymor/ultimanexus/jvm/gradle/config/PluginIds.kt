@@ -68,6 +68,7 @@ object PluginIds {
         const val PUBLISH_MAVEN_CENTRAL_AGGREGATION = "$PREFIX.feature.publish-maven-central-aggregation"
         const val ANTORA = "$PREFIX.feature.antora"
         const val ANTORA_UI = "$PREFIX.feature.antora-ui"
+        const val SCHEMA_DOCS = "$PREFIX.feature.schema-docs"
         const val PROJECT_STRUCTURE = "$PREFIX.feature.project-structure"
         const val GIT_HOOKS = "$PREFIX.feature.git-hooks"
         const val BUILD_CACHE = "$PREFIX.feature.build-cache"

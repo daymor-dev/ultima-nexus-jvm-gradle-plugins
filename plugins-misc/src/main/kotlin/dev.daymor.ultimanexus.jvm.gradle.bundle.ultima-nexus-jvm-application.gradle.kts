@@ -35,6 +35,7 @@ import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
  *   - Ultima Nexus annotation module (compileOnly)
  *   - Ultima Nexus annotation processor (annotationProcessor)
  *   - Documentation (auto-detected via antora-playbook.yml)
+ *   - Schema documentation collection (opt-in generateSchemaDocs task)
  *
  * The processor is selected automatically based on the application type
  * and whether Hibernate support is enabled.
@@ -63,6 +64,7 @@ plugins {
     id("dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-native-complete-application")
     id("dev.daymor.ultimanexus.jvm.gradle.bundle.lombok")
     id("dev.daymor.ultimanexus.jvm.gradle.feature.mapstruct-spring")
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.schema-docs")
 }
 
 if (file("antora-playbook.yml").exists()) {

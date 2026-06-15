@@ -27,6 +27,9 @@ import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getVersionOrNull
  * Includes:
  *   - dev.daymor.ultimanexus.jvm.gradle.test.test (unit tests)
  *   - dev.daymor.ultimanexus.jvm.gradle.test.test-suites (configurable suites)
+ *   - dev.daymor.ultimanexus.jvm.gradle.test.performance-regression
+ *     (JMH baseline-regression tracking; tasks no-op until a
+ *      performanceTest run and committed baselines exist)
  *
  * Default suites: integrationTest, functionalTest, performanceTest
  *
@@ -57,6 +60,7 @@ plugins {
     jacoco
     id("dev.daymor.ultimanexus.jvm.gradle.test.test")
     id("dev.daymor.ultimanexus.jvm.gradle.test.test-suites")
+    id("dev.daymor.ultimanexus.jvm.gradle.test.performance-regression")
 }
 
 val libs: VersionCatalog? = getLibsCatalogOrNull(project)

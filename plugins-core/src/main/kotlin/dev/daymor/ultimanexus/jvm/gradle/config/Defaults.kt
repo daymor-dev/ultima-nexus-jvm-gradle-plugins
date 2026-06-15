@@ -40,6 +40,12 @@ object Defaults {
         val STATIC_FILE_PATTERNS = listOf("*.html", "*.png", "*.ico", "*.svg", "*.jpg", "*.webp")
     }
 
+    object Benchmark {
+        const val DEFAULT_THRESHOLD_PERCENT = 20.0
+        const val BASELINE_DIRECTORY = "perf-baselines"
+        const val RESULT_DIRECTORY = "reports/jmh"
+    }
+
     object DependencyScope {
         const val IMPLEMENTATION = "implementation"
         const val API = "api"

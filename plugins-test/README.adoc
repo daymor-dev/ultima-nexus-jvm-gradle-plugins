@@ -30,6 +30,9 @@ All test plugins integrate with JaCoCo for code coverage.
 |`dev.daymor.ultimanexus.jvm.gradle.test.test-fixtures`
 |Shared test fixtures library support
 
+|`dev.daymor.ultimanexus.jvm.gradle.test.performance-regression`
+|JMH baseline-regression tracking (`benchmarkRegression` / `benchmarkBaselineUpdate`)
+
 |`dev.daymor.ultimanexus.jvm.gradle.bundle.test`
 |Bundle: All test types with `allTest` task
 |===
@@ -67,6 +70,7 @@ plugins {
 
 * Unit tests (JUnit 5 with JaCoCo)
 * Configurable test suites (integrationTest, functionalTest, performanceTest by default)
+* JMH benchmark regression tracking (`benchmarkRegression` / `benchmarkBaselineUpdate`)
 * `allTest` task to run all test types
 
 === Running Tests
@@ -83,6 +87,43 @@ plugins {
 
 # Run ALL tests (unit + all suites)
 ./gradlew allTest
+----
+
+== Performance Regression Plugin
+
+Turns the JMH JSON results written by the `performanceTest` suite
+(`build/reports/jmh/*.json`) into baseline-regression tracking.
+
+|===
+|Task |Behaviour
+
+|`benchmarkBaselineUpdate`
+|Promotes the latest results into the committed `perf-baselines/` directory.
+
+|`benchmarkRegression`
+|Compares the latest results against `perf-baselines/` (by benchmark name, on
+ `primaryMetric.score`) and reports improvements / regressions. Wired as a
+ finalizer of `performanceTest`.
+|===
+
+A benchmark regresses when its score moves in the worse direction (lower for
+throughput modes, higher for time-based modes) by more than the threshold
+(default 20%). Because absolute JMH scores are machine-dependent, the check is
+*advisory by default* — it logs warnings and keeps the build green. On a stable
+benchmark host, opt into hard failure:
+
+[source,kotlin]
+----
+benchmark {
+    thresholdPercent = 20.0   // relative tolerance
+    failOnRegression = true   // fail the build on a regression
+}
+----
+
+[source,bash]
+----
+./gradlew performanceTest
+./gradlew benchmarkBaselineUpdate   # commit perf-baselines/*.json
 ----
 
 == Unit Test Plugin

@@ -11,6 +11,7 @@ The `plugins-misc` module provides:
 * **Aggregation**: Multi-project report aggregation
 * **Version Platform**: Centralized version management via Java Platform (Spring Boot BOM auto-detected)
 * **Catalog Versions**: Apply all version catalog constraints
+* **Schema Docs**: Collect generated Mermaid ER (`.mmd`) and DBML (`.dbml`) schema documentation
 * **JVM Complete Bundle**: Language-agnostic JVM bundle for Kotlin, Scala, Groovy, etc.
 * **Full Bundle**: Complete `ultima-nexus-jvm` bundle (Spring Boot + Lombok + documentation)
 * **Root Bundle**: Root project conventions for multi-module builds
@@ -31,6 +32,9 @@ The `plugins-misc` module provides:
 
 |`dev.daymor.ultimanexus.jvm.gradle.feature.use-all-catalog-versions`
 |Apply all version catalog constraints as a platform
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.schema-docs`
+|Opt-in `generateSchemaDocs` task collecting generated Mermaid ER and DBML schema documentation
 
 |`dev.daymor.ultimanexus.jvm.gradle.bundle.jvm-complete`
 |Language-agnostic JVM bundle with quality checks, testing, and reporting
@@ -137,6 +141,7 @@ The plugin automatically adds:
 * **Starter** (`implementation`) — predefined or plain, based on `ultimaNexusJvm.usePredefinedStarter`
 * **Annotations** (`compileOnly`) — `@GenerateCrud`, `@GenerateApplication`, etc.
 * **Processor** (`annotationProcessor`) — selected based on `ultimaNexusJvm.applicationType` and `ultimaNexusJvm.useHibernate`
+* **Schema docs** (`generateSchemaDocs` task) — opt-in collection of the processor's generated Mermaid ER and DBML files into `build/schema-docs/`
 
 ==== Configuration
 

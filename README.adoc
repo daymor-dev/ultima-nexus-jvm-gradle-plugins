@@ -286,7 +286,7 @@ For detailed documentation on each module, see the individual README files:
 |Settings: Project structure, git hooks, build cache, Develocity, Maven Central aggregation, SBOM support
 
 |link:plugins-misc/README.adoc[plugins-misc]
-|Miscellaneous: Aggregation, version platform, `jvm-complete` bundle, full `ultima-nexus-jvm` bundle
+|Miscellaneous: Aggregation, version platform, schema docs, `jvm-complete` bundle, full `ultima-nexus-jvm` bundle
 |===
 
 == Requirements
