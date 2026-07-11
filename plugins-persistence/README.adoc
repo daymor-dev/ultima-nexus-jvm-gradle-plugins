@@ -1,0 +1,198 @@
+= Ultima Nexus - Persistence Module
+:toc: preamble
+:toclevels: 2
+
+Build-time persistence convention plugins for JVM projects.
+
+== Overview
+
+The `plugins-persistence` module provides build-time database integration:
+
+* **jOOQ Codegen**: Runs jOOQ's code generator offline against a directory of SQL DDL — no database, no Docker
+* **Flyway**: Wires Flyway's build-time tasks to a migrations directory
+* **Liquibase**: Wires Liquibase's build-time tasks to a changelog file
+
+Each plugin wires only the underlying tool and exposes a configurable location, so a project whose SQL is generated at build time needs no configuration while a project with hand-written SQL overrides one property.
+
+== Plugins
+
+[cols="1,3"]
+|===
+|Plugin ID |Description
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.jooq-codegen`
+|Offline jOOQ codegen from Flyway scripts, a Liquibase changelog, or plain DDL
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.flyway`
+|Flyway build-time tasks (`flywayMigrate`, `flywayInfo`, …) on a configurable migrations directory
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.liquibase`
+|Liquibase build-time tasks (`update`, `status`, …) on a configurable changelog file
+|===
+
+== Installation
+
+Add to your version catalog (`gradle/libs.versions.toml`):
+
+[source,toml]
+----
+[versions]
+ultima-nexus-plugins = "latest.release"
+
+[plugins]
+ultimanexus-jvm-feature-jooq-codegen = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.jooq-codegen", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-feature-flyway = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.flyway", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-feature-liquibase = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.liquibase", version.ref = "ultima-nexus-plugins" }
+----
+
+== jOOQ Codegen Plugin
+
+Generates the type-safe `Tables.*` by parsing SQL DDL with jOOQ's `DDLDatabase` — Flyway versioned scripts, a Liquibase formatted-SQL changelog, or plain `CREATE TABLE` files.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.jooq.codegen)
+}
+
+jooqCodegenConfig {
+    scriptsDir = "src/main/resources/db/migration"
+    basePackage = "com.example.app.jooq"
+    excludes = "audit_log"
+    forcedType {
+        userType = "com.example.Money"
+        converter = "com.example.MoneyConverter"
+        includeExpression = ".*\\.amount"
+    }
+}
+----
+
+=== What It Does
+
+Applies `org.jooq.jooq-codegen-gradle`, adds the offline `DDLDatabase` wiring, and emits jOOQ sources into `build/generated-sources/jooq`, wired onto the main source set and ahead of `compileJava`.
+
+A project whose schema is itself produced at build time (for example by an annotation processor that emits migrations) generates that SQL into a directory first and points `scriptsDir` at it. The plugin stays unaware of how the SQL was produced.
+
+=== Configuration
+
+[cols="2,2,3"]
+|===
+|Property |Default |Description
+
+|`scriptsDir`
+|`src/main/resources/db/migration`
+|Directory of SQL the offline parser reads (every `.sql` in the subtree)
+
+|`basePackage`
+|`${project.group}.jooq`
+|Target package for the generated `Tables.*` and records
+
+|`includes` / `excludes`
+|_all tables_
+|Java regexes selecting the tables to generate
+
+|`forcedType { … }`
+|—
+|Repeatable forced-type override (matcher plus `name` or `userType` + `converter`)
+|===
+
+== Flyway Plugin
+
+Wires Flyway's build-time tasks to a directory of versioned migration scripts, and orders every Flyway task after `compileJava`. A CI or pre-deploy step can then migrate and validate a real database without running the application.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.flyway)
+}
+
+flywayBuildTime {
+    migrationsDir = layout.projectDirectory.dir("src/main/resources/db/migration")
+}
+----
+
+The target database is supplied through the standard Flyway extension (`flyway { url = …; user = …; password = … }`) or the `flyway.url`, `flyway.user`, and `flyway.password` Gradle properties:
+
+[source,bash]
+----
+./gradlew flywayMigrate -Pflyway.url=jdbc:postgresql://localhost/app \
+    -Pflyway.user=app -Pflyway.password=secret
+----
+
+=== Configuration
+
+[cols="2,2,3"]
+|===
+|Property |Default |Description
+
+|`migrationsDir`
+|`build/classes/java/main/META-INF/db/migration`
+|Directory of versioned migration scripts. The default matches where a code generator emitting migrations during `compileJava` writes them, so generated migrations need no configuration.
+|===
+
+== Liquibase Plugin
+
+Wires Liquibase's build-time tasks to a changelog file, and orders every Liquibase task after `compileJava`. Liquibase core and picocli are added to the `liquibaseRuntime` configuration automatically; the consumer adds its JDBC driver.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.liquibase)
+}
+
+dependencies {
+    liquibaseRuntime("org.postgresql:postgresql")
+}
+
+liquibaseBuildTime {
+    changelogFile = layout.projectDirectory.file("src/main/resources/db/changelog.sql")
+}
+----
+
+To get tasks named `liquibaseUpdate` rather than the bare `update`, set `liquibaseTaskPrefix=liquibase` in `gradle.properties` (the prefix the Liquibase Gradle plugin reads at apply time):
+
+[source,bash]
+----
+./gradlew liquibaseUpdate -Pliquibase.url=jdbc:postgresql://localhost/app \
+    -Pliquibase.user=app -Pliquibase.password=secret
+----
+
+=== Configuration
+
+[cols="2,2,3"]
+|===
+|Property |Default |Description
+
+|`changelogFile`
+|`build/classes/java/main/META-INF/db/changelog/db.changelog-master.sql`
+|Changelog the Liquibase tasks run. The default matches where a code generator emitting a changelog during `compileJava` writes it, so a generated changelog needs no configuration.
+|===
+
+== Version Resolution
+
+The jOOQ plugin resolves the offline-parser version in this order:
+
+1. Version from `libs.versions.toml` (library name: `jooq-meta-extensions`)
+2. Built-in fallback version (see link:../README.adoc#_dependency_fallbacks[Dependency Fallbacks] in root README)
+
+=== Custom Version
+
+To use a specific version, add to your version catalog:
+
+[source,toml]
+----
+[libraries]
+jooq-meta-extensions = { module = "org.jooq:jooq-meta-extensions", version = "latest.release" }
+----
+
+== Related Modules
+
+* link:../plugins-base/README.adoc[plugins-base] - Base Gradle project conventions (dependency)
+* link:../plugins-integration/README.adoc[plugins-integration] - Aggregator for jOOQ codegen alongside Vaadin
+* link:../README.adoc[Root README] - Project overview and quick start

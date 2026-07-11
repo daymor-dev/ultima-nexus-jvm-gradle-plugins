@@ -23,9 +23,8 @@ dependencies {
     implementation(libs.ultima.nexus.jvm.core)
     implementation(libs.ultima.nexus.jvm.base)
     implementation(libs.ultima.nexus.jvm.check)
-    implementation(libs.ultima.nexus.jvm.spring.boot)
-    implementation(libs.ultima.nexus.jvm.lombok)
-    implementation(libs.ultima.nexus.jvm.mapstruct)
+    implementation(libs.vaadin.gradle.plugin)
+    implementation(libs.vaadin.flow.gradle.plugin)
 }
 
 testing.suites.named<JvmTestSuite>("test") {

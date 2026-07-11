@@ -9,7 +9,7 @@ Reusable Gradle convention plugins for JVM projects with quality checks, testing
 Convention plugins are Gradle plugins that encode your organization's build standards into reusable, composable units.
 Instead of copying and pasting `build.gradle.kts` boilerplate across dozens of projects, you apply a single plugin that configures everything: compilation settings, quality checks, test infrastructure, publishing metadata, and more.
 
-Ultima Nexus JVM Gradle Plugins provides a comprehensive set of 79 convention plugins organized into 15 modules.
+Ultima Nexus JVM Gradle Plugins provides a comprehensive set of 91 convention plugins organized into 17 modules.
 They can be used independently, combined a la carte, or consumed through high-level "bundle" plugins that give you a fully configured build in a single line.
 
 == Philosophy
@@ -76,7 +76,7 @@ This allows a fresh project to build immediately without any `libs.versions.toml
 
 == Module Map
 
-The plugins are organized across 15 modules, each published as a separate artifact:
+The plugins are organized across 17 modules, each published as a separate artifact:
 
 [cols="1,3,1"]
 |===
@@ -114,6 +114,18 @@ The plugins are organized across 15 modules, each published as a separate artifa
 |Spring Boot: application/library mode, test dependencies, AOT, native bundles
 |10
 
+|`plugins-frontend`
+|Frontend: Vaadin and htmx backends, each with a neutral feature, a Spring layer, and a framework bundle
+|6
+
+|`plugins-persistence`
+|Persistence: offline jOOQ codegen, build-time Flyway and Liquibase migration wiring
+|3
+
+|`plugins-integration`
+|Integration: compatibility aggregators that co-apply plugins from one classloader (Vaadin + jOOQ shim)
+|1
+
 |`plugins-lombok`
 |Lombok: annotation processing for main and test source sets
 |3
@@ -131,8 +143,8 @@ The plugins are organized across 15 modules, each published as a separate artifa
 |7
 
 |`plugins-misc`
-|Miscellaneous: aggregation, version platform, JVM-complete bundle, full Ultima Nexus bundles
-|9
+|Miscellaneous: aggregation, version platform, schema docs, JVM-complete bundle, full Ultima Nexus bundles
+|10
 
 |`plugins-native`
 |Native: GraalVM Native Image compilation and testing

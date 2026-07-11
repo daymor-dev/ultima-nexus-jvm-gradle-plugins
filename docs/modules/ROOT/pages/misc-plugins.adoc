@@ -164,9 +164,9 @@ Includes:
 * Testing infrastructure (unit, integration, functional, performance)
 * Lombok and JSpecify annotation processing
 * Documentation (auto-detected via `antora-playbook.yml`)
-* **Ultima Nexus starter** (`implementation` — predefined or plain, configurable)
-* **Ultima Nexus annotations** (`compileOnly` — `@GenerateCrud`, `@GenerateApplication`, etc.)
-* **Ultima Nexus processor** (`annotationProcessor` — selected based on application type and Hibernate setting)
+* **Ultima Nexus starter** (`implementation` — the archetype's starter)
+* **Ultima Nexus annotations** (`compileOnly` — `@GenerateStack`, `@GenerateApplication`, etc.)
+* **Ultima Nexus processor** (`annotationProcessor` — selected from the archetype and Hibernate setting)
 
 === Configuration
 
@@ -174,34 +174,56 @@ Includes:
 |===
 | Property | Default | Description
 
-| `ultimaNexusJvm.applicationType`
-| `spring-rest-api`
-| Application type. Determines which starter and processor to use. Supported: `spring-rest-api`, `entity-only`.
-
-| `ultimaNexusJvm.usePredefinedStarter`
-| `true`
-| Use the opinionated starter. Set to `false` for the minimal starter. Ignored for `entity-only`.
+| `ultimaNexusJvm.archetype`
+| `classic-backend`
+| The application shape. Determines the starter and the processor. Supported: `classic-backend`, `classic-fullstack`, `performance-backend`, `performance-fullstack`, `reactive-backend`, `reactive-fullstack`, `base`, `entity-only`.
 
 | `ultimaNexusJvm.useHibernate`
 | `true`
-| Use Hibernate generation. Set to `false` for plain JPA identity methods.
+| Use Hibernate generation. Set to `false` for plain JPA identity methods. Ignored for the reactive archetypes, which persist through R2DBC.
+|===
+
+=== Starter Selection
+
+[cols="1,2"]
+|===
+| Archetype | Starter
+
+| `classic-backend` / `classic-fullstack`
+| `starter-spring-classic-backend` / `starter-spring-classic-fullstack`
+
+| `performance-backend` / `performance-fullstack`
+| `starter-spring-performance-backend` / `starter-spring-performance-fullstack`
+
+| `reactive-backend` / `reactive-fullstack`
+| `starter-spring-reactive-backend` / `starter-spring-reactive-fullstack`
+
+| `base`
+| `starter-spring-base` — the hexagonal core, no opinionated wiring
+
+| `entity-only`
+| none — entity generation only, no application layers
 |===
 
 === Processor Selection
 
-The annotation processor is selected automatically based on the application type and Hibernate setting:
+The annotation processor is selected automatically from the archetype and the Hibernate setting:
 
 [cols="1,1,2"]
 |===
-| Application Type | Hibernate | Processor
+| Archetype | Hibernate | Processor
 
-| `spring-rest-api`
+| `classic-*`, `performance-*`, `base`
 | `true` (default)
 | `processor-java-spring-hibernate` — full hexagonal stack with Hibernate
 
-| `spring-rest-api`
+| `classic-*`, `performance-*`, `base`
 | `false`
 | `processor-java-spring-application` — full hexagonal stack with plain identity
+
+| `reactive-*`
+| n/a
+| `processor-java-spring-application` — full hexagonal stack; persistence is R2DBC
 
 | `entity-only`
 | `true`
@@ -219,12 +241,25 @@ To override the auto-included dependencies, define these entries in your `libs.v
 [source,toml]
 ----
 [libraries]
-ultima-nexus-jvm-starter = { module = "dev.daymor.ultima-nexus.jvm:starter-predefined-spring-rest-api-application", version = "latest.release" }
-ultima-nexus-jvm-annotation = { module = "dev.daymor.ultima-nexus.jvm:annotation-jvm", version = "latest.release" }
-ultima-nexus-jvm-processor = { module = "dev.daymor.ultima-nexus.jvm:processor-java-spring-hibernate", version = "latest.release" }
+ultima-nexus-jvm-starter = { module = "dev.daymor.ultimanexus.jvm:starter-spring-classic-backend", version = "latest.release" }
+ultima-nexus-jvm-annotation = { module = "dev.daymor.ultimanexus.jvm:annotation-jvm", version = "latest.release" }
+ultima-nexus-jvm-processor = { module = "dev.daymor.ultimanexus.jvm:processor-java-spring-hibernate", version = "latest.release" }
 ----
 
 If these catalog entries are present, they take precedence over the fallback coordinates.
+
+== Schema Docs Plugin
+
+Registers an opt-in `generateSchemaDocs` task that collects the Mermaid ER and DBML schema documentation the annotation processor generates into a single output directory, ready to embed in a docs site.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.schema-docs`
+
+[source,kotlin]
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.schema-docs")
+}
+----
 
 == Ultima Nexus JVM Library Bundle
 
@@ -247,13 +282,9 @@ Includes: Spring Boot library + quality checks + testing + reporting + publishin
 |===
 | Property | Default | Description
 
-| `ultimaNexusJvm.applicationType`
-| `spring-rest-api`
-| Application type: `spring-rest-api` or `entity-only`
-
-| `ultimaNexusJvm.usePredefinedStarter`
-| `true`
-| Use opinionated starter
+| `ultimaNexusJvm.archetype`
+| `classic-backend`
+| Application shape: `classic-backend`, `classic-fullstack`, `performance-backend`, `performance-fullstack`, `reactive-backend`, `reactive-fullstack`, `base`, or `entity-only`
 
 | `ultimaNexusJvm.useHibernate`
 | `true`

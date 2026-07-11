@@ -273,6 +273,15 @@ For detailed documentation on each module, see the individual README files:
 |link:plugins-spring-boot/README.adoc[plugins-spring-boot]
 |Spring Boot: Application/library mode, test dependencies, DevTools, Docker Compose
 
+|link:plugins-frontend/README.adoc[plugins-frontend]
+|Frontend: Vaadin and htmx rendering backends, each with a framework-neutral feature, a Spring layer, and a framework bundle
+
+|link:plugins-persistence/README.adoc[plugins-persistence]
+|Persistence: Offline jOOQ codegen, build-time Flyway and Liquibase migration wiring
+
+|link:plugins-integration/README.adoc[plugins-integration]
+|Integration: Compatibility aggregators that co-apply plugins from one classloader (Vaadin + jOOQ shim)
+
 |link:plugins-lombok/README.adoc[plugins-lombok]
 |Lombok: Annotation processing for main and test sources
 
@@ -346,9 +355,6 @@ This project was inspired by and builds upon the excellent work of many open sou
 
 |https://github.com/gradleup/nmcp[GradleUp NMCP]
 |Maven Central publishing simplified
-
-|https://github.com/nickygerritsen/classpath-collision-detector[Classpath Collision Detector]
-|Detect duplicate classes in the classpath
 
 |https://github.com/spring-projects/spring-boot[Spring Boot Gradle Plugin]
 |Spring Boot application support

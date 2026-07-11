@@ -288,6 +288,73 @@ GraalVM Native Image compilation and testing.
 |xref:native-plugins.adoc[Native]
 |===
 
+== Frontend Plugins
+
+Vaadin and htmx rendering backends, each with a framework-neutral feature, a Spring layer, and a framework bundle.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...feature.vaadin-frontend`
+|Applies the Vaadin plugin, production-mode default, and vaadinBuildFrontend test wiring for any Vaadin web app
+|xref:frontend-plugins.adoc[Frontend]
+
+|`...feature.spring-vaadin-frontend`
+|Adds the Vaadin Spring Boot integration on top of feature.vaadin-frontend
+|xref:frontend-plugins.adoc[Frontend]
+
+|`...feature.htmx-frontend`
+|Adds the neutral htmx + Thymeleaf stack (plain Thymeleaf + htmx WebJar) for any JVM web app
+|xref:frontend-plugins.adoc[Frontend]
+
+|`...feature.spring-htmx-frontend`
+|Adds the Spring Boot htmx + Thymeleaf integration on top of feature.htmx-frontend
+|xref:frontend-plugins.adoc[Frontend]
+
+|`...bundle.ultima-nexus-frontend-vaadin`
+|Layers the framework's generated Vaadin frontend modules on top of feature.spring-vaadin-frontend
+|xref:frontend-plugins.adoc[Frontend]
+
+|`...bundle.ultima-nexus-frontend-htmx`
+|Layers the framework's generated htmx frontend modules on top of feature.spring-htmx-frontend
+|xref:frontend-plugins.adoc[Frontend]
+|===
+
+== Persistence Plugins
+
+Offline jOOQ code generation and build-time Flyway/Liquibase migration wiring.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...feature.jooq-codegen`
+|Runs jOOQ codegen offline against a directory of SQL DDL — no database, no Docker
+|xref:persistence-plugins.adoc[Persistence]
+
+|`...feature.flyway`
+|Wires Flyway's build-time tasks to a configurable migrations directory
+|xref:persistence-plugins.adoc[Persistence]
+
+|`...feature.liquibase`
+|Wires Liquibase's build-time tasks to a configurable changelog file
+|xref:persistence-plugins.adoc[Persistence]
+|===
+
+== Integration Plugins
+
+Compatibility aggregators that co-apply plugins from one classloader.
+
+[cols="3,4,1"]
+|===
+|Plugin ID |Description |Page
+
+|`...bundle.ultima-nexus-jvm-application-with-jooq`
+|Applies the Vaadin + htmx frontend bundles and jOOQ codegen from one classloader (vaadin/flow#17665 shim)
+|xref:integration-plugins.adoc[Integration]
+|===
+
 == Publishing Plugins
 
 Maven Central publishing, artifact signing, and Gradle Plugin Portal.
@@ -518,7 +585,10 @@ dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple-application
 dev.daymor.ultimanexus.jvm.gradle.bundle.spring-boot-simple-library
 dev.daymor.ultimanexus.jvm.gradle.bundle.starter
 dev.daymor.ultimanexus.jvm.gradle.bundle.test
+dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-frontend-htmx
+dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-frontend-vaadin
 dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-application
+dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-application-with-jooq
 dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-complete
 dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-library
 dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-settings
@@ -543,12 +613,16 @@ dev.daymor.ultimanexus.jvm.gradle.feature.antora-ui
 dev.daymor.ultimanexus.jvm.gradle.feature.build-cache
 dev.daymor.ultimanexus.jvm.gradle.feature.compile-java
 dev.daymor.ultimanexus.jvm.gradle.feature.composite-build
+dev.daymor.ultimanexus.jvm.gradle.feature.flyway
 dev.daymor.ultimanexus.jvm.gradle.feature.git-hooks
 dev.daymor.ultimanexus.jvm.gradle.feature.graalvm-native
 dev.daymor.ultimanexus.jvm.gradle.feature.gradle-plugin-publish
+dev.daymor.ultimanexus.jvm.gradle.feature.htmx-frontend
 dev.daymor.ultimanexus.jvm.gradle.feature.java-application
 dev.daymor.ultimanexus.jvm.gradle.feature.java-library
 dev.daymor.ultimanexus.jvm.gradle.feature.javadoc
+dev.daymor.ultimanexus.jvm.gradle.feature.jooq-codegen
+dev.daymor.ultimanexus.jvm.gradle.feature.liquibase
 dev.daymor.ultimanexus.jvm.gradle.feature.mapstruct
 dev.daymor.ultimanexus.jvm.gradle.feature.mapstruct-spring
 dev.daymor.ultimanexus.jvm.gradle.feature.project-structure
@@ -559,7 +633,10 @@ dev.daymor.ultimanexus.jvm.gradle.feature.publish-maven-central-aggregation
 dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-aot
 dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-application
 dev.daymor.ultimanexus.jvm.gradle.feature.spring-boot-library
+dev.daymor.ultimanexus.jvm.gradle.feature.spring-htmx-frontend
+dev.daymor.ultimanexus.jvm.gradle.feature.spring-vaadin-frontend
 dev.daymor.ultimanexus.jvm.gradle.feature.use-all-catalog-versions
+dev.daymor.ultimanexus.jvm.gradle.feature.vaadin-frontend
 dev.daymor.ultimanexus.jvm.gradle.feature.version-platform
 dev.daymor.ultimanexus.jvm.gradle.report.code-coverage
 dev.daymor.ultimanexus.jvm.gradle.report.develocity

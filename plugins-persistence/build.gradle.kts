@@ -23,9 +23,12 @@ dependencies {
     implementation(libs.ultima.nexus.jvm.core)
     implementation(libs.ultima.nexus.jvm.base)
     implementation(libs.ultima.nexus.jvm.check)
-    implementation(libs.ultima.nexus.jvm.spring.boot)
-    implementation(libs.ultima.nexus.jvm.lombok)
-    implementation(libs.ultima.nexus.jvm.mapstruct)
+    implementation(libs.jooq.codegen.gradle.plugin)
+    implementation(libs.jooq.meta)
+    implementation(libs.flyway.gradle.plugin)
+    implementation(libs.liquibase.gradle.plugin)
+    implementation(libs.liquibase.core)
+    implementation(libs.picocli)
 }
 
 testing.suites.named<JvmTestSuite>("test") {

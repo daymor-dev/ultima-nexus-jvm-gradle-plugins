@@ -3,9 +3,9 @@
 antora = "1.0.0"
 gradle-develocity = "4.3"
 gradle-plugin-publish = "2.0.0"
-classpath-collision-detector = "1.0.0"
 cyclonedx-gradle-plugin = "3.2.2"
 dependency-analysis-gradle-plugin = "3.6.1"
+kotlin-metadata-jvm = "2.4.0"
 gradle-pre-commit-git-hooks = "2.1.12"
 gradleup-nmcp = "1.4.4"
 jvm-dependency-conflict-resolution = "2.5"
@@ -13,7 +13,13 @@ node = "7.1.0"
 spotbugs-gradle-plugin = "6.4.8"
 spotless-plugin-gradle = "8.4.0"
 graalvm-native-build-tools = "1.0.0"
-spring-boot = "4.0.5"
+jooq-codegen-gradle-plugin = "3.21.5"
+flyway-gradle-plugin = "12.8.1"
+liquibase-gradle-plugin = "3.1.0"
+liquibase-core = "5.0.3"
+picocli = "4.7.7"
+spring-boot = "4.1.0"
+vaadin = "25.2.1"
 
 # TOOL VERSIONS (used by check plugins)
 checkstyle = "12.3.0"
@@ -37,9 +43,9 @@ mockk = "1.14.9"
 # GRADLE PLUGINS (implementation dependencies for convention plugins)
 antora = { module = "org.antora:gradle-antora-plugin", version.ref = "antora" }
 gradle-plugin-publish = { module = "com.gradle.plugin-publish:com.gradle.plugin-publish.gradle.plugin", version.ref = "gradle-plugin-publish" }
-classpath-collision-detector = { module = "io.fuchs.gradle.classpath-collision-detector:classpath-collision-detector", version.ref = "classpath-collision-detector" }
 cyclonedx-gradle-plugin = { module = "org.cyclonedx:cyclonedx-gradle-plugin", version.ref = "cyclonedx-gradle-plugin" }
 dependency-analysis-gradle-plugin = { module = "com.autonomousapps:dependency-analysis-gradle-plugin", version.ref = "dependency-analysis-gradle-plugin" }
+kotlin-metadata-jvm = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm", version.ref = "kotlin-metadata-jvm" }
 gradle-pre-commit-git-hooks = { module = "org.danilopianini.gradle-pre-commit-git-hooks:org.danilopianini.gradle-pre-commit-git-hooks.gradle.plugin", version.ref = "gradle-pre-commit-git-hooks" }
 gradleup-nmcp-aggregation = { module = "com.gradleup.nmcp.aggregation:com.gradleup.nmcp.aggregation.gradle.plugin", version.ref = "gradleup-nmcp" }
 gradleup-nmcp-settings = { module = "com.gradleup.nmcp.settings:com.gradleup.nmcp.settings.gradle.plugin", version.ref = "gradleup-nmcp" }
@@ -48,6 +54,14 @@ node = { module = "com.github.node-gradle:gradle-node-plugin", version.ref = "no
 spotbugs-gradle-plugin = { module = "com.github.spotbugs:com.github.spotbugs.gradle.plugin", version.ref = "spotbugs-gradle-plugin" }
 spotless-plugin-gradle = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless-plugin-gradle" }
 graalvm-native-gradle-plugin = { module = "org.graalvm.buildtools:native-gradle-plugin", version.ref = "graalvm-native-build-tools" }
+jooq-codegen-gradle-plugin = { module = "org.jooq:jooq-codegen-gradle", version.ref = "jooq-codegen-gradle-plugin" }
+jooq-meta = { module = "org.jooq:jooq-meta", version.ref = "jooq-codegen-gradle-plugin" }
+flyway-gradle-plugin = { module = "org.flywaydb:flyway-gradle-plugin", version.ref = "flyway-gradle-plugin" }
+liquibase-gradle-plugin = { module = "org.liquibase:liquibase-gradle-plugin", version.ref = "liquibase-gradle-plugin" }
+liquibase-core = { module = "org.liquibase:liquibase-core", version.ref = "liquibase-core" }
+picocli = { module = "info.picocli:picocli", version.ref = "picocli" }
+vaadin-gradle-plugin = { module = "com.vaadin:vaadin-gradle-plugin", version.ref = "vaadin" }
+vaadin-flow-gradle-plugin = { module = "com.vaadin:flow-gradle-plugin", version.ref = "vaadin" }
 spring-boot-gradle-plugin = { module = "org.springframework.boot:spring-boot-gradle-plugin", version.ref = "spring-boot" }
 gradle-develocity = { module = "com.gradle.develocity:com.gradle.develocity.gradle.plugin", version.ref = "gradle-develocity" }
 
@@ -81,6 +95,8 @@ ultima-nexus-jvm-lombok = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins
 ultima-nexus-jvm-java = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-java" }
 ultima-nexus-jvm-native = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-native" }
 ultima-nexus-jvm-mapstruct = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-mapstruct" }
+ultima-nexus-jvm-frontend = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-frontend" }
+ultima-nexus-jvm-persistence = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-persistence" }
 
 [plugins]
 # External plugins

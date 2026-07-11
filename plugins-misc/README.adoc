@@ -138,9 +138,9 @@ plugins {
 
 The plugin automatically adds:
 
-* **Starter** (`implementation`) — predefined or plain, based on `ultimaNexusJvm.usePredefinedStarter`
-* **Annotations** (`compileOnly`) — `@GenerateCrud`, `@GenerateApplication`, etc.
-* **Processor** (`annotationProcessor`) — selected based on `ultimaNexusJvm.applicationType` and `ultimaNexusJvm.useHibernate`
+* **Starter** (`implementation`) — the archetype's starter, selected by `ultimaNexusJvm.archetype`
+* **Annotations** (`compileOnly`) — `@GenerateStack`, `@GenerateApplication`, etc.
+* **Processor** (`annotationProcessor`) — selected from `ultimaNexusJvm.archetype` and `ultimaNexusJvm.useHibernate`
 * **Schema docs** (`generateSchemaDocs` task) — opt-in collection of the processor's generated Mermaid ER and DBML files into `build/schema-docs/`
 
 ==== Configuration
@@ -149,17 +149,35 @@ The plugin automatically adds:
 |===
 |Property |Default |Description
 
-|`ultimaNexusJvm.applicationType`
-|`spring-rest-api`
-|Application type. Determines which starter and processor to use. Supported: `spring-rest-api`, `entity-only`
-
-|`ultimaNexusJvm.usePredefinedStarter`
-|`true`
-|Use the opinionated starter. Set `false` for the minimal starter. Ignored for `entity-only`.
+|`ultimaNexusJvm.archetype`
+|`classic-backend`
+|The application shape. Determines the starter and the processor. Supported: `classic-backend`, `classic-fullstack`, `performance-backend`, `performance-fullstack`, `reactive-backend`, `reactive-fullstack`, `base`, `entity-only`.
 
 |`ultimaNexusJvm.useHibernate`
 |`true`
-|Use Hibernate generation. Set `false` for plain JPA identity methods.
+|Use Hibernate generation. Set `false` for plain JPA identity methods. Ignored for the reactive archetypes (R2DBC persistence).
+|===
+
+==== Starter Selection
+
+[cols="1,2"]
+|===
+|Archetype |Starter
+
+|`classic-backend` / `classic-fullstack`
+|`starter-spring-classic-backend` / `-fullstack`
+
+|`performance-backend` / `performance-fullstack`
+|`starter-spring-performance-backend` / `-fullstack`
+
+|`reactive-backend` / `reactive-fullstack`
+|`starter-spring-reactive-backend` / `-fullstack`
+
+|`base`
+|`starter-spring-base`
+
+|`entity-only`
+|none — entity generation only, no application layers
 |===
 
 ==== Processor Selection
@@ -168,15 +186,19 @@ The processor is selected automatically:
 
 [cols="1,1,2"]
 |===
-|Application Type |Hibernate |Processor
+|Archetype |Hibernate |Processor
 
-|`spring-rest-api`
+|`classic-*`, `performance-*`, `base`
 |`true` (default)
 |`processor-java-spring-hibernate` (full stack + Hibernate)
 
-|`spring-rest-api`
+|`classic-*`, `performance-*`, `base`
 |`false`
 |`processor-java-spring-application` (full stack + plain identity)
+
+|`reactive-*`
+|n/a
+|`processor-java-spring-application` (full stack; R2DBC persistence)
 
 |`entity-only`
 |`true`
@@ -194,9 +216,9 @@ Override the auto-included dependencies via version catalog entries:
 [source,toml]
 ----
 [libraries]
-ultima-nexus-jvm-starter = { module = "dev.daymor.ultima-nexus.jvm:starter-predefined-spring-rest-api-application", version = "latest.release" }
-ultima-nexus-jvm-annotation = { module = "dev.daymor.ultima-nexus.jvm:annotation-jvm", version = "latest.release" }
-ultima-nexus-jvm-processor = { module = "dev.daymor.ultima-nexus.jvm:processor-java-spring-hibernate", version = "latest.release" }
+ultima-nexus-jvm-starter = { module = "dev.daymor.ultimanexus.jvm:starter-spring-classic-backend", version = "latest.release" }
+ultima-nexus-jvm-annotation = { module = "dev.daymor.ultimanexus.jvm:annotation-jvm", version = "latest.release" }
+ultima-nexus-jvm-processor = { module = "dev.daymor.ultimanexus.jvm:processor-java-spring-hibernate", version = "latest.release" }
 ----
 
 When present, catalog entries take precedence over the automatic selection.
@@ -481,15 +503,10 @@ IMPORTANT: This plugin *cannot* be used with `java`, `java-library`, or any bund
 |===
 |Property |Default |Plugin |Description
 
-|`ultimaNexusJvm.applicationType`
-|`spring-rest-api`
+|`ultimaNexusJvm.archetype`
+|`classic-backend`
 |`ultima-nexus-jvm-application`
-|Application type: `spring-rest-api` or `entity-only`
-
-|`ultimaNexusJvm.usePredefinedStarter`
-|`true`
-|`ultima-nexus-jvm-application`
-|Use opinionated starter
+|Application shape: `classic-backend`, `classic-fullstack`, `performance-backend`, `performance-fullstack`, `reactive-backend`, `reactive-fullstack`, `base`, `entity-only`
 
 |`ultimaNexusJvm.useHibernate`
 |`true`

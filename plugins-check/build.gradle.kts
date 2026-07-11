@@ -25,7 +25,7 @@ dependencies {
     implementation(libs.spotbugs.gradle.plugin)
     implementation(libs.spotless.plugin.gradle)
     implementation(libs.dependency.analysis.gradle.plugin)
-    implementation(libs.classpath.collision.detector)
+    implementation(libs.kotlin.metadata.jvm)
 }
 
 testing.suites.named<JvmTestSuite>("test") {

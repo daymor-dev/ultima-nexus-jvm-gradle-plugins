@@ -16,7 +16,7 @@
 
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults.DependencyScope
-import dev.daymor.ultimanexus.jvm.gradle.config.Defaults.UltimaNexusJvm.ApplicationType
+import dev.daymor.ultimanexus.jvm.gradle.config.Defaults.UltimaNexusJvm.Archetype
 import dev.daymor.ultimanexus.jvm.gradle.config.Defaults.UltimaNexusJvm.CatalogLibrary
 import dev.daymor.ultimanexus.jvm.gradle.config.PluginIds
 import dev.daymor.ultimanexus.jvm.gradle.config.PropertyKeys
@@ -37,15 +37,17 @@ import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
  *   - Documentation (auto-detected via antora-playbook.yml)
  *   - Schema documentation collection (opt-in generateSchemaDocs task)
  *
- * The processor is selected automatically based on the application type
- * and whether Hibernate support is enabled.
+ * The starter and the processor are both selected from the archetype (and,
+ * for the classic/entity-only shapes, whether Hibernate support is enabled).
  *
  * Configuration (gradle.properties):
- *   ultimaNexusJvm.applicationType=spring-rest-api  (default)
- *     Supported types:
- *       - spring-rest-api : Spring Boot REST API with Spring Data JPA
- *       - entity-only     : Only entity generation (no Spring layers)
- *   ultimaNexusJvm.usePredefinedStarter=true   (default: true)
+ *   ultimaNexusJvm.archetype=classic-backend  (default)
+ *     Supported archetypes:
+ *       - classic-backend / classic-fullstack         : Spring MVC + JPA
+ *       - performance-backend / performance-fullstack : throughput-tuned, jOOQ persistence
+ *       - reactive-backend / reactive-fullstack       : WebFlux + R2DBC
+ *       - base        : the hexagonal core only, no opinionated wiring
+ *       - entity-only : entity generation only (no application layers, no starter)
  *   ultimaNexusJvm.useHibernate=true            (default: true)
  *
  * Override dependencies via version catalog entries:
@@ -71,12 +73,15 @@ if (file("antora-playbook.yml").exists()) {
     apply(plugin = PluginIds.Bundle.DOCUMENTATION)
 }
 
-val applicationType = project.findPropertyOrNull(PropertyKeys.UltimaNexusJvm.APPLICATION_TYPE)
-    ?: Defaults.UltimaNexusJvm.DEFAULT_APPLICATION_TYPE
-val usePredefined = project.findPropertyOrNull(PropertyKeys.UltimaNexusJvm.USE_PREDEFINED_STARTER)
-    ?.toBoolean() ?: Defaults.UltimaNexusJvm.DEFAULT_USE_PREDEFINED_STARTER
+val archetype = project.findPropertyOrNull(PropertyKeys.UltimaNexusJvm.ARCHETYPE)
+    ?: Defaults.UltimaNexusJvm.DEFAULT_ARCHETYPE
 val useHibernate = project.findPropertyOrNull(PropertyKeys.UltimaNexusJvm.USE_HIBERNATE)
     ?.toBoolean() ?: Defaults.UltimaNexusJvm.DEFAULT_USE_HIBERNATE
+
+require(archetype in Archetype.SUPPORTED) {
+    "Unknown ${PropertyKeys.UltimaNexusJvm.ARCHETYPE}: '$archetype'. " +
+        "Supported archetypes: ${Archetype.SUPPORTED.joinToString()}"
+}
 
 val libs = getLibsCatalogOrNull(project)
 
@@ -84,43 +89,38 @@ val starterDep = libs?.let { getLibraryOrNull(it, CatalogLibrary.STARTER) }
 val annotationDep = libs?.let { getLibraryOrNull(it, CatalogLibrary.ANNOTATION) }
 val processorDep = libs?.let { getLibraryOrNull(it, CatalogLibrary.PROCESSOR) }
 
-fun resolveProcessorFallback(type: String, hibernate: Boolean): String =
-    when (type) {
-        ApplicationType.SPRING_REST_API -> if (hibernate) {
-            Fallbacks.ULTIMA_NEXUS_JVM_PROCESSOR_SPRING_HIBERNATE
-        } else {
-            Fallbacks.ULTIMA_NEXUS_JVM_PROCESSOR_SPRING_APPLICATION
-        }
-        ApplicationType.ENTITY_ONLY -> if (hibernate) {
+fun resolveProcessorFallback(archetype: String, hibernate: Boolean): String =
+    when (archetype) {
+        in Archetype.REACTIVE -> Fallbacks.ULTIMA_NEXUS_JVM_PROCESSOR_SPRING_APPLICATION
+        Archetype.ENTITY_ONLY -> if (hibernate) {
             Fallbacks.ULTIMA_NEXUS_JVM_PROCESSOR_JAVA_HIBERNATE
         } else {
             Fallbacks.ULTIMA_NEXUS_JVM_PROCESSOR_JAVA
         }
-        else -> error(
-            "Unknown ${PropertyKeys.UltimaNexusJvm.APPLICATION_TYPE}: '$type'. " +
-                "Supported types: ${ApplicationType.SUPPORTED.joinToString()}"
-        )
+        else -> if (hibernate) {
+            Fallbacks.ULTIMA_NEXUS_JVM_PROCESSOR_SPRING_HIBERNATE
+        } else {
+            Fallbacks.ULTIMA_NEXUS_JVM_PROCESSOR_SPRING_APPLICATION
+        }
     }
 
-fun resolveStarterFallback(type: String, predefined: Boolean): String? =
-    when (type) {
-        ApplicationType.SPRING_REST_API -> if (predefined) {
-            Fallbacks.ULTIMA_NEXUS_JVM_STARTER_PREDEFINED_REST_API
-        } else {
-            Fallbacks.ULTIMA_NEXUS_JVM_STARTER_REST_API
-        }
-        ApplicationType.ENTITY_ONLY -> null
-        else -> error(
-            "Unknown ${PropertyKeys.UltimaNexusJvm.APPLICATION_TYPE}: '$type'. " +
-                "Supported types: ${ApplicationType.SUPPORTED.joinToString()}"
-        )
+fun resolveStarterFallback(archetype: String): String? =
+    when (archetype) {
+        Archetype.CLASSIC_BACKEND -> Fallbacks.ULTIMA_NEXUS_JVM_STARTER_CLASSIC_BACKEND
+        Archetype.CLASSIC_FULLSTACK -> Fallbacks.ULTIMA_NEXUS_JVM_STARTER_CLASSIC_FULLSTACK
+        Archetype.PERFORMANCE_BACKEND -> Fallbacks.ULTIMA_NEXUS_JVM_STARTER_PERFORMANCE_BACKEND
+        Archetype.PERFORMANCE_FULLSTACK -> Fallbacks.ULTIMA_NEXUS_JVM_STARTER_PERFORMANCE_FULLSTACK
+        Archetype.REACTIVE_BACKEND -> Fallbacks.ULTIMA_NEXUS_JVM_STARTER_REACTIVE_BACKEND
+        Archetype.REACTIVE_FULLSTACK -> Fallbacks.ULTIMA_NEXUS_JVM_STARTER_REACTIVE_FULLSTACK
+        Archetype.BASE -> Fallbacks.ULTIMA_NEXUS_JVM_STARTER_BASE
+        else -> null
     }
 
 dependencies {
     if (starterDep != null) {
         add(DependencyScope.IMPLEMENTATION, starterDep)
     } else {
-        val starterFallback = resolveStarterFallback(applicationType, usePredefined)
+        val starterFallback = resolveStarterFallback(archetype)
         if (starterFallback != null) {
             add(DependencyScope.IMPLEMENTATION, starterFallback)
         }
@@ -137,7 +137,7 @@ dependencies {
     } else {
         add(
             DependencyScope.ANNOTATION_PROCESSOR,
-            resolveProcessorFallback(applicationType, useHibernate)
+            resolveProcessorFallback(archetype, useHibernate)
         )
     }
 }

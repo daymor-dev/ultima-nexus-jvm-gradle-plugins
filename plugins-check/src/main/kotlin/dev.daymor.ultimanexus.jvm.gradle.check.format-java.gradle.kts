@@ -97,7 +97,7 @@ val defaultLicenseHeader: String by lazy {
 val eclipseVersion = libs?.let { getVersionOrNull(it, "eclipse-jdt") } ?: FallbackVersions.ECLIPSE_JDT
 
 spotless.java {
-    targetExclude("build/generated/**")
+    targetExclude("build/generated/**", "build/generated-sources/**", "build/generated-jooq-schema/**")
     addStep(
         JavaImportOrderStep.create(
             samePackageDepth = formatJavaConfig.importSamePackageDepth.get(),

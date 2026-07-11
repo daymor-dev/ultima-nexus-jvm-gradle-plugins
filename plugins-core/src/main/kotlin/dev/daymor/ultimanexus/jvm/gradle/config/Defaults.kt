@@ -74,21 +74,53 @@ object Defaults {
 
     object UltimaNexusJvm {
 
-        object ApplicationType {
-            const val SPRING_REST_API = "spring-rest-api"
+        object Archetype {
+            const val CLASSIC_BACKEND = "classic-backend"
+            const val CLASSIC_FULLSTACK = "classic-fullstack"
+            const val PERFORMANCE_BACKEND = "performance-backend"
+            const val PERFORMANCE_FULLSTACK = "performance-fullstack"
+            const val REACTIVE_BACKEND = "reactive-backend"
+            const val REACTIVE_FULLSTACK = "reactive-fullstack"
+            const val BASE = "base"
             const val ENTITY_ONLY = "entity-only"
-            val SUPPORTED = listOf(SPRING_REST_API, ENTITY_ONLY)
+
+            val SUPPORTED = listOf(
+                CLASSIC_BACKEND, CLASSIC_FULLSTACK,
+                PERFORMANCE_BACKEND, PERFORMANCE_FULLSTACK,
+                REACTIVE_BACKEND, REACTIVE_FULLSTACK,
+                BASE, ENTITY_ONLY
+            )
+
+            val REACTIVE = setOf(REACTIVE_BACKEND, REACTIVE_FULLSTACK)
         }
 
-        const val DEFAULT_APPLICATION_TYPE = ApplicationType.SPRING_REST_API
-        const val DEFAULT_USE_PREDEFINED_STARTER = true
+        const val DEFAULT_ARCHETYPE = Archetype.CLASSIC_BACKEND
         const val DEFAULT_USE_HIBERNATE = true
 
         object CatalogLibrary {
             const val STARTER = "ultima-nexus-jvm-starter"
             const val ANNOTATION = "ultima-nexus-jvm-annotation"
             const val PROCESSOR = "ultima-nexus-jvm-processor"
+            const val TEST_PROCESSOR = "ultima-nexus-jvm-test-processor"
+            const val STARTER_TEST_BASE = "ultima-nexus-jvm-starter-test-base"
+            const val STARTER_INTEGRATION_TEST = "ultima-nexus-jvm-starter-integration-test"
+            const val STARTER_FUNCTIONAL_TEST = "ultima-nexus-jvm-starter-functional-test"
+            const val STARTER_PERFORMANCE_TEST = "ultima-nexus-jvm-starter-performance-test"
+            const val JMH_GENERATOR_ANNPROCESS = "jmh-generator-annprocess"
+            const val CONTRACT_UI = "ultima-nexus-jvm-application-contract-ui"
+            const val CONFIGURATION_FRONTEND = "ultima-nexus-jvm-configuration-spring-frontend"
+            const val FRONTEND_VAADIN = "ultima-nexus-jvm-frontend-vaadin"
+            const val FRONTEND_HTMX = "ultima-nexus-jvm-frontend-htmx"
+            const val THYMELEAF = "thymeleaf"
+            const val HTMX_WEBJAR = "htmx-webjar"
+            const val HTMX_SPRING_BOOT = "htmx-spring-boot"
+            const val SPRING_BOOT_STARTER_THYMELEAF = "spring-boot-starter-thymeleaf"
+            const val VAADIN_SPRING_BOOT_STARTER = "vaadin-spring-boot-starter"
         }
+    }
+
+    object Frontend {
+        const val DEFAULT_VAADIN_PRODUCTION_MODE = true
     }
 
     object Repositories {

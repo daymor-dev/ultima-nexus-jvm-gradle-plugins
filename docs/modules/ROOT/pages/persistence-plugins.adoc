@@ -1,0 +1,127 @@
+= Persistence Plugins
+:navtitle: Persistence
+
+Build-time persistence convention plugins: offline jOOQ code generation, and
+wiring Flyway and Liquibase migration tasks. Each plugin is framework-agnostic —
+it wires only the underlying tool — and exposes a configurable location whose
+default matches where a code generator emits its output, so a project whose SQL
+is generated needs no configuration while a project with hand-written SQL
+overrides one property.
+
+== jOOQ Codegen Plugin
+
+Runs jOOQ's code generator offline against a directory of SQL DDL — no database, no Docker. It parses Flyway versioned scripts, a Liquibase formatted-SQL changelog, or plain `CREATE TABLE` files with jOOQ's `DDLDatabase` and emits the type-safe `Tables.*` into `build/generated-sources/jooq`, ahead of `compileJava`.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.jooq-codegen`
+
+[source,kotlin]
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.jooq-codegen")
+}
+
+jooqCodegenConfig {
+    scriptsDir = "src/main/resources/db/migration"
+    basePackage = "com.example.app.jooq"
+    // Optional generator overrides:
+    excludes = "audit_log"
+    forcedType {
+        userType = "com.example.Money"
+        converter = "com.example.MoneyConverter"
+        includeExpression = ".*\\.amount"
+    }
+}
+----
+
+=== Configuration
+
+[cols="2,2,3"]
+|===
+| Property | Default | Description
+
+| `scriptsDir`
+| `src/main/resources/db/migration`
+| Directory of SQL the offline parser reads (every `.sql` in the subtree)
+
+| `basePackage`
+| `${project.group}.jooq`
+| Target package for the generated `Tables.*` and records
+
+| `includes` / `excludes`
+| _all tables_
+| Java regexes selecting the tables to generate
+
+| `forcedType { … }`
+| —
+| Repeatable forced-type override (matcher plus `name` or `userType` + `converter`)
+|===
+
+=== Version Catalog Overrides
+
+Define a `jooq-meta-extensions` library in your `libs.versions.toml` to override the offline-parser coordinate:
+
+[source,toml]
+----
+[libraries]
+jooq-meta-extensions = { module = "org.jooq:jooq-meta-extensions", version = "latest.release" }
+----
+
+== Flyway Plugin
+
+Wires Flyway's build-time tasks (`flywayMigrate`, `flywayInfo`, `flywayValidate`, …) to a directory of versioned migration scripts, and orders every Flyway task after `compileJava`. A CI or pre-deploy step can then migrate and validate a real database from those scripts without running the application.
+
+The `migrationsDir` property defaults to `build/classes/java/main/META-INF/db/migration` — where a code generator that emits migrations during `compileJava` writes them, so a project whose migrations are generated needs no configuration. A project with hand-written scripts overrides the one property.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.flyway`
+
+[source,kotlin]
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.flyway")
+}
+
+// Only when the scripts are not at the generated-code default:
+flywayBuildTime {
+    migrationsDir = layout.projectDirectory.dir("src/main/resources/db/migration")
+}
+----
+
+The target database is supplied through the standard Flyway extension (`flyway { url = …; user = …; password = … }`) or the `flyway.url` / `flyway.user` / `flyway.password` Gradle properties:
+
+[source,bash]
+----
+./gradlew flywayMigrate -Pflyway.url=jdbc:postgresql://localhost/app \
+    -Pflyway.user=app -Pflyway.password=secret
+----
+
+== Liquibase Plugin
+
+Wires Liquibase's build-time tasks (`update`, `status`, `validate`, …) to a changelog file, and orders every Liquibase task after `compileJava`. A CI or pre-deploy step can then update and validate a real database from that changelog without running the application. Liquibase core and picocli are added to the `liquibaseRuntime` configuration automatically; the consumer adds its JDBC driver.
+
+The `changelogFile` property defaults to `build/classes/java/main/META-INF/db/changelog/db.changelog-master.sql` — where a code generator that emits a changelog during `compileJava` writes it, so a project whose changelog is generated needs no configuration. A project with a hand-written changelog overrides the one property.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.liquibase`
+
+[source,kotlin]
+----
+plugins {
+    id("dev.daymor.ultimanexus.jvm.gradle.feature.liquibase")
+}
+
+dependencies {
+    liquibaseRuntime("org.postgresql:postgresql")
+}
+
+// Only when the changelog is not at the generated-code default:
+liquibaseBuildTime {
+    changelogFile = layout.projectDirectory.file("src/main/resources/db/changelog.sql")
+}
+----
+
+To get tasks named `liquibaseUpdate` rather than the bare `update`, set `liquibaseTaskPrefix=liquibase` in `gradle.properties` (the prefix the Liquibase Gradle plugin reads at apply time):
+
+[source,bash]
+----
+./gradlew liquibaseUpdate -Pliquibase.url=jdbc:postgresql://localhost/app \
+    -Pliquibase.user=app -Pliquibase.password=secret
+----

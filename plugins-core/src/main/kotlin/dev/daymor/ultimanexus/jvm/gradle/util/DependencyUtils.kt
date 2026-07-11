@@ -44,6 +44,7 @@ object DependencyUtils {
         const val BYTE_BUDDY_AGENT = "1.18.7"
         const val CHECKSTYLE = "12.3.0"
         const val ECLIPSE_JDT = "4.38"
+        const val JMH = "1.37"
         const val JSPECIFY = "1.0.0"
         const val JSR305 = "3.0.2"
         const val JUNIT_JUPITER = "6.0.3"
@@ -53,9 +54,14 @@ object DependencyUtils {
         const val MOCKK = "1.14.9"
         const val PMD = "7.19.0"
         const val SLF4J = "2.0.17"
-        const val SPRING_BOOT = "4.0.5"
+        const val SPRING_BOOT = "4.1.0"
         const val ULTIMA_NEXUS_JVM = "0.2.0-SNAPSHOT"
         const val ULTIMA_NEXUS_JVM_CHECK = "1.0.0"
+        const val HTMX_SPRING_BOOT = "5.0.0"
+        const val VAADIN = "25.2.1"
+        const val JOOQ = "3.21.5"
+        const val THYMELEAF = "3.1.5.RELEASE"
+        const val HTMX_WEBJAR = "2.0.10"
     }
 
     object Fallbacks {
@@ -79,12 +85,34 @@ object DependencyUtils {
 
         private const val UN_GROUP = "dev.daymor.ultimanexus.jvm"
         private const val UN_VERSION = FallbackVersions.ULTIMA_NEXUS_JVM
-        const val ULTIMA_NEXUS_JVM_STARTER_REST_API =
-            "$UN_GROUP:starter-spring-rest-api-application:$UN_VERSION"
-        const val ULTIMA_NEXUS_JVM_STARTER_PREDEFINED_REST_API =
-            "$UN_GROUP:starter-predefined-spring-rest-api-application:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_STARTER_BASE =
+            "$UN_GROUP:starter-spring-base:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_STARTER_CLASSIC_BACKEND =
+            "$UN_GROUP:starter-spring-classic-backend:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_STARTER_CLASSIC_FULLSTACK =
+            "$UN_GROUP:starter-spring-classic-fullstack:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_STARTER_PERFORMANCE_BACKEND =
+            "$UN_GROUP:starter-spring-performance-backend:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_STARTER_PERFORMANCE_FULLSTACK =
+            "$UN_GROUP:starter-spring-performance-fullstack:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_STARTER_REACTIVE_BACKEND =
+            "$UN_GROUP:starter-spring-reactive-backend:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_STARTER_REACTIVE_FULLSTACK =
+            "$UN_GROUP:starter-spring-reactive-fullstack:$UN_VERSION"
         const val ULTIMA_NEXUS_JVM_ANNOTATION =
             "$UN_GROUP:annotation-jvm:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_PROCESSOR_SPRING_TEST =
+            "$UN_GROUP:processor-java-spring-test:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_STARTER_TEST_BASE =
+            "$UN_GROUP:starter-spring-test-base:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_STARTER_INTEGRATION_TEST =
+            "$UN_GROUP:starter-spring-integration-test:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_STARTER_FUNCTIONAL_TEST =
+            "$UN_GROUP:starter-spring-functional-test:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_STARTER_PERFORMANCE_TEST =
+            "$UN_GROUP:starter-spring-performance-test:$UN_VERSION"
+        const val JMH_GENERATOR_ANNPROCESS =
+            "org.openjdk.jmh:jmh-generator-annprocess:${FallbackVersions.JMH}"
         const val ULTIMA_NEXUS_JVM_PROCESSOR_JAVA =
             "$UN_GROUP:processor-java:$UN_VERSION"
         const val ULTIMA_NEXUS_JVM_PROCESSOR_JAVA_HIBERNATE =
@@ -93,6 +121,23 @@ object DependencyUtils {
             "$UN_GROUP:processor-java-spring-application:$UN_VERSION"
         const val ULTIMA_NEXUS_JVM_PROCESSOR_SPRING_HIBERNATE =
             "$UN_GROUP:processor-java-spring-hibernate:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_APPLICATION_CONTRACT_UI =
+            "$UN_GROUP:application-contract-ui:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_CONFIGURATION_SPRING_FRONTEND =
+            "$UN_GROUP:configuration-spring-frontend:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_FRONTEND_VAADIN =
+            "$UN_GROUP:frontend-vaadin:$UN_VERSION"
+        const val ULTIMA_NEXUS_JVM_FRONTEND_HTMX =
+            "$UN_GROUP:frontend-htmx:$UN_VERSION"
+
+        const val THYMELEAF = "org.thymeleaf:thymeleaf:${FallbackVersions.THYMELEAF}"
+        const val HTMX_WEBJAR = "org.webjars.npm:htmx.org:${FallbackVersions.HTMX_WEBJAR}"
+        const val HTMX_SPRING_BOOT = "io.github.wimdeblauwe:htmx-spring-boot:${FallbackVersions.HTMX_SPRING_BOOT}"
+        const val SPRING_BOOT_STARTER_THYMELEAF =
+            "org.springframework.boot:spring-boot-starter-thymeleaf:${FallbackVersions.SPRING_BOOT}"
+        const val VAADIN_SPRING_BOOT_STARTER =
+            "com.vaadin:vaadin-spring-boot-starter:${FallbackVersions.VAADIN}"
+        const val JOOQ_META_EXTENSIONS = "org.jooq:jooq-meta-extensions:${FallbackVersions.JOOQ}"
     }
 
     fun getLibrary(versionCatalog: VersionCatalog, name: String): Provider<MinimalExternalModuleDependency> =

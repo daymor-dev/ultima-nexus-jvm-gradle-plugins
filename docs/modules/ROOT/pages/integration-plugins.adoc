@@ -1,0 +1,31 @@
+= Integration Plugins
+:navtitle: Integration
+
+Compatibility aggregators that apply otherwise-independent convention plugins from a single
+classloader to work around cross-plugin bugs.
+
+Every plugin here is a temporary compatibility shim. The modules it bridges remain fully
+independent and standalone; each shim is deletable once the upstream issue it works around
+is fixed.
+
+== Application-with-jOOQ Bundle
+
+Applies the Vaadin frontend bundle, the htmx frontend bundle, and the jOOQ code-generation plugin together from a single convention-plugin classloader.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-application-with-jooq`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm.application)
+    alias(libs.plugins.ultimanexus.jvm.bundle.application.with.jooq)
+}
+----
+
+=== Why it exists
+
+Vaadin's `flow-gradle-plugin` (https://github.com/vaadin/flow/issues/17665[vaadin/flow#17665]) computes the inputs of `VaadinPrepareFrontendTask` (`svc`, `tokenService`, `inputProperties`) only in its `project.afterEvaluate`. When the Vaadin plugin and the jOOQ code-generation plugin are contributed by two *different* published convention-plugin modules, applying both to the same project perturbs the `afterEvaluate` ordering enough that the Vaadin task is realised before those inputs are set — failing the build with `property 'svc' … doesn't have a configured value`.
+
+Applying the Vaadin frontend bundles and the jOOQ plugin from one module (one classloader) keeps the ordering intact. Use this bundle instead of applying `bundle.ultima-nexus-frontend-vaadin` / `bundle.ultima-nexus-frontend-htmx` and `feature.jooq-codegen` separately whenever a single application needs both a Vaadin (or htmx) frontend and jOOQ code generation.
+
+NOTE: This is a compatibility shim. When the upstream Vaadin bug is fixed, the frontend and persistence plugins can be applied side by side directly and this bundle can be removed.

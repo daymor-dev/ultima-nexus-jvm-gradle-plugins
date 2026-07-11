@@ -15,34 +15,41 @@
  */
 
 import com.autonomousapps.tasks.ProjectHealthTask
-import io.fuchs.gradle.collisiondetector.DetectCollisionsTask
+import dev.daymor.ultimanexus.jvm.gradle.task.DetectClasspathCollisionsTask
 
 /**
  * Convention plugin for dependency analysis in subprojects.
  *
- * This plugin applies dependency-analysis-gradle-plugin and classpath-collision-detector
- * to analyze dependency health and detect classpath collisions.
+ * This plugin applies dependency-analysis-gradle-plugin for dependency
+ * health and registers an in-house, configuration-cache-compatible
+ * classpath-collision check. The check captures the runtime classpath
+ * as a task input and scans the jar bytes directly — it parses no class
+ * or Kotlin metadata, so it stays compatible as dependencies adopt newer
+ * metadata formats.
  *
  * For root project configuration with severity settings, use the dependencies.root plugin.
  */
 plugins {
     java
     id("com.autonomousapps.dependency-analysis")
-    id("io.fuchs.gradle.classpath-collision-detector")
     id("dev.daymor.ultimanexus.jvm.gradle.base.lifecycle")
 }
 
-tasks.named<DetectCollisionsTask>("detectCollisions").configure {
-    collisionFilter { exclude("**.html", "**.txt", "LICENSE") }
-}
+val detectClasspathCollisions =
+    tasks.register<DetectClasspathCollisionsTask>("detectClasspathCollisions") {
+        group = "verification"
+        description = "Fails the build when two jars provide the same class with differing bytes."
+        classpath.from(configurations.named("runtimeClasspath"))
+        resourceExclusions.convention(emptyList())
+    }
 
 tasks {
     named("qualityCheck") {
-        dependsOn(tasks.detectCollisions)
+        dependsOn(detectClasspathCollisions)
         dependsOn(tasks.withType<ProjectHealthTask>())
     }
     named("qualityGate") {
-        dependsOn(tasks.detectCollisions)
+        dependsOn(detectClasspathCollisions)
         dependsOn(tasks.withType<ProjectHealthTask>())
     }
 }

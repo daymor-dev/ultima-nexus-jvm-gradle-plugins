@@ -1,0 +1,242 @@
+= Ultima Nexus - Frontend Module
+:toc: preamble
+:toclevels: 2
+
+Frontend convention plugins for JVM web applications.
+
+== Overview
+
+The `plugins-frontend` module provides two rendering backends, each layered so it can be used with or without Spring:
+
+* **Vaadin**: Full client-side rendering, with the production bundle built before the tests that boot the app
+* **Vaadin (Spring)**: Adds the Vaadin Spring Boot integration on top
+* **htmx**: Server-rendered htmx + Thymeleaf, dependency-only (no build-time bundle)
+* **htmx (Spring)**: Adds the Spring Thymeleaf and htmx integrations on top
+* **Bundles**: Layer the Ultima Nexus JVM generated-frontend modules on top of the Spring plugins
+
+All plugins resolve versions from the version catalog with fallback support.
+
+== Plugins
+
+[cols="1,3"]
+|===
+|Plugin ID |Description
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.vaadin-frontend`
+|Vaadin plugin, production-mode default, and `vaadinBuildFrontend` test wiring
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.spring-vaadin-frontend`
+|Vaadin + the Vaadin Spring Boot integration
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.htmx-frontend`
+|htmx + Thymeleaf (plain Thymeleaf and the htmx WebJar)
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.spring-htmx-frontend`
+|htmx + the Spring Thymeleaf and htmx integrations
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-frontend-vaadin`
+|Bundle: Spring Vaadin + the Ultima Nexus JVM generated Vaadin frontend modules
+
+|`dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-frontend-htmx`
+|Bundle: Spring htmx + the Ultima Nexus JVM generated htmx frontend modules
+|===
+
+== Installation
+
+Add to your version catalog (`gradle/libs.versions.toml`):
+
+[source,toml]
+----
+[versions]
+ultima-nexus-plugins = "latest.release"
+
+[plugins]
+ultimanexus-jvm-feature-vaadin-frontend = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.vaadin-frontend", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-feature-spring-vaadin-frontend = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.spring-vaadin-frontend", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-feature-htmx-frontend = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.htmx-frontend", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-feature-spring-htmx-frontend = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.spring-htmx-frontend", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-frontend-vaadin = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-frontend-vaadin", version.ref = "ultima-nexus-plugins" }
+ultimanexus-jvm-bundle-frontend-htmx = { id = "dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-frontend-htmx", version.ref = "ultima-nexus-plugins" }
+----
+
+== Vaadin Plugin
+
+The default choice for projects that do not use Spring (or wire the Vaadin servlet manually). It adds no UI dependencies of its own — the consumer declares the Vaadin views and components it needs.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.vaadin.frontend)
+}
+----
+
+=== What It Does
+
+* Applies `com.vaadin`, so the `vaadinPrepareFrontend` and `vaadinBuildFrontend` tasks are available
+* Sets Vaadin production mode by default, so the served servlet runs against the built bundle
+* Makes `test`, `integrationTest`, and `functionalTest` depend on `vaadinBuildFrontend`, so a full-context test exercises the real servlet against the built bundle
+
+When production mode is on, `bootRun` also depends on `vaadinBuildFrontend`, so `./gradlew bootRun` after a clean serves the built frontend. In development mode the Vaadin dev server serves the frontend live and this wiring is skipped.
+
+=== Configuration
+
+[cols="2,1,3"]
+|===
+|Property |Default |Description
+
+|`ultimaNexusJvm.frontend.vaadinProductionMode`
+|`true`
+|Whether the Vaadin frontend runs in production mode against the built bundle. Set to `false` to run in Vaadin development mode locally.
+|===
+
+== Vaadin Spring Plugin
+
+The recommended choice for Spring Boot projects. Applies the Vaadin plugin AND adds the Vaadin Spring Boot integration.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.spring.vaadin.frontend)
+}
+----
+
+=== What It Configures
+
+Everything from the Vaadin plugin, plus:
+
+[source,kotlin]
+----
+dependencies {
+    implementation("com.vaadin:vaadin-spring-boot-starter:...")
+}
+----
+
+The starter auto-configures the Vaadin servlet and Spring-managed route and component instantiation.
+
+== htmx Plugin
+
+The default choice for projects that do not use Spring. htmx is server-rendered and needs no build-time bundle, so this is a dependency-only plugin with no extra tasks.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.htmx.frontend)
+}
+----
+
+=== What It Does
+
+Adds the plain Thymeleaf template engine and the htmx JavaScript library as a WebJar:
+
+[source,kotlin]
+----
+dependencies {
+    implementation("org.thymeleaf:thymeleaf:...")
+    implementation("org.webjars.npm:htmx.org:...")
+}
+----
+
+== htmx Spring Plugin
+
+The recommended choice for Spring Boot projects. Applies the htmx plugin AND adds the Spring integrations.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.spring.htmx.frontend)
+}
+----
+
+=== What It Configures
+
+Everything from the htmx plugin, plus:
+
+[source,kotlin]
+----
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf:...")
+    implementation("io.github.wimdeblauwe:htmx-spring-boot:...")
+}
+----
+
+The starter provides Thymeleaf auto-configuration and the Spring view resolver; `htmx-spring-boot` provides the htmx request and response integration for Spring MVC.
+
+== Vaadin Frontend Bundle
+
+The Ultima Nexus JVM convenience layer. Applies the Vaadin Spring plugin AND adds the generated-frontend modules, so a `@GenerateFrontend(backends = "vaadin")` entity's views compile and run with no hand-written Gradle.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm.application)
+    alias(libs.plugins.ultimanexus.jvm.bundle.frontend.vaadin)
+}
+----
+
+=== Includes
+
+* Everything from the Vaadin Spring plugin
+* `dev.daymor.ultimanexus.jvm:frontend-vaadin`
+* `dev.daymor.ultimanexus.jvm:configuration-spring-frontend`
+* `dev.daymor.ultimanexus.jvm:application-contract-ui`
+
+== htmx Frontend Bundle
+
+The Ultima Nexus JVM convenience layer. Applies the htmx Spring plugin AND adds the generated-frontend modules, so a `@GenerateFrontend(backends = "htmx")` entity's controller and shared fragments compile and run with no hand-written Gradle.
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.bundle.ultima.nexus.jvm.application)
+    alias(libs.plugins.ultimanexus.jvm.bundle.frontend.htmx)
+}
+----
+
+=== Includes
+
+* Everything from the htmx Spring plugin
+* `dev.daymor.ultimanexus.jvm:frontend-htmx`
+* `dev.daymor.ultimanexus.jvm:configuration-spring-frontend`
+* `dev.daymor.ultimanexus.jvm:application-contract-ui`
+
+TIP: Apply both bundles to serve both backends from one application — an entity's `@GenerateFrontend` default emits for every backend present.
+
+== Version Resolution
+
+The plugins resolve each dependency version in this order:
+
+1. Version from `libs.versions.toml` (library names: `thymeleaf`, `htmx-webjar`, `htmx-spring-boot`, `spring-boot-starter-thymeleaf`, `vaadin-spring-boot-starter`, `ultima-nexus-jvm-frontend-vaadin`, `ultima-nexus-jvm-frontend-htmx`, `ultima-nexus-jvm-configuration-spring-frontend`, `ultima-nexus-jvm-application-contract-ui`)
+2. Built-in fallback versions (see link:../README.adoc#_dependency_fallbacks[Dependency Fallbacks] in root README)
+
+=== Custom Version
+
+To use a specific version, add to your version catalog:
+
+[source,toml]
+----
+[libraries]
+thymeleaf = { module = "org.thymeleaf:thymeleaf", version = "latest.release" }
+htmx-webjar = { module = "org.webjars.npm:htmx.org", version = "latest.release" }
+htmx-spring-boot = { module = "io.github.wimdeblauwe:htmx-spring-boot", version = "latest.release" }
+spring-boot-starter-thymeleaf = { module = "org.springframework.boot:spring-boot-starter-thymeleaf", version = "latest.release" }
+vaadin-spring-boot-starter = { module = "com.vaadin:vaadin-spring-boot-starter", version = "latest.release" }
+----
+
+== Related Modules
+
+* link:../plugins-base/README.adoc[plugins-base] - Base Gradle project conventions (dependency)
+* link:../plugins-spring-boot/README.adoc[plugins-spring-boot] - Spring Boot conventions
+* link:../plugins-integration/README.adoc[plugins-integration] - Aggregator for Vaadin alongside jOOQ codegen
+* link:../README.adoc[Root README] - Project overview and quick start

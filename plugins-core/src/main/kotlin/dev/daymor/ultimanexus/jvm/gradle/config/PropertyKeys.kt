@@ -124,9 +124,12 @@ object PropertyKeys {
     }
 
     object UltimaNexusJvm {
-        const val USE_PREDEFINED_STARTER = "ultimaNexusJvm.usePredefinedStarter"
-        const val APPLICATION_TYPE = "ultimaNexusJvm.applicationType"
+        const val ARCHETYPE = "ultimaNexusJvm.archetype"
         const val USE_HIBERNATE = "ultimaNexusJvm.useHibernate"
+    }
+
+    object Frontend {
+        const val VAADIN_PRODUCTION_MODE = "ultimaNexusJvm.frontend.vaadinProductionMode"
     }
 
     object Develocity {
