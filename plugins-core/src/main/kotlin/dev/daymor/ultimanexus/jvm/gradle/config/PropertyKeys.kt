@@ -44,12 +44,14 @@ object PropertyKeys {
     object Test {
         const val MAX_HEAP_SIZE = "test.maxHeapSize"
         const val MAX_PARALLEL_FORKS = "test.maxParallelForks"
+        const val FORK_EVERY = "test.forkEvery"
         const val SHOW_STANDARD_STREAMS = "test.showStandardStreams"
         const val FILE_ENCODING = "test.fileEncoding"
         const val USE_BYTE_BUDDY_AGENT = "test.useByteBuddyAgent"
         const val USE_JACOCO = "test.useJacoco"
         const val SUITES = "test.suites"
         const val SUITE_PREFIX = "test.suite."
+        const val CONTAINER_REUSE = "test.containerReuse"
     }
 
     object Checkstyle {

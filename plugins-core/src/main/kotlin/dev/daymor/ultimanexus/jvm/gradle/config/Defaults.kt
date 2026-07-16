@@ -23,8 +23,12 @@ object Defaults {
     const val SPOTBUGS_EFFORT = "MAX"
     const val SPOTBUGS_REPORT_LEVEL = "LOW"
     const val TEST_MAX_HEAP_SIZE = "1g"
+    const val CONTEXT_TEST_MAX_HEAP_SIZE = "3g"
+    const val TEST_FORK_EVERY = 0L
     const val FILE_ENCODING = "UTF-8"
+    const val CONTAINER_REUSE_SYSTEM_PROPERTY = "test.container.reuse"
     val DEFAULT_TEST_SUITES = listOf("integrationTest", "functionalTest", "performanceTest")
+    val CONTEXT_BOOTING_SUITES = listOf("integrationTest", "functionalTest")
     val SUITES_WITHOUT_BYTEBUDDY = listOf("performanceTest")
     val SUITES_WITHOUT_JACOCO = listOf("performanceTest")
     const val PROJECT_STRUCTURE_DEPTH = 1

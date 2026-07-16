@@ -45,11 +45,11 @@ import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
  *   }
  *
  * Properties configuration (gradle.properties):
- *   ultimanexus.test.maxHeapSize=2g
- *   ultimanexus.test.maxParallelForks=4
- *   ultimanexus.test.showStandardStreams=false
- *   ultimanexus.test.fileEncoding=UTF-8
- *   ultimanexus.test.useByteBuddyAgent=true
+ *   test.maxHeapSize=2g
+ *   test.maxParallelForks=4
+ *   test.showStandardStreams=false
+ *   test.fileEncoding=UTF-8
+ *   test.useByteBuddyAgent=true
  */
 
 plugins {

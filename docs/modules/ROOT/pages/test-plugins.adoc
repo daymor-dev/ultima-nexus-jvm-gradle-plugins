@@ -267,9 +267,9 @@ See the xref:report-plugins.adoc[Report Plugins] section for details.
 |Property |Default |Plugin |Description
 
 |`test.maxHeapSize`
-|`1g`
+|`1g` (`3g` for `integrationTest` and `functionalTest`)
 |`test`, `test-suites`
-|Maximum heap size for test JVMs
+|Maximum heap size for test JVMs. The `integrationTest` and `functionalTest` suites default to a larger heap — setting this property explicitly overrides both defaults.
 
 |`test.maxParallelForks`
 |_(half of CPUs)_
@@ -302,14 +302,25 @@ See the xref:report-plugins.adoc[Report Plugins] section for details.
 |Comma-separated list of test suites to create
 
 |`test.suite.<name>.maxHeapSize`
-|_(inherits global)_
+|_(inherits `test.maxHeapSize`)_
 |`test-suites`
-|Per-suite maximum heap size
+|Per-suite maximum heap size. Takes precedence over `test.maxHeapSize` and over the larger
+context-booting-suite default.
 
 |`test.suite.<name>.maxParallelForks`
 |_(inherits global)_
 |`test-suites`
 |Per-suite parallel test processes
+
+|`test.forkEvery`
+|`0` (`1` for `performanceTest`)
+|`test-suites`
+|How many test classes share one forked JVM; `0` reuses a single JVM for the whole suite. `performanceTest` defaults to `1` so JIT state from an earlier class cannot skew a benchmark.
+
+|`test.suite.<name>.forkEvery`
+|_(inherits `test.forkEvery`)_
+|`test-suites`
+|Per-suite fork interval
 
 |`test.suite.<name>.showStandardStreams`
 |_(inherits global)_

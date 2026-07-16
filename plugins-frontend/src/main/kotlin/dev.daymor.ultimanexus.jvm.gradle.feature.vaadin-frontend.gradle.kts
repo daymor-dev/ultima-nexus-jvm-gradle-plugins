@@ -36,9 +36,10 @@ import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
  *     against the built production bundle. Override with
  *     `ultimaNexusJvm.frontend.vaadinProductionMode=false` (gradle.properties or
  *     -P) to run the app in Vaadin development mode locally.
- *   - Makes the `test`, `integrationTest`, and `functionalTest` tasks depend on
- *     `vaadinBuildFrontend`, so a full-context test exercises the real servlet
- *     against the built bundle rather than a missing one.
+ *   - Makes the `test`, `integrationTest`, `functionalTest`, and `performanceTest`
+ *     tasks depend on `vaadinBuildFrontend`, so a test or benchmark that starts the
+ *     application exercises the real servlet against the built bundle rather than a
+ *     missing one.
  *
  * This plugin adds no UI dependencies of its own — the consumer declares the
  * Vaadin views/components it needs. On a Spring Boot application, apply
@@ -67,7 +68,7 @@ val vaadinProductionMode = project.findPropertyOrNull(PropertyKeys.Frontend.VAAD
 extensions.configure<VaadinFlowPluginExtension> { productionMode.set(vaadinProductionMode) }
 
 val bootedTasks = buildList {
-    addAll(listOf("test", "integrationTest", "functionalTest"))
+    addAll(listOf("test", "integrationTest", "functionalTest", "performanceTest"))
 
     if (vaadinProductionMode) {
 

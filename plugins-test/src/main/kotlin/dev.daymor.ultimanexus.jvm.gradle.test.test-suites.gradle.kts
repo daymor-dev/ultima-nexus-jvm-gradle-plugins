@@ -61,6 +61,11 @@ import dev.daymor.ultimanexus.jvm.gradle.util.PropertyUtils.findPropertyOrNull
  * test.suite.smokeTest.maxParallelForks=1
  * ```
  *
+ * Container reuse (local iteration only — never enable on CI):
+ * `-Ptest.containerReuse=true` passes a neutral `test.container.reuse=true` system property to the
+ * context-booting suites' workers, which a test base managing a shared Testcontainers container reads to
+ * mark it reusable so it survives the JVM. Off by default; a per-suite override is `test.suite.<name>.containerReuse`.
+ *
  * Usage:
  * ```kotlin
  * plugins {
@@ -80,18 +85,22 @@ interface TestSuiteConfigSpec {
     val useJacoco: Property<Boolean>
     val maxHeapSize: Property<String>
     val maxParallelForks: Property<Int>
+    val forkEvery: Property<Long>
     val showStandardStreams: Property<Boolean>
     val fileEncoding: Property<String>
+    val containerReuse: Property<Boolean>
 }
 
 interface TestSuitesExtension {
     val suites: ListProperty<String>
     val maxHeapSize: Property<String>
     val maxParallelForks: Property<Int>
+    val forkEvery: Property<Long>
     val showStandardStreams: Property<Boolean>
     val fileEncoding: Property<String>
     val useByteBuddyAgent: Property<Boolean>
     val useJacoco: Property<Boolean>
+    val containerReuse: Property<Boolean>
     val suiteConfigs: NamedDomainObjectContainer<TestSuiteConfigSpec>
 
     fun suiteConfig(name: String, action: Action<TestSuiteConfigSpec>) {
@@ -110,6 +119,9 @@ testSuitesExtension.maxHeapSize.convention(
 testSuitesExtension.maxParallelForks.convention(
     project.findPropertyAsInt(PropertyKeys.Test.MAX_PARALLEL_FORKS, defaultParallelForks)
 )
+testSuitesExtension.forkEvery.convention(
+    project.findPropertyOrNull(PropertyKeys.Test.FORK_EVERY)?.toLongOrNull() ?: Defaults.TEST_FORK_EVERY
+)
 testSuitesExtension.showStandardStreams.convention(
     project.findPropertyAsBoolean(PropertyKeys.Test.SHOW_STANDARD_STREAMS, true)
 )
@@ -121,6 +133,9 @@ testSuitesExtension.useByteBuddyAgent.convention(
 )
 testSuitesExtension.useJacoco.convention(
     project.findPropertyAsBoolean(PropertyKeys.Test.USE_JACOCO, true)
+)
+testSuitesExtension.containerReuse.convention(
+    project.findPropertyAsBoolean(PropertyKeys.Test.CONTAINER_REUSE, false)
 )
 
 val suitesFromProps = project.findPropertyOrNull(PropertyKeys.Test.SUITES)
@@ -161,12 +176,20 @@ suiteNames.forEach { suiteName ->
     val useByteBuddy = suiteConfig?.useByteBuddyAgent?.orNull
         ?: getSuiteBooleanProperty(suiteName, "useByteBuddyAgent", defaultByteBuddy)
 
+    val defaultHeap = if (suiteName in Defaults.CONTEXT_BOOTING_SUITES) Defaults.CONTEXT_TEST_MAX_HEAP_SIZE
+    else testSuitesExtension.maxHeapSize.get()
     val maxHeap = suiteConfig?.maxHeapSize?.orNull
         ?: getSuiteProperty(suiteName, "maxHeapSize")
-        ?: testSuitesExtension.maxHeapSize.get()
+        ?: project.findPropertyOrNull(PropertyKeys.Test.MAX_HEAP_SIZE)
+        ?: defaultHeap
 
     val parallelForks = suiteConfig?.maxParallelForks?.orNull
         ?: getSuiteIntProperty(suiteName, "maxParallelForks", testSuitesExtension.maxParallelForks.get())
+
+    val defaultForkEvery = if (suiteName == "performanceTest") 1L else testSuitesExtension.forkEvery.get()
+    val forkEveryClasses = suiteConfig?.forkEvery?.orNull
+        ?: getSuiteProperty(suiteName, "forkEvery")?.toLongOrNull()
+        ?: defaultForkEvery
 
     val showStreams = suiteConfig?.showStandardStreams?.orNull
         ?: getSuiteBooleanProperty(suiteName, "showStandardStreams", testSuitesExtension.showStandardStreams.get())
@@ -180,6 +203,11 @@ suiteNames.forEach { suiteName ->
     val useJacoco = suiteConfig?.useJacoco?.orNull
         ?: getSuiteBooleanProperty(suiteName, "useJacoco", defaultJacoco)
 
+    val containerReuse = (suiteName in Defaults.CONTEXT_BOOTING_SUITES) && (
+        suiteConfig?.containerReuse?.orNull
+            ?: getSuiteBooleanProperty(suiteName, "containerReuse", testSuitesExtension.containerReuse.get())
+        )
+
     testing.suites.register<JvmTestSuite>(suiteName) {
         useJUnitJupiter()
         extensions.extraProperties["useJacoco"] = useJacoco
@@ -188,8 +216,13 @@ suiteNames.forEach { suiteName ->
                 group = Defaults.TaskGroup.VERIFICATION
                 maxHeapSize = maxHeap
                 maxParallelForks = parallelForks
+                forkEvery = forkEveryClasses
                 testLogging.showStandardStreams = showStreams
                 systemProperty("file.encoding", encoding)
+
+                if (containerReuse) {
+                    systemProperty(Defaults.CONTAINER_REUSE_SYSTEM_PROPERTY, "true")
+                }
 
                 if (useByteBuddy) {
                     jvmArgumentProviders.add(
@@ -207,7 +240,6 @@ suiteNames.forEach { suiteName ->
 
                 if (suiteName == "performanceTest") {
                     exclude("**/jmh_generated/**")
-                    forkEvery = 1
                     systemProperty("jmh.ignoreLock", "true")
                 }
             }

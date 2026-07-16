@@ -19,6 +19,8 @@ import dev.daymor.ultimanexus.jvm.gradle.config.Defaults.UltimaNexusJvm.CatalogL
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.Fallbacks
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibraryOrNull
 import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNull
+import org.gradle.api.plugins.quality.Checkstyle
+import org.gradle.api.plugins.quality.Pmd
 
 /**
  * Plugin: dev.daymor.ultimanexus.jvm.gradle.bundle.ultima-nexus-jvm-generated-tests
@@ -26,9 +28,9 @@ import dev.daymor.ultimanexus.jvm.gradle.util.DependencyUtils.getLibsCatalogOrNu
  * Wires the four test tiers the Ultima Nexus `@GenerateTests` annotation processor emits.
  *
  * The processor writes every generated test class into the MAIN annotation-processor output,
- * tagged by tier (`generated-unit`, `generated-integration`, `generated-functional`,
- * `generated-performance`). This plugin points each test task at that output and filters it
- * to the tier the task owns, so the generated suites run exactly like hand-written ones:
+ * named by tier (`*Test`, `*IT`, `*FT`, `*PT`). This plugin points each test task at that output
+ * and selects its tier by class-name suffix, so the generated suites run exactly like hand-written
+ * ones — and a hand-written test in the tier's own source set runs alongside them:
  *
  *   ./gradlew test              -> generated *Test  (unit)
  *   ./gradlew integrationTest   -> generated *IT
@@ -105,41 +107,35 @@ dependencies {
 
 private val mainClassesDirs = sourceSets["main"].output.classesDirs
 
-/**
- * Scans the main output for generated test classes without re-adding it to the runtime classpath.
- *
- * The classes are already reachable — a test suite resolves the project through its jar or through
- * `sourceSets.main.output`. Appending the directory a second time would put every `META-INF`
- * resource on the classpath twice, and a runtime that resolves a resource by a unique path (a
- * Liquibase changelog, a service descriptor) fails on the duplicate rather than picking one.
- */
 private fun Test.scanGeneratedClasses() {
     testClassesDirs += mainClassesDirs
 }
 
-private fun wireGeneratedTier(taskName: String, pattern: String, tag: String) =
+private fun wireGeneratedTier(taskName: String, pattern: String) =
     tasks.named<Test>(taskName) {
         scanGeneratedClasses()
         include(pattern)
-        useJUnitPlatform { includeTags(tag) }
+        useJUnitPlatform()
     }
 
 tasks.named<Test>("test") {
     scanGeneratedClasses()
     include("**/*Test.class")
-    useJUnitPlatform { excludeTags("generated-integration", "generated-functional", "generated-performance") }
+    useJUnitPlatform()
 }
 
-wireGeneratedTier("integrationTest", "**/*IT.class", "generated-integration")
-wireGeneratedTier("functionalTest", "**/*FT.class", "generated-functional")
+wireGeneratedTier("integrationTest", "**/*IT.class")
+wireGeneratedTier("functionalTest", "**/*FT.class")
 
 private val generatedMainSources = layout.buildDirectory.dir("generated/sources/annotationProcessor/java/main")
 
 sourceSets.named("performanceTest") { java.srcDir(files(generatedMainSources).builtBy("compileJava")) }
 
-// The generated *PT source references the entity and application classes, which the main output
-// supplies at compile time. The runtime classpath already resolves them through the project itself.
 tasks.named<JavaCompile>("compilePerformanceTestJava") {
     include("**/*PT.java")
     classpath += mainClassesDirs
 }
+
+private val handWrittenPerformanceTestJava = layout.projectDirectory.dir("src/performanceTest/java").asFile
+tasks.named<Checkstyle>("checkstylePerformanceTest") { setSource(handWrittenPerformanceTestJava) }
+tasks.named<Pmd>("pmdPerformanceTest") { setSource(handWrittenPerformanceTestJava) }

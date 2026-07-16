@@ -29,7 +29,7 @@ It:
 
 * Applies the Vaadin Gradle plugin, so the `vaadinPrepareFrontend` / `vaadinBuildFrontend` tasks are available.
 * Sets Vaadin production mode by default, so the served servlet runs against the built production bundle.
-* Makes the `test`, `integrationTest`, and `functionalTest` tasks depend on `vaadinBuildFrontend`, so a full-context test exercises the real servlet against the built bundle. When production mode is on, `bootRun` also depends on `vaadinBuildFrontend`, so `./gradlew bootRun` after a clean serves the built frontend instead of a missing-bundle error; in development mode the Vaadin dev server serves the frontend live and this wiring is skipped.
+* Makes the `test`, `integrationTest`, `functionalTest`, and `performanceTest` tasks depend on `vaadinBuildFrontend`, so a test or benchmark that starts the application exercises the real servlet against the built bundle. A benchmark JVM is headless and carries no dev server, so it always runs the application in production mode against that bundle. When production mode is on, `bootRun` also depends on `vaadinBuildFrontend`, so `./gradlew bootRun` after a clean serves the built frontend instead of a missing-bundle error; in development mode the Vaadin dev server serves the frontend live and this wiring is skipped.
 
 On a Spring Boot application, apply the xref:#spring-vaadin-frontend[Spring Vaadin Frontend plugin] on top for the Vaadin Spring Boot integration. Ultima Nexus JVM users who want the generated Vaadin frontend modules wired in for zero-config apply the xref:#vaadin-frontend-bundle[Vaadin Frontend Bundle] instead.
 
