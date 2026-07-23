@@ -1,0 +1,89 @@
+= Ultima Nexus - Serialization Module
+:toc: preamble
+:toclevels: 2
+
+Compile-time serialization plugins for Java projects.
+
+== Overview
+
+The `plugins-serialization` module wires compile-time serialization into a build. Its current backend is DSL-JSON; a future serializer would join it as an additional plugin.
+
+* **DSL-JSON Codegen**: framework-neutral annotation-processor wiring so every `@CompiledJson` type is serialised through a generated converter instead of runtime reflection, with a `-Werror`-safe generated marker
+
+The plugin resolves its version from the version catalog with fallback support. It is framework-neutral — usable on any project that wants reflection-free DSL-JSON.
+
+== Plugins
+
+[cols="1,3"]
+|===
+|Plugin ID |Description
+
+|`dev.daymor.ultimanexus.jvm.gradle.feature.dsljson-codegen`
+|DSL-JSON compile-time converter wiring: the runtime, the annotation processor, and the `-Werror`-safe generated marker
+|===
+
+== Installation
+
+Add to your version catalog (`gradle/libs.versions.toml`):
+
+[source,toml]
+----
+[versions]
+ultima-nexus-plugins = "latest.release"
+dsl-json = "2.0.2"
+
+[plugins]
+ultimanexus-jvm-feature-dsljson-codegen = { id = "dev.daymor.ultimanexus.jvm.gradle.feature.dsljson-codegen", version.ref = "ultima-nexus-plugins" }
+
+[libraries]
+dsl-json = { module = "com.dslplatform:dsl-json", version.ref = "dsl-json" }
+----
+
+== DSL-JSON Codegen
+
+=== Usage
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.dsljson.codegen)
+}
+----
+
+=== What It Does
+
+Configures DSL-JSON's compile-time converter generation for the main source set:
+
+[source,kotlin]
+----
+dependencies {
+    implementation("com.dslplatform:dsl-json:...")
+    annotationProcessor("com.dslplatform:dsl-json:...")
+}
+
+tasks.named<JavaCompile>("compileJava") {
+    options.compilerArgs.add(
+        "-Adsljson.generatedmarker=@javax.annotation.processing.Generated(\"dsl_json\") " +
+            "@SuppressWarnings({\"rawtypes\",\"unchecked\"})"
+    )
+}
+----
+
+Since DSL-JSON 2.x, the annotation processor lives in the same `dsl-json` artifact as the runtime; the plugin adds that one artifact to both `implementation` and `annotationProcessor`. The processor emits one `_<Type>_DslJsonConverter` per `@CompiledJson` type, and a generated converter takes precedence over runtime analysis, so an annotated type is encoded without reflection.
+
+=== Why the generated marker
+
+DSL-JSON emits its converters with raw-type and unchecked calls into its own API. A project compiling with `-Werror` would reject them. DSL-JSON's `generatedmarker` option is emitted verbatim above each generated class, so carrying a `@SuppressWarnings` there scopes the exemption to the vendor's own machine-written class and leaves `-Werror` fully enforced on hand-written code compiled by the same task.
+
+== Version Resolution
+
+The plugin resolves the DSL-JSON version in this order:
+
+1. Version from `libs.versions.toml` (library name: `dsl-json`)
+2. Built-in fallback version (see link:../README.adoc#_dependency_fallbacks[Dependency Fallbacks] in root README)
+
+== Related Modules
+
+* link:../plugins-base/README.adoc[plugins-base] - Base Gradle project conventions (dependency)
+* link:../plugins-mapper/README.adoc[plugins-mapper] - Object mapping via MapStruct (sibling compile-time codegen module)
+* link:../README.adoc[Root README] - Project overview and quick start

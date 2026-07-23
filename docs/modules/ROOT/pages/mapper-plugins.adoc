@@ -1,9 +1,9 @@
-= MapStruct Plugins
-:description: MapStruct annotation processing wiring for the main source set, with an optional Spring component-model overlay.
+= Object Mapping Plugins
+:description: Object-mapping wiring for the main source set; today MapStruct, with an optional Spring component-model overlay.
 :toc: left
 :toclevels: 3
 
-The MapStruct plugins add https://mapstruct.org/[MapStruct] annotation processing to the main source set. Mapper interfaces are compiled into `*Impl` classes by the MapStruct annotation processor at build time; this module provides the wiring that puts MapStruct on the right configurations and (optionally) flips the generated impls into Spring components.
+The object-mapping plugins wire compile-time object mapping into the main source set. The current backend is https://mapstruct.org/[MapStruct]: mapper interfaces are compiled into `*Impl` classes by its annotation processor at build time, and these plugins put it on the right configurations and (optionally) flip the generated impls into Spring components. A future mapping backend would join this module as an additional plugin.
 
 == MapStruct (Framework-Neutral)
 

@@ -1,12 +1,12 @@
-= Ultima Nexus - MapStruct Module
+= Ultima Nexus - Object Mapping Module
 :toc: preamble
 :toclevels: 2
 
-MapStruct annotation processing plugins for Java projects.
+Compile-time object-mapping plugins for Java projects.
 
 == Overview
 
-The `plugins-mapstruct` module provides MapStruct integration:
+The `plugins-mapper` module wires compile-time object mapping into a build. Its current backend is MapStruct; a future mapping backend would join it as an additional plugin.
 
 * **MapStruct**: Framework-neutral annotation processor wiring with optional Lombok binding
 * **MapStruct (Spring)**: Adds the `-Amapstruct.defaultComponentModel=spring` overlay so generated `*Impl` classes become Spring `@Component` beans

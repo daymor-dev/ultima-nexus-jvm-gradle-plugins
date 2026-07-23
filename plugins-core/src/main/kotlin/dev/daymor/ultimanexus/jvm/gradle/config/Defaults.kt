@@ -96,6 +96,8 @@ object Defaults {
             )
 
             val REACTIVE = setOf(REACTIVE_BACKEND, REACTIVE_FULLSTACK)
+
+            val PERFORMANCE = setOf(PERFORMANCE_BACKEND, PERFORMANCE_FULLSTACK)
         }
 
         const val DEFAULT_ARCHETYPE = Archetype.CLASSIC_BACKEND

@@ -268,11 +268,15 @@ MapStruct annotation processor wiring with optional Spring component-model overl
 
 |`...feature.mapstruct`
 |MapStruct annotation processor (framework-neutral, lombok-binding aware)
-|xref:mapstruct-plugins.adoc[MapStruct]
+|xref:mapper-plugins.adoc[Object Mapping]
 
 |`...feature.mapstruct-spring`
 |MapStruct with `-Amapstruct.defaultComponentModel=spring` overlay for Spring-based projects
-|xref:mapstruct-plugins.adoc[MapStruct]
+|xref:mapper-plugins.adoc[Object Mapping]
+
+|`...feature.dsljson-codegen`
+|DSL-JSON compile-time converter wiring (reflection-free, `-Werror`-safe generated marker)
+|xref:serialization-plugins.adoc[Serialization]
 |===
 
 == Native Plugins

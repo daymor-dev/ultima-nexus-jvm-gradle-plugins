@@ -130,9 +130,13 @@ The plugins are organized across 17 modules, each published as a separate artifa
 |Lombok: annotation processing for main and test source sets
 |3
 
-|`plugins-mapstruct`
-|MapStruct: annotation processor wiring with optional Spring component-model overlay
+|`plugins-mapper`
+|Object mapping: MapStruct annotation processor wiring with optional Spring component-model overlay
 |2
+
+|`plugins-serialization`
+|Serialization: DSL-JSON compile-time converter wiring (reflection-free)
+|1
 
 |`plugins-documentation`
 |Documentation: Antora site generation and UI bundles

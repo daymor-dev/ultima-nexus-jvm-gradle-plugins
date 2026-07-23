@@ -1,0 +1,33 @@
+= Serialization Plugins
+:description: DSL-JSON compile-time converter wiring for the main source set, with a -Werror-safe generated marker.
+:toc: left
+:toclevels: 3
+
+The serialization plugins wire compile-time serialization into the main source set. The current backend is https://github.com/ngs-doo/dsl-json[DSL-JSON]: a `@CompiledJson` type is compiled into a `_<Type>_DslJsonConverter` by its annotation processor at build time, and this module puts DSL-JSON on the right configurations and keeps the generated converters compatible with a `-Werror` build. A future serializer would join this module as an additional plugin.
+
+== DSL-JSON Codegen
+
+Adds DSL-JSON as `implementation` and `annotationProcessor`, and sets the processor's generated-marker option. A generated converter takes precedence over DSL-JSON's runtime analysis, so an annotated type is serialised without reflection.
+
+Plugin ID:: `dev.daymor.ultimanexus.jvm.gradle.feature.dsljson-codegen`
+
+[source,kotlin]
+----
+plugins {
+    alias(libs.plugins.ultimanexus.jvm.feature.dsljson.codegen)
+}
+----
+
+=== What It Configures
+
+* `implementation("com.dslplatform:dsl-json")` -- the runtime (and, since DSL-JSON 2.x, the annotation processor lives in the same artifact)
+* `annotationProcessor("com.dslplatform:dsl-json")` -- emits one `_<Type>_DslJsonConverter` per `@CompiledJson` type
+* `-Adsljson.generatedmarker=...` on `compileJava` -- so the generated converters carry `@SuppressWarnings({"rawtypes","unchecked"})`
+
+=== Why the generated marker
+
+DSL-JSON emits its converters with raw-type and unchecked calls into its own API. A project compiling with `-Werror` would reject them. The processor's `generatedmarker` option is emitted verbatim above each generated class, so carrying a `@SuppressWarnings` there scopes the exemption to the vendor's own machine-written class and leaves `-Werror` fully enforced on hand-written code compiled by the same task.
+
+=== Version Resolution
+
+The DSL-JSON version resolves from the consuming project's `libs.versions.toml` via the `dsl-json` alias, falling back to a pinned version when the alias is missing.

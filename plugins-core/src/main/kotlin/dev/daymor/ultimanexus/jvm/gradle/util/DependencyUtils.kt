@@ -60,6 +60,7 @@ object DependencyUtils {
         const val HTMX_SPRING_BOOT = "5.0.0"
         const val VAADIN = "25.2.1"
         const val JOOQ = "3.21.5"
+        const val DSL_JSON = "2.0.2"
         const val THYMELEAF = "3.1.5.RELEASE"
         const val HTMX_WEBJAR = "2.0.10"
     }
@@ -138,6 +139,7 @@ object DependencyUtils {
         const val VAADIN_SPRING_BOOT_STARTER =
             "com.vaadin:vaadin-spring-boot-starter:${FallbackVersions.VAADIN}"
         const val JOOQ_META_EXTENSIONS = "org.jooq:jooq-meta-extensions:${FallbackVersions.JOOQ}"
+        const val DSL_JSON = "com.dslplatform:dsl-json:${FallbackVersions.DSL_JSON}"
     }
 
     fun getLibrary(versionCatalog: VersionCatalog, name: String): Provider<MinimalExternalModuleDependency> =

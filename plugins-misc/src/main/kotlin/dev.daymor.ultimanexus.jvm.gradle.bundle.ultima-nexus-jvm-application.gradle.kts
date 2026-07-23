@@ -83,6 +83,10 @@ require(archetype in Archetype.SUPPORTED) {
         "Supported archetypes: ${Archetype.SUPPORTED.joinToString()}"
 }
 
+if (archetype in Archetype.PERFORMANCE) {
+    apply(plugin = PluginIds.Feature.DSLJSON_CODEGEN)
+}
+
 val libs = getLibsCatalogOrNull(project)
 
 val starterDep = libs?.let { getLibraryOrNull(it, CatalogLibrary.STARTER) }

@@ -12,12 +12,13 @@ jvm-dependency-conflict-resolution = "2.5"
 node = "7.1.0"
 spotbugs-gradle-plugin = "6.4.8"
 spotless-plugin-gradle = "8.4.0"
-graalvm-native-build-tools = "1.0.0"
+graalvm-native-build-tools = "1.1.5"
 jooq-codegen-gradle-plugin = "3.21.5"
 flyway-gradle-plugin = "12.8.1"
 liquibase-gradle-plugin = "3.1.0"
 liquibase-core = "5.0.3"
 picocli = "4.7.7"
+dsl-json = "2.0.2"
 spring-boot = "4.1.0"
 vaadin = "25.2.1"
 
@@ -60,6 +61,7 @@ flyway-gradle-plugin = { module = "org.flywaydb:flyway-gradle-plugin", version.r
 liquibase-gradle-plugin = { module = "org.liquibase:liquibase-gradle-plugin", version.ref = "liquibase-gradle-plugin" }
 liquibase-core = { module = "org.liquibase:liquibase-core", version.ref = "liquibase-core" }
 picocli = { module = "info.picocli:picocli", version.ref = "picocli" }
+dsl-json = { module = "com.dslplatform:dsl-json", version.ref = "dsl-json" }
 vaadin-gradle-plugin = { module = "com.vaadin:vaadin-gradle-plugin", version.ref = "vaadin" }
 vaadin-flow-gradle-plugin = { module = "com.vaadin:flow-gradle-plugin", version.ref = "vaadin" }
 spring-boot-gradle-plugin = { module = "org.springframework.boot:spring-boot-gradle-plugin", version.ref = "spring-boot" }
@@ -94,7 +96,8 @@ ultima-nexus-jvm-spring-boot = { module = "dev.daymor.ultima-nexus.jvm.gradle:pl
 ultima-nexus-jvm-lombok = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-lombok" }
 ultima-nexus-jvm-java = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-java" }
 ultima-nexus-jvm-native = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-native" }
-ultima-nexus-jvm-mapstruct = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-mapstruct" }
+ultima-nexus-jvm-mapper = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-mapper" }
+ultima-nexus-jvm-serialization = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-serialization" }
 ultima-nexus-jvm-frontend = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-frontend" }
 ultima-nexus-jvm-persistence = { module = "dev.daymor.ultima-nexus.jvm.gradle:plugins-persistence" }
 

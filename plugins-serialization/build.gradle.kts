@@ -22,11 +22,6 @@ plugins {
 dependencies {
     implementation(libs.ultima.nexus.jvm.core)
     implementation(libs.ultima.nexus.jvm.base)
-    implementation(libs.ultima.nexus.jvm.check)
-    implementation(libs.ultima.nexus.jvm.spring.boot)
-    implementation(libs.ultima.nexus.jvm.lombok)
-    implementation(libs.ultima.nexus.jvm.mapper)
-    implementation(libs.ultima.nexus.jvm.serialization)
 }
 
 testing.suites.named<JvmTestSuite>("test") {

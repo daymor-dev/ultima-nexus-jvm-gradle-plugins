@@ -69,6 +69,7 @@ object PluginIds {
         const val ANTORA = "$PREFIX.feature.antora"
         const val ANTORA_UI = "$PREFIX.feature.antora-ui"
         const val SCHEMA_DOCS = "$PREFIX.feature.schema-docs"
+        const val DSLJSON_CODEGEN = "$PREFIX.feature.dsljson-codegen"
         const val PROJECT_STRUCTURE = "$PREFIX.feature.project-structure"
         const val GIT_HOOKS = "$PREFIX.feature.git-hooks"
         const val BUILD_CACHE = "$PREFIX.feature.build-cache"

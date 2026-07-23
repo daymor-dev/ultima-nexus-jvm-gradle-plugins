@@ -58,6 +58,7 @@ interface GraalvmNativeConfigExtension {
     val quickBuild: Property<Boolean>
     val fallback: Property<Boolean>
     val richOutput: Property<Boolean>
+    val metadataRepository: Property<Boolean>
 }
 
 val graalvmNativeConfig =
@@ -75,8 +76,15 @@ graalvmNativeConfig.fallback.conventionFromProperty(
 graalvmNativeConfig.richOutput.conventionFromProperty(
     project, PropertyKeys.GraalvmNative.RICH_OUTPUT, true
 )
+graalvmNativeConfig.metadataRepository.conventionFromProperty(
+    project, PropertyKeys.GraalvmNative.METADATA_REPOSITORY, false
+)
 
 graalvmNative {
+    metadataRepository {
+        enabled.set(graalvmNativeConfig.metadataRepository)
+    }
+
     binaries {
         named("main") {
             verbose.set(graalvmNativeConfig.verbose)

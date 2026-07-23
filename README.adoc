@@ -285,8 +285,11 @@ For detailed documentation on each module, see the individual README files:
 |link:plugins-lombok/README.adoc[plugins-lombok]
 |Lombok: Annotation processing for main and test sources
 
-|link:plugins-mapstruct/README.adoc[plugins-mapstruct]
-|MapStruct: Annotation processor wiring with optional Spring component-model overlay
+|link:plugins-mapper/README.adoc[plugins-mapper]
+|Object mapping: MapStruct annotation processor wiring with optional Spring component-model overlay
+
+|link:plugins-serialization/README.adoc[plugins-serialization]
+|Serialization: DSL-JSON compile-time converter wiring (reflection-free)
 
 |link:plugins-documentation/README.adoc[plugins-documentation]
 |Documentation: Antora site generation
